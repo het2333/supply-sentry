@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — Business Runtime 微内核",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "zod": "4.5.4"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@readywork/app-demo-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — MCP 工具桥验证（DSH agent 原生 tool-calling 调用我们的工具）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/agent": "workspace:*",
+    "@readywork/app-mcp-bridge": "workspace:*",
+    "@readywork/app-mock-model": "workspace:*",
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

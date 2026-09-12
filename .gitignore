@@ -1,0 +1,67 @@
+# Dependencies and generated build output
+node_modules/
+.pnpm-store/
+.next/
+.turbo/
+dist/
+out/
+*.tsbuildinfo
+
+# Test reports and language caches
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.traineddata
+
+# Local configuration and credentials (keep placeholder templates)
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+.readywork-credential-key
+
+# Local business data, sessions, research checkouts and verification artifacts
+/data/
+/.readywork/
+/.research/
+/.superpowers/
+/artifacts/
+/backups/
+/tmp/
+/temp/
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-shm
+*.db-wal
+*.tar
+*.tar.gz
+*.tgz
+/revenue_chart.png
+
+# Logs, temporary files and operating-system metadata
+*.log
+*.pid
+*.pid.lock
+*.tmp
+*.bak
+*.swp
+*.swo
+*~
+.DS_Store
+._*
+Thumbs.db

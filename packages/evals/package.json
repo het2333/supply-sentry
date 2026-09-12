@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/evals",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — Evaluations 回放工具链（轨迹录制 / 评分 / 回归对比）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*"
+  }
+}

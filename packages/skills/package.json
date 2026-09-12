@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 能力层插件系统（SkillRegistry）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*"
+  }
+}

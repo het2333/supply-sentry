@@ -1,0 +1,14 @@
+{
+  "name": "@readywork/app-demo-quote",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 报价与订单员工（销售侧询价→选型→核价→报价）演示",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

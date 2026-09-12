@@ -1,0 +1,31 @@
+name: readywork-bridge
+label: Readywork Bridge
+kind: platform
+version: 1.0.0
+description: >
+  Internal durable HMAC bridge between Hermes Gateway and Readywork procurement.
+  It spools every external inbound message before suppressing the generic agent,
+  and exposes a loopback-only idempotent outbound dispatcher.
+author: Readywork
+requires_env:
+  - name: READYWORK_BRIDGE_SECRET
+    description: Shared HMAC-SHA256 secret used only by Readywork and this bridge.
+    prompt: Readywork Bridge secret
+    password: true
+  - name: READYWORK_API_URL
+    description: Readywork API base URL reachable from the Hermes container.
+    prompt: Readywork API URL
+    password: false
+optional_env:
+  - name: READYWORK_PROFILE_ID
+    description: Explicit Readywork Hermes profile when gateway source routing has no profile.
+    prompt: Readywork profile ID
+    password: false
+  - name: READYWORK_BRIDGE_HOST
+    description: Internal bridge listener host.
+    prompt: Bridge host
+    password: false
+  - name: READYWORK_BRIDGE_PORT
+    description: Internal bridge listener port.
+    prompt: Bridge port
+    password: false

@@ -1,0 +1,20 @@
+{
+  "name": "@readywork/supply-chain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — Supply Chain Workforce Pack（采购需求/询价/PO供应商运营）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/agent": "workspace:*",
+    "@readywork/context": "workspace:*",
+    "@readywork/control-tower": "workspace:*",
+    "@readywork/core": "workspace:*",
+    "@readywork/graph-runtime": "workspace:*",
+    "@readywork/skills": "workspace:*",
+    "@readywork/tools": "workspace:*",
+    "@readywork/workflow": "workspace:*"
+  }
+}

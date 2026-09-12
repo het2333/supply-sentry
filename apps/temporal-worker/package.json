@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/app-temporal-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@readywork/agent": "workspace:*",
+    "@readywork/graph-runtime": "workspace:*",
+    "@readywork/supply-chain": "workspace:*",
+    "@readywork/temporal-runtime": "workspace:*",
+    "@temporalio/worker": "^1.13.2"
+  }
+}

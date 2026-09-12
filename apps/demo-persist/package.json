@@ -1,0 +1,15 @@
+{
+  "name": "@readywork/app-demo-persist",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — node:sqlite 持久化与崩溃恢复演示",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/persistence": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@readywork/advanced-sla-contract": ["packages/core/src/procurement-advanced-sla.ts"],
+      "@readywork/procurement-confirmation-contract": ["packages/core/src/procurement-confirmation.ts"],
+      "@readywork/procurement-supplier-reply-contract": ["packages/core/src/procurement-supplier-reply.ts"],
+      "@readywork/core": ["packages/core/src/index.ts"],
+      "@readywork/agent": ["packages/agent/src/index.ts"],
+      "@readywork/workflow": ["packages/workflow/src/index.ts"],
+      "@readywork/skills": ["packages/skills/src/index.ts"],
+      "@readywork/tools": ["packages/tools/src/index.ts"],
+      "@readywork/context": ["packages/context/src/index.ts"],
+      "@readywork/control-tower": ["packages/control-tower/src/index.ts"],
+      "@readywork/supply-chain": ["packages/supply-chain/src/index.ts"],
+      "@readywork/persistence": ["packages/persistence/src/index.ts"],
+      "@readywork/evals": ["packages/evals/src/index.ts"],
+      "@readywork/connectors": ["packages/connectors/src/index.ts"],
+      "@readywork/temporal-runtime": ["packages/temporal-runtime/src/index.ts"],
+      "@readywork/graph-runtime": ["packages/graph-runtime/src/index.ts"],
+      "@readywork/connector-runtime": ["packages/connector-runtime/src/index.ts"],
+      "@readywork/messaging": ["packages/messaging/src/index.ts"],
+      "@readywork/app-validation": ["apps/validation/src/chain.ts"],
+      "@readywork/app-mock-model": ["apps/mock-model/src/index.ts"],
+      "@readywork/app-mcp-bridge": ["apps/mcp-bridge/src/bridge.ts"]
+    }
+  },
+  "include": ["packages/*/src/**/*.ts", "packages/*/test/**/*.ts", "apps/*/src/**/*.ts", "apps/*/test/**/*.ts"]
+}

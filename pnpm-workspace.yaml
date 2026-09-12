@@ -1,0 +1,14 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+overrides:
+  '@xmldom/xmldom': 0.8.15
+  fast-uri: 3.1.6
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  protobufjs: true
+  # Its postinstall only reports OpenCollective support. OCR uses the shipped
+  # WASM package and language data is provisioned explicitly at runtime.
+  tesseract.js: true
+  unrs-resolver: true

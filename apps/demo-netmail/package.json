@@ -1,0 +1,15 @@
+{
+  "name": "@readywork/app-demo-netmail",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 真实网易邮箱闭环（真发→IMAP 真收→解析→审批→回写 Odoo）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/connectors": "workspace:*",
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

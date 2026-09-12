@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/app-demo-intake",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — DeepSeek 采购事件意图识别 → 规则路由演示",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

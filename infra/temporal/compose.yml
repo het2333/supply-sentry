@@ -1,0 +1,52 @@
+name: readywork-temporal
+
+# 本地 V1：Temporal 官方持久化开发服务器。
+# 只绑定 loopback，Workflow History 保存在独立 Docker 卷中。
+services:
+  temporal-volume-init:
+    image: temporalio/auto-setup:1.28.1
+    user: "0:0"
+    entrypoint:
+      - sh
+      - -lc
+      - chown -R 1000:1000 /var/lib/temporal && chmod 750 /var/lib/temporal
+    volumes:
+      - temporal_data:/var/lib/temporal
+    restart: "no"
+
+  temporal:
+    image: temporalio/auto-setup:1.28.1
+    container_name: readywork-temporal
+    restart: unless-stopped
+    depends_on:
+      temporal-volume-init:
+        condition: service_completed_successfully
+    entrypoint:
+      - temporal
+      - server
+      - start-dev
+      - --ip
+      - 0.0.0.0
+      - --port
+      - "7233"
+      - --ui-port
+      - "8233"
+      - --db-filename
+      - /var/lib/temporal/temporal.db
+      - --log-format
+      - json
+    ports:
+      - "127.0.0.1:${READYWORK_TEMPORAL_PORT:-7233}:7233"
+      - "127.0.0.1:${READYWORK_TEMPORAL_UI_PORT:-18082}:8233"
+    volumes:
+      - temporal_data:/var/lib/temporal
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "127.0.0.1:7233"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+volumes:
+  temporal_data:
+    name: readywork_temporal_data

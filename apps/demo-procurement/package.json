@@ -1,0 +1,16 @@
+{
+  "name": "@readywork/app-demo-procurement",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 采购运营员工六大能力模块全流程演示",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/connectors": "workspace:*",
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*",
+    "@readywork/tools": "workspace:*"
+  }
+}

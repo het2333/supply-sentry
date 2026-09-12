@@ -1,0 +1,7 @@
+{
+  "name": "@readywork/app-control-plane-api",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "dependencies": { "@readywork/app-api": "workspace:*" }
+}

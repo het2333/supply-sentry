@@ -1,0 +1,15 @@
+{
+  "name": "@readywork/app-demo-mailloop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 真实邮件闭环（IMAP 收信 → 解析 → 审批 → 回写 Odoo）验证",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/connectors": "workspace:*",
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@readywork/app-demo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — V1 验证链演示",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

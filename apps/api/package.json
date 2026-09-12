@@ -1,0 +1,33 @@
+{
+  "name": "@readywork/app-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 最小 HTTP API（node:http，零依赖）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "4.9.0",
+    "@readywork/agent": "workspace:*",
+    "@readywork/connector-runtime": "workspace:*",
+    "@readywork/connectors": "workspace:*",
+    "@readywork/core": "workspace:*",
+    "@readywork/graph-runtime": "workspace:*",
+    "@readywork/messaging": "workspace:*",
+    "@readywork/persistence": "workspace:*",
+    "@readywork/supply-chain": "workspace:*",
+    "@readywork/temporal-runtime": "workspace:*",
+    "@readywork/tools": "workspace:*",
+    "date-holidays": "3.36.0",
+    "exceljs": "^4.4.0",
+    "mammoth": "^1.12.1",
+    "papaparse": "^5.5.4",
+    "pdfjs-dist": "^6.2.108",
+    "react": "19.2.8",
+    "tesseract.js": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — Agent Runtime Adapter（端口 + 确定性桩 + DSH 占位）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*"
+  }
+}

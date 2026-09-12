@@ -1,0 +1,14 @@
+{
+  "name": "@readywork/context",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — Enterprise Context Graph（内存实现）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/persistence": "workspace:*"
+  }
+}

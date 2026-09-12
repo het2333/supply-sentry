@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/persistence",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — node:sqlite 持久化（Task/BO/Approval/Event/Org/Budget 落盘 + 重启恢复）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*"
+  }
+}

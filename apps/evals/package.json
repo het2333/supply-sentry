@@ -1,0 +1,15 @@
+{
+  "name": "@readywork/app-evals",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — Evaluations 回放评测脚本（正常交付 vs 延期交付 回归对比）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/evals": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

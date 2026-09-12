@@ -1,0 +1,15 @@
+{
+  "name": "@readywork/workflow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 流程层引擎（agent/tool/skill/wait/approval/condition/notify/end）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/skills": "workspace:*",
+    "@readywork/tools": "workspace:*"
+  }
+}

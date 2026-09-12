@@ -1,0 +1,53 @@
+{
+  "name": "supply-sentry",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SupplySentry — AI-assisted procurement execution and supplier follow-up",
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "demo": "tsx apps/demo/src/index.ts",
+    "demo:dsh": "tsx apps/demo-dsh/src/index.ts",
+    "demo:persist": "tsx apps/demo-persist/src/index.ts",
+    "demo:mcp": "tsx apps/demo-mcp/src/index.ts",
+    "demo:odoo": "tsx apps/demo-odoo/src/index.ts",
+    "demo:quote": "tsx apps/demo-quote/src/index.ts",
+    "demo:mailloop": "tsx apps/demo-mailloop/src/index.ts",
+    "demo:netmail": "tsx apps/demo-netmail/src/index.ts",
+    "demo:sales": "tsx apps/demo-sales/src/index.ts",
+    "demo:procurement": "tsx apps/demo-procurement/src/index.ts",
+    "demo:orchestrator": "tsx apps/demo-orchestrator/src/index.ts",
+    "demo:intake": "tsx apps/demo-intake/src/index.ts",
+    "eval": "tsx apps/evals/src/index.ts",
+    "web": "tsx apps/web/src/index.ts",
+    "console": "pnpm --filter @readywork/app-console dev",
+    "mock-model": "tsx apps/mock-model/src/index.ts",
+    "api": "tsx apps/api/src/index.ts",
+    "api:business": "tsx apps/business-api/src/index.ts",
+    "api:control": "tsx apps/control-plane-api/src/index.ts",
+    "temporal:worker": "tsx apps/temporal-worker/src/index.ts",
+    "validate:manufacturing-context": "tsx apps/validation/src/manufacturing-context-chain.ts data/readywork.sqlite t:acme po:7c4c2aa5-b119-4e14-8953-a9fc78882e2a",
+    "infra:temporal:up": "docker compose -f infra/temporal/compose.yml up -d --wait",
+    "infra:temporal:down": "docker compose -f infra/temporal/compose.yml down",
+    "infra:temporal:logs": "docker compose -f infra/temporal/compose.yml logs -f temporal",
+    "infra:temporal:health": "docker compose -f infra/temporal/compose.yml exec -T temporal temporal operator cluster health --address 127.0.0.1:7233",
+    "infra:temporal:up:production": "docker compose -f infra/temporal/compose.production.yml up -d --wait",
+    "infra:temporal:down:production": "docker compose -f infra/temporal/compose.production.yml down",
+    "infra:temporal:logs:production": "docker compose -f infra/temporal/compose.production.yml logs -f temporal temporal-ui",
+    "infra:hermes:up": "docker compose --env-file infra/hermes/.env -f infra/hermes/compose.yml pull && docker compose --env-file infra/hermes/.env -f infra/hermes/compose.yml up -d --wait",
+    "infra:hermes:down": "docker compose --env-file infra/hermes/.env -f infra/hermes/compose.yml down",
+    "infra:hermes:logs": "docker compose --env-file infra/hermes/.env -f infra/hermes/compose.yml logs -f gateway dashboard",
+    "verify:hermes": "node scripts/verify-hermes-integration.mjs",
+    "test:deploy:contracts": "node --test infra/production/test/*.test.mjs",
+    "test": "tsx --test packages/core/test/*.test.ts packages/workflow/test/*.test.ts packages/agent/test/*.test.ts packages/persistence/test/*.test.ts packages/context/test/*.test.ts packages/connectors/test/*.test.ts packages/graph-runtime/test/*.test.ts packages/connector-runtime/test/*.test.ts packages/messaging/test/*.test.ts packages/temporal-runtime/test/*.test.ts packages/supply-chain/test/*.test.ts apps/api/test/*.test.ts apps/console/test/*.test.ts apps/temporal-worker/test/*.test.ts apps/mcp-bridge/test/*.test.ts && pnpm --dir apps/console exec tsx --test test/po-employee-cancel-interaction.test.tsx && pnpm --dir apps/console exec tsx --test --test-concurrency=1 test/auth-gate-interaction.test.tsx test/legal-source-chinese-rendering.test.tsx test/workflow-canvas-localization-interaction.test.tsx test/po-employee-edit-interaction.test.tsx test/po-employee-navigation-intent-interaction.test.tsx test/po-employee-page-detail-interaction.test.tsx test/po-employee-approval-interaction.test.tsx test/po-employee-realtime-interaction.test.tsx test/po-employee-action-reachability-interaction.test.tsx test/po-employee-modal-focus-interaction.test.tsx test/po-employee-documents-history-interaction.test.tsx test/po-detail-reference-states-interaction.test.tsx test/po-dialog-source-chinese-interaction.test.tsx test/po-employee-evidence-forms-interaction.test.tsx test/po-employee-evidence-forms-persistence-integration.test.tsx test/chinese-ui-contract.test.tsx test/suppliers-workbench-interaction.test.tsx test/material-lead-times-panel-interaction.test.tsx test/home-dashboard-interaction.test.tsx test/home-source-chinese-rendering.test.tsx test/notifications-interaction.test.tsx test/message-drafts-interaction.test.tsx test/route-workbench-interaction.test.tsx test/route-workbench-actions-interaction.test.tsx test/risk-sparkline-interaction.test.tsx test/risk-dashboard-interaction.test.tsx test/sla-workbench-interaction.test.tsx test/advanced-sla-workbench-interaction.test.tsx test/configuration-workbench-interaction.test.tsx test/demo-request-form-interaction.test.tsx test/ui-wrappers-interaction.test.tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

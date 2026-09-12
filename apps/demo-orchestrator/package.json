@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/app-demo-orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 采购路径编排器演示（动态路由）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

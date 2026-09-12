@@ -1,0 +1,10 @@
+{
+  "name": "@readywork/app-mock-model",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — OpenAI 兼容 mock 模型端点（脚本化决策，供无 key 验证 DSH Adapter）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

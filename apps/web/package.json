@@ -1,0 +1,14 @@
+{
+  "name": "@readywork/app-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — Web Control Tower 仪表盘（node:http 零依赖）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

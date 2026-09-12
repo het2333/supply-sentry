@@ -1,0 +1,15 @@
+{
+  "name": "@readywork/app-mcp-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — MCP 工具桥（ToolRegistry/SkillRegistry 暴露为 DSH 可调用的 MCP 工具）",
+  "type": "module",
+  "exports": {
+    ".": "./src/bridge.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/skills": "workspace:*",
+    "@readywork/tools": "workspace:*"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@readywork/connectors",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 企业连接器插件（Connector 注册表 + stub 实现）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*"
+  }
+}

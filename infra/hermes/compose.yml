@@ -1,0 +1,70 @@
+name: readywork-hermes
+
+x-hermes-image: &hermes-image
+  image: nousresearch/hermes-agent:v2026.9.7@sha256:63bfb6d732f49a55d453e801057273785cc61e0f6ee43db3fa2f2a79846301b7
+
+x-hermes-environment: &hermes-environment
+  HERMES_UID: ${HERMES_UID:-10000}
+  HERMES_GID: ${HERMES_GID:-10000}
+  HERMES_DASHBOARD_SESSION_TOKEN: ${HERMES_DASHBOARD_SESSION_TOKEN:?请在 infra/hermes/.env 中设置 Dashboard 会话令牌}
+  READYWORK_BRIDGE_SECRET: ${READYWORK_BRIDGE_SECRET:?请在 infra/hermes/.env 中设置 Bridge 共享密钥}
+  READYWORK_API_URL: ${READYWORK_API_URL:-http://host.docker.internal:4173}
+  READYWORK_BRIDGE_HOST: 0.0.0.0
+  READYWORK_BRIDGE_PORT: "8788"
+  READYWORK_BRIDGE_DATA_DIR: /opt/data/plugin-data/readywork-bridge
+  GATEWAY_MULTIPLEX_PROFILES: "true"
+
+x-hermes-volumes: &hermes-volumes
+  - ../../data/hermes:/opt/data
+  - ./plugins/readywork_bridge:/opt/data/plugins/readywork_bridge:ro
+
+services:
+  gateway:
+    <<: *hermes-image
+    container_name: readywork-hermes-gateway
+    restart: unless-stopped
+    environment: *hermes-environment
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ../../data/hermes:/opt/data
+      - ./plugins/readywork_bridge:/opt/data/plugins/readywork_bridge:ro
+      - ./bootstrap.sh:/opt/readywork/bootstrap.sh:ro
+    command: ["/opt/readywork/bootstrap.sh"]
+    ports:
+      - 127.0.0.1:8788:8788
+      # 企业微信回调由公网 HTTPS 反向代理转发到此回环端口，不能直接暴露 Gateway。
+      - 127.0.0.1:8645:8645
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8788/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 30s
+
+  dashboard:
+    <<: *hermes-image
+    container_name: readywork-hermes-dashboard
+    restart: unless-stopped
+    depends_on:
+      gateway:
+        condition: service_healthy
+    environment: *hermes-environment
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    volumes:
+      - ../../data/hermes:/opt/data
+      - ./plugins/readywork_bridge:/opt/data/plugins/readywork_bridge:ro
+      - ./dashboard-bootstrap.sh:/opt/readywork/dashboard-bootstrap.sh:ro
+      - ./dashboard_loopback_proxy.py:/opt/readywork/dashboard_loopback_proxy.py:ro
+      - ./weixin_onboarding_service.py:/opt/readywork/weixin_onboarding_service.py:ro
+    command: ["/opt/readywork/dashboard-bootstrap.sh"]
+    ports:
+      - 127.0.0.1:9119:9119
+      - 127.0.0.1:9121:9121
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:9119/api/health >/dev/null && curl -fsS http://127.0.0.1:9121/health >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 20s

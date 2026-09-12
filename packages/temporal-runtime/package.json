@@ -1,0 +1,16 @@
+{
+  "name": "@readywork/temporal-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./workflows": "./src/workflows.ts"
+  },
+  "dependencies": {
+    "@readywork/graph-runtime": "workspace:*",
+    "@temporalio/client": "^1.13.2",
+    "@temporalio/common": "^1.13.2",
+    "@temporalio/workflow": "^1.13.2"
+  }
+}

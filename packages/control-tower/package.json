@@ -1,0 +1,14 @@
+{
+  "name": "@readywork/control-tower",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — Control Plane 控制塔（员工/任务/审批/事件查询 + KPI）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/core": "workspace:*",
+    "@readywork/workflow": "workspace:*"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@readywork/app-demo-dsh",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 用 DeepSeek Harness Adapter 重跑验证链（无 key 时自动起 mock 模型）",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/agent": "workspace:*",
+    "@readywork/app-mock-model": "workspace:*",
+    "@readywork/app-validation": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

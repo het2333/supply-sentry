@@ -1,0 +1,15 @@
+{
+  "name": "@readywork/app-validation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 共享验证链（demo 与 demo:dsh 复用同一套业务流程）",
+  "type": "module",
+  "exports": {
+    ".": "./src/chain.ts"
+  },
+  "dependencies": {
+    "@readywork/context": "workspace:*",
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@readywork/app-demo-odoo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI Workforce OS — 真实 Odoo 采购订单延期催交写回演示",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@readywork/connectors": "workspace:*",
+    "@readywork/core": "workspace:*",
+    "@readywork/supply-chain": "workspace:*",
+    "@readywork/tools": "workspace:*"
+  }
+}
