@@ -114,6 +114,13 @@ import { createManufacturingContextRuntime } from './manufacturing-context-worke
 import { handleManufacturingContextRequest } from './manufacturing-context-routes.js';
 import { submitPublicDemoRequest } from './public-demo-requests.js';
 import { PublicDemoResetInProgressError, readPublicDemoStatus, resetPublicDemo } from './public-demo-reset.js';
+import {
+  currentPublicDemoGeneration,
+  PublicDemoGenerationConflictError,
+  PublicDemoRateLimiter,
+  publicDemoRequestBodyLimit,
+  requireCurrentDemoGeneration,
+} from './public-demo-abuse-controls.js';
 
 /**
  * AI Workforce OS · Console 后端 API（node:http 零依赖，供 apps/console 前端调用）。
@@ -132,6 +139,7 @@ const ALLOWED_ORIGINS = new Set(
 const INTERNAL_CALLBACK_TOKEN = process.env['READYWORK_INTERNAL_CALLBACK_TOKEN'] ?? randomBytes(32).toString('hex');
 assertPublicDemoConfiguration();
 const temporalRuntime = new TemporalRuntimeClient();
+const publicDemoRateLimiter = new PublicDemoRateLimiter();
 
 const mailConnector = new NetEaseMailConnector();
 const connectors = new ConnectorRegistry();
@@ -473,6 +481,42 @@ const DASHBOARD_HTML = `<!doctype html><html lang="zh"><meta charset="utf-8"><me
 function sendJson(res: ServerResponse, code: number, body: unknown): void {
   res.writeHead(code, { 'content-type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(body, null, 2));
+}
+
+function publicDemoRequestIp(req: IncomingMessage): string | undefined {
+  if (process.env['READYWORK_TRUST_PROXY'] === '1') {
+    const forwarded = req.headers['x-forwarded-for'];
+    return Array.isArray(forwarded) ? forwarded[0] : forwarded;
+  }
+  return req.socket.remoteAddress;
+}
+
+function applyPublicDemoRateLimit(req: IncomingMessage, res: ServerResponse, method: string, path: string, username?: string): boolean {
+  const decision = publicDemoRateLimiter.check({ ip: publicDemoRequestIp(req), username, method, path });
+  if (decision.allowed) return true;
+  res.setHeader('retry-after', String(decision.retryAfterSeconds));
+  sendJson(res, 429, {
+    error: '公开演示请求过于频繁，请稍后重试',
+    code: decision.code,
+    retryAfterSeconds: decision.retryAfterSeconds,
+  });
+  return false;
+}
+
+function enforcePublicDemoBodyLimit(req: IncomingMessage, method: string, path: string): void {
+  const contentTypeHeader = req.headers['content-type'];
+  const contentType = Array.isArray(contentTypeHeader) ? contentTypeHeader[0] : contentTypeHeader;
+  const limit = publicDemoRequestBodyLimit(method, path, contentType);
+  if (limit === null) return;
+  if (limit === 0) throw new HttpError(403, '公开演示环境已禁用文件上传', 'PUBLIC_DEMO_CAPABILITY_DISABLED');
+  const contentLengthHeader = req.headers['content-length'];
+  const rawContentLength = Array.isArray(contentLengthHeader) ? contentLengthHeader[0] : contentLengthHeader;
+  if (!rawContentLength) return;
+  if (!/^\d+$/u.test(rawContentLength)) throw new HttpError(400, 'Content-Length 无效', 'INVALID_CONTENT_LENGTH');
+  const contentLength = Number(rawContentLength);
+  if (!Number.isSafeInteger(contentLength) || contentLength > limit) {
+    throw new HttpError(413, `请求体超过 ${Math.floor(limit / 1024)} KB 限制`, 'BODY_TOO_LARGE');
+  }
 }
 
 async function readBody(req: IncomingMessage): Promise<Record<string, unknown>> {
@@ -1237,7 +1281,7 @@ const server = createServer(async (req, res) => {
     if (method === 'OPTIONS') {
       res.writeHead(204, {
         'access-control-allow-methods': 'GET,POST,PUT,DELETE,OPTIONS',
-        'access-control-allow-headers': 'authorization,content-type,idempotency-key,x-readywork-internal-token,x-readywork-signature',
+        'access-control-allow-headers': 'authorization,content-type,idempotency-key,x-readywork-demo-generation,x-readywork-internal-token,x-readywork-signature',
       });
       res.end();
       return;
@@ -1248,6 +1292,8 @@ const server = createServer(async (req, res) => {
         code: 'PUBLIC_DEMO_CAPABILITY_DISABLED',
       });
     }
+    if (publicDemoMode() && (path === '/api/auth/public-demo' || path === '/api/auth/login')
+      && !applyPublicDemoRateLimit(req, res, method, path)) return;
     if (!surfaceAllows(SERVICE_SURFACE, method, path)) return sendJson(res, 404, { error: `该路由不属于 ${SERVICE_SURFACE} 服务边界` });
     if (method === 'POST' && path === '/internal/demo/reset') {
       if (!publicDemoMode()) return sendJson(res, 404, { error: '未找到路由' });
@@ -1275,6 +1321,7 @@ const server = createServer(async (req, res) => {
       if (!publicDemoMode()) return sendJson(res, 404, { error: '未找到路由' });
       const result = createPublicDemoSession();
       res.setHeader('set-cookie', sessionCookieHeader(result.token, secureSessionCookie(req)));
+      try { res.setHeader('x-readywork-demo-generation', String(currentPublicDemoGeneration(requisitionDb))); } catch { /* reset worker initializes generation */ }
       return sendJson(res, 200, {
         ok: true,
         account: { username: result.session.username, name: result.session.name, role: result.session.role, humanId: result.session.humanId },
@@ -1307,6 +1354,25 @@ const server = createServer(async (req, res) => {
     }
 
     if (method === 'POST' && path === '/api/auth/logout') {
+      const publicDemoSession = publicDemoMode() ? requestSession(req) : null;
+      if (publicDemoSession?.tenantId === 't:public-demo') {
+        const generation = currentPublicDemoGeneration(requisitionDb);
+        res.setHeader('x-readywork-demo-generation', String(generation));
+        if (!applyPublicDemoRateLimit(req, res, method, path, publicDemoSession.username)) return;
+        enforcePublicDemoBodyLimit(req, method, path);
+        try {
+          requireCurrentDemoGeneration(req, requisitionDb);
+        } catch (error) {
+          if (error instanceof PublicDemoGenerationConflictError) {
+            return sendJson(res, 409, {
+              error: '公开演示数据已重置，请刷新页面后重试',
+              code: error.code,
+              currentGeneration: error.currentGeneration,
+            });
+          }
+          throw error;
+        }
+      }
       const body = await readBody(req);
       logout(String(body['token'] ?? bearerToken(req) ?? sessionTokenFromCookie(req.headers['cookie']) ?? ''));
       res.setHeader('cache-control', 'no-store');
@@ -1317,6 +1383,10 @@ const server = createServer(async (req, res) => {
     if (method === 'GET' && path === '/api/auth/me') {
       res.setHeader('cache-control', 'no-store');
       const s = requestSession(req);
+      if (publicDemoMode() && s?.tenantId === 't:public-demo') {
+        if (!applyPublicDemoRateLimit(req, res, method, path, s.username)) return;
+        try { res.setHeader('x-readywork-demo-generation', String(currentPublicDemoGeneration(requisitionDb))); } catch { /* first reset may still be starting */ }
+      }
       return s ? sendJson(res, 200, {
         ok: true,
         account: { username: s.username, name: s.name, role: s.role, humanId: s.humanId },
@@ -1331,6 +1401,8 @@ const server = createServer(async (req, res) => {
       const session = requestSession(req);
       if (!session) return sendJson(res, 401, { error: '未登录或会话过期', code: 'UNAUTHORIZED' });
       if (session.tenantId !== 't:public-demo') return sendJson(res, 403, { error: '公开演示租户不匹配', code: 'PUBLIC_DEMO_TENANT_MISMATCH' });
+      if (!applyPublicDemoRateLimit(req, res, method, path, session.username)) return;
+      res.setHeader('x-readywork-demo-generation', String(currentPublicDemoGeneration(requisitionDb)));
       return sendJson(res, 200, readPublicDemoStatus(requisitionDb));
     }
 
@@ -1351,6 +1423,29 @@ const server = createServer(async (req, res) => {
     }
 
     const workbenchSession = requestSession(req);
+    if (publicDemoMode() && workbenchSession) {
+      if (workbenchSession.tenantId !== 't:public-demo') {
+        return sendJson(res, 403, { error: '公开演示租户不匹配', code: 'PUBLIC_DEMO_TENANT_MISMATCH' });
+      }
+      const generation = currentPublicDemoGeneration(requisitionDb);
+      res.setHeader('x-readywork-demo-generation', String(generation));
+      if (!applyPublicDemoRateLimit(req, res, method, path, workbenchSession.username)) return;
+      enforcePublicDemoBodyLimit(req, method, path);
+      if (method !== 'GET' && method !== 'HEAD' && method !== 'OPTIONS') {
+        try {
+          requireCurrentDemoGeneration(req, requisitionDb);
+        } catch (error) {
+          if (error instanceof PublicDemoGenerationConflictError) {
+            return sendJson(res, 409, {
+              error: '公开演示数据已重置，请刷新页面后重试',
+              code: error.code,
+              currentGeneration: error.currentGeneration,
+            });
+          }
+          throw error;
+        }
+      }
+    }
     let workbenchConnectorReady: ((connectorId: string) => boolean) | undefined;
     if (workbenchSession && path.startsWith('/api/procurement/workbench/context/')) {
       try {

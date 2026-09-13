@@ -10,6 +10,22 @@ export type ApiRequestOptions = Omit<RequestInit, "body"> & { body?: unknown; ti
 export const READYWORK_AUTH_REQUIRED_EVENT = "readywork:auth-required";
 export type ReadyworkAuthRequiredReason = "expired" | "signed_out";
 
+export interface PublicDemoApiRuntime {
+  getGeneration: () => number | null;
+  onGeneration: (generation: number) => void;
+  onGenerationConflict: (currentGeneration: number | null) => Promise<void> | void;
+}
+
+let publicDemoApiRuntime: PublicDemoApiRuntime | null = null;
+
+/** The callbacks point to React-owned state; the API module never persists the generation itself. */
+export function configurePublicDemoApiRuntime(runtime: PublicDemoApiRuntime): () => void {
+  publicDemoApiRuntime = runtime;
+  return () => {
+    if (publicDemoApiRuntime === runtime) publicDemoApiRuntime = null;
+  };
+}
+
 export function notifyAuthenticationRequired(reason: ReadyworkAuthRequiredReason = "expired"): void {
   if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(READYWORK_AUTH_REQUIRED_EVENT, { detail: { reason } }));
 }
@@ -29,6 +45,11 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
       : JSON.stringify(options.body);
   headers.set("accept", "application/json");
   if (options.body !== undefined && !formBody) headers.set("content-type", "application/json");
+  const method = (options.method ?? (options.body === undefined ? "GET" : "POST")).toUpperCase();
+  if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS" && !headers.has("x-readywork-demo-generation")) {
+    const generation = publicDemoApiRuntime?.getGeneration();
+    if (generation !== null && generation !== undefined) headers.set("x-readywork-demo-generation", String(generation));
+  }
   const controller = new AbortController();
   let timedOut = false;
   const abortFromCaller = () => controller.abort(callerSignal?.reason);
@@ -52,9 +73,18 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     if (contentType.includes("application/json") && text) {
       try { payload = JSON.parse(text) as unknown; } catch { payload = { error: "服务器返回了无效响应" }; }
     }
+    const responseGeneration = Number(response.headers.get("x-readywork-demo-generation"));
+    if (Number.isSafeInteger(responseGeneration) && responseGeneration > 0) publicDemoApiRuntime?.onGeneration(responseGeneration);
     if (!response.ok) {
       const message = payload && typeof payload === "object" && "error" in payload ? String((payload as { error: unknown }).error) : `请求失败（${response.status}）`;
       if (response.status === 401 && !path.startsWith("/api/auth/")) notifyAuthenticationRequired();
+      if (response.status === 409 && payload && typeof payload === "object"
+        && (payload as { code?: unknown }).code === "DEMO_GENERATION_CONFLICT") {
+        const current = Number((payload as { currentGeneration?: unknown }).currentGeneration);
+        const normalizedCurrent = Number.isSafeInteger(current) && current > 0 ? current : null;
+        if (normalizedCurrent !== null) publicDemoApiRuntime?.onGeneration(normalizedCurrent);
+        await publicDemoApiRuntime?.onGenerationConflict(normalizedCurrent);
+      }
       throw new ReadyworkApiError(message, response.status, payload);
     }
     return payload as T;

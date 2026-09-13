@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
-import { apiRequest } from "@/features/shared/api-client";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { apiRequest, configurePublicDemoApiRuntime } from "@/features/shared/api-client";
 
 export interface PublicDemoCapabilities {
   syntheticData: true;
@@ -23,6 +23,7 @@ export interface PublicDemoState {
   demoMode: boolean;
   generation: number | null;
   status: PublicDemoStatus["status"] | "loading" | "unavailable";
+  resetNotice: boolean;
   capabilities: PublicDemoCapabilities | null;
   setDemoMode: (enabled: boolean) => void;
   refreshStatus: () => Promise<void>;
@@ -32,6 +33,7 @@ const PublicDemoContext = createContext<PublicDemoState>({
   demoMode: false,
   generation: null,
   status: "unavailable",
+  resetNotice: false,
   capabilities: null,
   setDemoMode: () => undefined,
   refreshStatus: async () => undefined,
@@ -41,12 +43,14 @@ export function PublicDemoProvider({ children }: { children: ReactNode }) {
   const [demoMode, updateDemoMode] = useState(false);
   const [generation, setGeneration] = useState<number | null>(null);
   const [status, setStatus] = useState<PublicDemoState["status"]>("unavailable");
+  const [resetNotice, setResetNotice] = useState(false);
 
   const setDemoMode = useCallback((enabled: boolean) => {
     updateDemoMode(enabled);
     if (!enabled) {
       setGeneration(null);
       setStatus("unavailable");
+      setResetNotice(false);
     }
   }, []);
 
@@ -63,10 +67,20 @@ export function PublicDemoProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  useEffect(() => configurePublicDemoApiRuntime({
+    getGeneration: () => generation,
+    onGeneration: (next) => setGeneration(next),
+    onGenerationConflict: async () => {
+      await refreshStatus();
+      setResetNotice(true);
+    },
+  }), [generation, refreshStatus]);
+
   const value = useMemo<PublicDemoState>(() => ({
     demoMode,
     generation,
     status,
+    resetNotice,
     capabilities: demoMode ? {
       syntheticData: true,
       externalDelivery: false,
@@ -75,7 +89,7 @@ export function PublicDemoProvider({ children }: { children: ReactNode }) {
     } : null,
     setDemoMode,
     refreshStatus,
-  }), [demoMode, generation, refreshStatus, setDemoMode, status]);
+  }), [demoMode, generation, refreshStatus, resetNotice, setDemoMode, status]);
 
   return <PublicDemoContext.Provider value={value}>{children}</PublicDemoContext.Provider>;
 }

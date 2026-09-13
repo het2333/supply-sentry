@@ -133,3 +133,79 @@ test("public demo settings never mount connector, credential, or upload controls
     restore();
   }
 });
+
+test("public demo mutations carry the in-memory generation and refresh after a reset conflict", async () => {
+  const { restore } = installDom();
+  const originalFetch = globalThis.fetch;
+  let generation = 4;
+  let conflictRefreshes = 0;
+  globalThis.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
+    assert.equal(String(input), "/api/procurement/notifications/read-all");
+    assert.equal(new Headers(init?.headers).get("x-readywork-demo-generation"), "4");
+    return json({ error: "公开演示数据已重置，请刷新页面后重试", code: "DEMO_GENERATION_CONFLICT", currentGeneration: 5 }, 409);
+  }) as typeof fetch;
+  try {
+    const { apiRequest, configurePublicDemoApiRuntime, ReadyworkApiError } = await import("../features/shared/api-client.js");
+    const dispose = configurePublicDemoApiRuntime({
+      getGeneration: () => generation,
+      onGeneration: (next) => { generation = next; },
+      onGenerationConflict: async () => { conflictRefreshes += 1; generation = 5; },
+    });
+    await assert.rejects(
+      () => apiRequest("/api/procurement/notifications/read-all", { method: "POST" }),
+      (error: unknown) => error instanceof ReadyworkApiError
+        && error.status === 409
+        && (error.payload as { code?: string }).code === "DEMO_GENERATION_CONFLICT",
+    );
+    assert.equal(conflictRefreshes, 1);
+    assert.equal(generation, 5);
+    dispose();
+  } finally {
+    globalThis.fetch = originalFetch;
+    restore();
+  }
+});
+
+test("public demo banner shows that a reset conflict refreshed the current view", async () => {
+  const { host, restore } = installDom();
+  const originalFetch = globalThis.fetch;
+  let root: { render: (node: React.ReactNode) => void; unmount: () => void } | undefined;
+  let statusReads = 0;
+  globalThis.fetch = (async (input: string | URL | Request) => {
+    const path = String(input);
+    if (path === "/api/public-demo/status") {
+      statusReads += 1;
+      return json({ demoMode: true, tenantId: "t:public-demo", seedVersion: "public-demo-v1", generation: 8, resetAt: "2026-09-13T05:00:00.000Z", status: "healthy" });
+    }
+    if (path === "/api/procurement/notifications/read-all") {
+      return json({ error: "reset", code: "DEMO_GENERATION_CONFLICT", currentGeneration: 8 }, 409);
+    }
+    throw new Error(`unexpected fetch: ${path}`);
+  }) as typeof fetch;
+  (globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
+  try {
+    const { act } = await import("react");
+    const { createRoot } = await import("react-dom/client");
+    const { apiRequest } = await import("../features/shared/api-client.js");
+    const { UiLanguageProvider } = await import("../features/localization/ui-language.js");
+    const { PublicDemoProvider } = await import("../features/public-demo/public-demo-context.js");
+    const { PublicDemoFrame } = await import("../features/public-demo/public-demo-banner.js");
+    await act(async () => {
+      root = createRoot(host);
+      root.render(<PathnameContext.Provider value="/"><UiLanguageProvider><PublicDemoProvider><PublicDemoFrame><div>workspace</div></PublicDemoFrame></PublicDemoProvider></UiLanguageProvider></PathnameContext.Provider>);
+      await wait();
+    });
+    await act(async () => {
+      await apiRequest("/api/public-demo/status");
+      await assert.rejects(() => apiRequest("/api/procurement/notifications/read-all", { method: "POST" }));
+      await wait();
+    });
+    assert.equal(statusReads, 2, "the conflict handler must re-read authoritative demo status");
+    assert.match(host.textContent ?? "", /Public demo data was reset; this view has been refreshed/);
+    assert.match(host.textContent ?? "", /Generation 8/);
+  } finally {
+    if (root) await import("react").then(({ act }) => act(async () => root!.unmount()));
+    globalThis.fetch = originalFetch;
+    restore();
+  }
+});
