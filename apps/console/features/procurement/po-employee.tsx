@@ -66,6 +66,7 @@ import {
   type PoDetailItemRow,
 } from "@/features/procurement/po-detail-view-model";
 import { useProcurementLocale } from "@/features/procurement/tenant-preferences-context";
+import { procurementDateTimeLocalToIso, procurementDateTimeLocalValue } from "@/features/procurement/tenant-locale";
 import { useProcurementRealtimeRefresh } from "@/features/procurement/realtime-events";
 import type { PurchaseOrderNavigationIntent } from "@/features/procurement/navigation-state";
 
@@ -2356,7 +2357,7 @@ export function ProcurementPoEmployee(props: {
       if (!verificationReference.trim()) { setFeedback({ tone: "error", text: "请填写可追溯的人工核验依据。" }); return; }
       if (!reason.trim()) { setFeedback({ tone: "error", text: "请填写人工核验原因。" }); return; }
       if (confirming.evidenceForm.kind === "receipt" && !warehouseId.trim()) { setFeedback({ tone: "error", text: "请填写真实仓库或 ERP 仓库标识。" }); return; }
-      const estimatedArrivalIso = estimatedArrivalAt ? new Date(estimatedArrivalAt).toISOString() : undefined;
+      const estimatedArrivalIso = estimatedArrivalAt ? procurementDateTimeLocalToIso(estimatedArrivalAt, preferences.timeZone) : undefined;
       const lines = confirming.evidenceForm.lines.map((line) => ({ line, quantity: Number(evidenceQuantities[line.poLineId] ?? 0) }))
         .filter((entry) => Number.isFinite(entry.quantity) && entry.quantity > 0);
       if (!lines.length) { setFeedback({ tone: "error", text: "请至少为一条 PO 行填写本次数量。" }); return; }
@@ -2387,7 +2388,7 @@ export function ProcurementPoEmployee(props: {
       if (productionProgressStatus === "ready_to_ship" && normalized.some(({ line, quantity, percentage }) => percentage !== 100 || quantity < line.effectiveQty)) {
         setFeedback({ tone: "error", text: "待发运状态要求完成度为 100%，且完成数量覆盖该行有效订购量。" }); return;
       }
-      const readyIso = productionExpectedReadyAt ? new Date(productionExpectedReadyAt).toISOString() : undefined;
+      const readyIso = productionExpectedReadyAt ? procurementDateTimeLocalToIso(productionExpectedReadyAt, preferences.timeZone) : undefined;
       body = {
         ...body, supplierReference: productionProgressReference.trim(), evidenceReference: verificationReference.trim(), reason: reason.trim(),
         lines: normalized.map(({ line, quantity, percentage }) => ({ poLineId: line.poLineId, quantity, completionPercent: percentage,
@@ -2400,8 +2401,9 @@ export function ProcurementPoEmployee(props: {
       if (!transportEventOccurredAt) { setFeedback({ tone: "error", text: "请填写运输节点实际发生时间。" }); return; }
       if (!verificationReference.trim()) { setFeedback({ tone: "error", text: "请填写可追溯的人工核验依据。" }); return; }
       if (!reason.trim()) { setFeedback({ tone: "error", text: "请填写人工核验原因。" }); return; }
-      const eventOccurredIso = new Date(transportEventOccurredAt).toISOString();
-      const estimatedArrivalIso = estimatedArrivalAt ? new Date(estimatedArrivalAt).toISOString() : undefined;
+      const eventOccurredIso = procurementDateTimeLocalToIso(transportEventOccurredAt, preferences.timeZone);
+      if (!eventOccurredIso) { setFeedback({ tone: "error", text: `请填写租户时区 ${preferences.timeZone} 中存在的有效运输节点时间。` }); return; }
+      const estimatedArrivalIso = estimatedArrivalAt ? procurementDateTimeLocalToIso(estimatedArrivalAt, preferences.timeZone) : undefined;
       body = {
         ...body, shipmentId, eventCode: transportEventCode, eventReference: transportEventReference.trim(),
         eventOccurredAt: eventOccurredIso, evidenceReference: verificationReference.trim(), reason: reason.trim(),
@@ -2490,8 +2492,7 @@ export function ProcurementPoEmployee(props: {
     setTrackingNumber("");
     setEstimatedArrivalAt("");
     setTransportEventCode("picked_up");
-    const now = new Date();
-    setTransportEventOccurredAt(new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 16));
+    setTransportEventOccurredAt(procurementDateTimeLocalValue(new Date(), preferences.timeZone));
     setTransportEventReference("");
     setTransportLocation("");
     setCarrierReference("");
@@ -2823,7 +2824,7 @@ export function ProcurementPoEmployee(props: {
               {confirming.evidenceForm.kind === "shipment" ? <>
                 <label><span className="text-xs font-medium text-slate-700">承运商（可选）</span><input value={carrier} onChange={(event) => setCarrier(event.target.value)} maxLength={120} placeholder="例如 DHL、顺丰" className="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-blue-400" /></label>
                 <label><span className="text-xs font-medium text-slate-700">运单号（可选）</span><input value={trackingNumber} onChange={(event) => setTrackingNumber(event.target.value)} maxLength={120} placeholder="输入真实追踪号" className="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-blue-400" /></label>
-                <label className="sm:col-span-2"><span className="text-xs font-medium text-slate-700">预计到货时间 ETA（可选）</span><input type="datetime-local" value={estimatedArrivalAt} onChange={(event) => setEstimatedArrivalAt(event.target.value)} className="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-blue-400" /><span className="mt-1 block text-[10px] leading-4 text-slate-400">按当前浏览器时区录入，保存时转换为可审计的 ISO 时间。</span></label>
+              <label className="sm:col-span-2"><span className="text-xs font-medium text-slate-700">预计到货时间 ETA（可选）</span><input type="datetime-local" value={estimatedArrivalAt} onChange={(event) => setEstimatedArrivalAt(event.target.value)} className="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-blue-400" /><span className="mt-1 block text-[10px] leading-4 text-slate-400">按租户时区 {preferences.timeZone} 录入，保存时转换为可审计的 ISO 时间。</span></label>
               </> : <><label><span className="text-xs font-medium text-slate-700">仓库标识 <span className="text-red-500">*</span></span><input value={warehouseId} onChange={(event) => setWarehouseId(event.target.value)} maxLength={120} placeholder="输入 Odoo / WMS 仓库 ID" className="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-blue-400" /></label><label><span className="text-xs font-medium text-slate-700">关联发运单（可选）</span><select value={shipmentId} onChange={(event) => setShipmentId(event.target.value)} className="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-blue-400"><option value="">不指定</option>{confirming.evidenceForm.shipments?.map((shipment) => <option key={shipment.id} value={shipment.id}>{shipment.reference}</option>)}</select></label></>}
               <label className="sm:col-span-2"><span className="text-xs font-medium text-slate-700">原始核验依据 <span className="text-red-500">*</span></span><input value={verificationReference} onChange={(event) => setVerificationReference(event.target.value)} maxLength={300} placeholder="例如：邮件 Message-ID、附件编号、Odoo Receipt URL 或仓库签收凭证号" className="mt-2 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-blue-400" /></label>
               <label className="sm:col-span-2"><span className="text-xs font-medium text-slate-700">核验原因 <span className="text-red-500">*</span></span><textarea value={reason} onChange={(event) => setReason(event.target.value)} maxLength={500} placeholder="说明你核对了哪些原始事实，以及为什么可以推进 PO 阶段" className="mt-2 min-h-20 w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-sm outline-none focus:border-blue-400" /></label>

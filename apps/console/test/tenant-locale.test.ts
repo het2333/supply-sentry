@@ -4,6 +4,8 @@ import {
   formatProcurementDate,
   procurementCalendarDate,
   procurementCalendarDateDaysBefore,
+  procurementDateTimeLocalToIso,
+  procurementDateTimeLocalValue,
   type ProcurementTenantPreferences,
 } from "../features/procurement/tenant-locale.js";
 
@@ -80,4 +82,20 @@ test("采购日历日期：按租户时区生成范围且不受 DST 小时数影
   assert.equal(procurementCalendarDate(instant, "Asia/Shanghai"), "2026-08-30");
   assert.equal(procurementCalendarDate(instant, "America/New_York"), "2026-08-29");
   assert.equal(procurementCalendarDateDaysBefore(new Date("2026-03-09T12:00:00.000Z"), "America/New_York", 1), "2026-03-08");
+});
+
+test("datetime-local 按租户时区转换为稳定 ISO，不依赖 Node 进程时区", () => {
+  assert.equal(procurementDateTimeLocalToIso("2026-09-18T09:30", "Asia/Shanghai"), "2026-09-18T01:30:00.000Z");
+  assert.equal(procurementDateTimeLocalToIso("2026-09-18T09:30", "America/New_York"), "2026-09-18T13:30:00.000Z");
+  assert.equal(procurementDateTimeLocalToIso("", "Asia/Shanghai"), undefined);
+  assert.equal(procurementDateTimeLocalToIso("2026-02-30T09:30", "Asia/Shanghai"), undefined);
+  assert.equal(procurementDateTimeLocalToIso("2026-09-18T09:30", "Mars/Olympus"), undefined);
+});
+
+test("ISO 时间按租户时区生成 datetime-local 控件值", () => {
+  const instant = new Date("2026-09-18T01:30:00.000Z");
+  assert.equal(procurementDateTimeLocalValue(instant, "Asia/Shanghai"), "2026-09-18T09:30");
+  assert.equal(procurementDateTimeLocalValue(instant, "America/New_York"), "2026-09-17T21:30");
+  assert.equal(procurementDateTimeLocalValue(new Date(Number.NaN), "Asia/Shanghai"), "");
+  assert.equal(procurementDateTimeLocalValue(instant, "Mars/Olympus"), "");
 });
