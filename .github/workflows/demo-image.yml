@@ -31,6 +31,9 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm test:localization
+      - run: node --test scripts/docs/test/*.test.mjs scripts/demo/test/capture-public-demo.test.mjs
+      - run: node scripts/docs/verify-architecture.mjs
+      - run: node scripts/docs/verify-readme.mjs --local
       - run: node --test infra/demo/test/*.test.mjs
       - run: pnpm eval:supplier-replies:verify
       - run: pnpm eval:supplier-replies:check
@@ -76,4 +79,3 @@ jobs:
             OCI_REVISION=${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-

@@ -72,6 +72,19 @@ case "$command" in
     ensure_env
     compose logs -f
     ;;
+  status)
+    ensure_env
+    compose ps
+    ;;
+  verify)
+    ensure_env
+    callback_token=$(env_value READYWORK_INTERNAL_CALLBACK_TOKEN)
+    [ -n "$callback_token" ] || { printf 'Missing internal callback token\n' >&2; exit 1; }
+    demo_port=${READYWORK_DEMO_PORT:-$(env_value READYWORK_DEMO_PORT)}
+    demo_port=${demo_port:-3002}
+    READYWORK_INTERNAL_CALLBACK_TOKEN="$callback_token" \
+      node "$SCRIPT_DIR/verify-public-demo.mjs" "http://127.0.0.1:$demo_port/"
+    ;;
   reset)
     ensure_env
     callback_token=$(env_value READYWORK_INTERNAL_CALLBACK_TOKEN)
@@ -86,7 +99,7 @@ case "$command" in
     compose down --volumes
     ;;
   help|-h|--help)
-    printf 'Usage: ./scripts/demo/demo.sh up [--build] | down | logs | reset | purge\n'
+    printf 'Usage: ./scripts/demo/demo.sh up [--build] | down | logs | status | verify | reset | purge\n'
     ;;
   *)
     printf 'Unknown command: %s\n' "$command" >&2

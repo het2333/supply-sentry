@@ -21,6 +21,10 @@ test('CI pins the toolchain and gates tests, localization, evaluation, seed, bui
     /pnpm test(?:\s|$)/mu,
     /pnpm test:localization/u,
     /infra\/demo\/test/u,
+    /scripts\/docs\/test/u,
+    /verify-architecture\.mjs/u,
+    /verify-readme\.mjs --local/u,
+    /capture-public-demo\.test\.mjs/u,
     /eval:supplier-replies:verify/u,
     /eval:supplier-replies:check/u,
     /seed-public-demo/u,
@@ -40,6 +44,8 @@ test('GHCR workflow publishes immutable SHA/version tags and gates latest on man
   assert.match(workflow, /provenance:\s*true/u);
   assert.match(workflow, /latest/u);
   assert.match(workflow, /needs:\s*verify/u);
+  assert.match(workflow, /scripts\/docs\/test/u);
+  assert.match(workflow, /verify-readme\.mjs --local/u);
   assert.doesNotMatch(workflow, /pull_request:[\s\S]*DEEPSEEK_API_KEY/u);
 });
 

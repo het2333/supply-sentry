@@ -27,6 +27,7 @@ function fixture() {
   };
   executable('docker', 'printf "docker %s\\n" "$*" >> "$DEMO_TEST_LOG"; exit 0');
   executable('curl', 'printf "curl %s\\n" "$*" >> "$DEMO_TEST_LOG"; printf \'{"ok":true,"generation":2}\\n\'; exit 0');
+  executable('node', 'printf "node callback=%s %s\\n" "${READYWORK_INTERNAL_CALLBACK_TOKEN:+SET}" "$*" >> "$DEMO_TEST_LOG"; exit 0');
   return {
     root, log, envFile,
     run(args, input = '') {
@@ -62,6 +63,18 @@ test('reset authenticates internally while down preserves volumes', () => {
     assert.equal(f.run(['down']).status, 0);
     assert.match(f.commands(), /docker compose .* down$/mu);
     assert.doesNotMatch(f.commands(), /down --volumes/u);
+  } finally { f.close(); }
+});
+
+test('status and verify inspect the isolated stack without exposing the internal token', () => {
+  const f = fixture();
+  try {
+    assert.equal(f.run(['status']).status, 0);
+    assert.match(f.commands(), /docker compose .*--project-name supplysentry-demo .* ps$/mu);
+
+    assert.equal(f.run(['verify']).status, 0);
+    assert.match(f.commands(), /node callback=SET .*scripts\/demo\/verify-public-demo\.mjs http:\/\/127\.0\.0\.1:3002\//u);
+    assert.doesNotMatch(f.commands(), /test-callback-token/u);
   } finally { f.close(); }
 });
 
