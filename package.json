@@ -33,6 +33,8 @@
     "mock-model": "tsx apps/mock-model/src/index.ts",
     "demo:public": "./scripts/demo/demo.sh up",
     "demo:verify": "node scripts/demo/verify-public-demo.mjs",
+    "demo:capture": "node scripts/demo/capture-public-demo.mjs",
+    "demo:media:verify": "node scripts/demo/verify-public-demo-media.mjs artifacts/media/supplysentry-demo",
     "api": "tsx apps/api/src/index.ts",
     "api:business": "tsx apps/business-api/src/index.ts",
     "api:control": "tsx apps/control-plane-api/src/index.ts",
@@ -55,6 +57,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
+    "playwright-core": "^1.55.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }

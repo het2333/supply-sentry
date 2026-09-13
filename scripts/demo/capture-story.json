@@ -1,0 +1,84 @@
+{
+  "name": "SupplySentry public demo walkthrough",
+  "tenantId": "t:public-demo",
+  "language": "en",
+  "notice": "Public demo using synthetic data and simulated external delivery only.",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "scenes": [
+    {
+      "id": "public-entry",
+      "route": "/?lang=en",
+      "action": "enter-public-demo",
+      "expectedHeading": "Welcome back",
+      "title": "A safe public workspace",
+      "subtitle": "Synthetic orders, isolated storage, and no external delivery",
+      "durationSeconds": 5
+    },
+    {
+      "id": "portfolio-overview",
+      "route": "/?section=home&lang=en",
+      "action": "navigate",
+      "expectedHeading": "Overview",
+      "title": "One view across active purchase orders",
+      "subtitle": "Portfolio signals, next actions, and evidence-backed status",
+      "durationSeconds": 8
+    },
+    {
+      "id": "vague-supplier-reply",
+      "route": "/?section=orders&poId=purchase-order%3Apublic-demo%3Avague-reply&returnTo=home&poTab=overview&lang=en",
+      "action": "navigate",
+      "expectedHeading": "PO-DEMO-1003",
+      "title": "Free-form supplier replies become structured evidence",
+      "subtitle": "Unknown facts stay unknown; material differences require review",
+      "durationSeconds": 8
+    },
+    {
+      "id": "partial-shipment-approval",
+      "route": "/?section=orders&poId=purchase-order%3Apublic-demo%3Apartial&returnTo=home&poTab=overview&lang=en",
+      "action": "navigate",
+      "expectedHeading": "PO-DEMO-1004",
+      "title": "Partial shipment is not silent short delivery",
+      "subtitle": "The remaining quantity stays open until an authorized decision",
+      "durationSeconds": 8
+    },
+    {
+      "id": "notifications",
+      "route": "/?section=notifications&lang=en",
+      "action": "navigate",
+      "expectedHeading": "Notifications",
+      "title": "Exception-first follow-up",
+      "subtitle": "Buyers see the items that require attention, not another inbox",
+      "durationSeconds": 8
+    },
+    {
+      "id": "sla",
+      "route": "/?section=sla&lang=en",
+      "action": "navigate",
+      "expectedHeading": "SLA",
+      "title": "SLA policies drive durable follow-up",
+      "subtitle": "No-response and delivery-risk timers survive process restarts",
+      "durationSeconds": 8
+    },
+    {
+      "id": "message-drafts",
+      "route": "/?section=message-drafts&lang=en",
+      "action": "navigate",
+      "expectedHeading": "Drafted Emails",
+      "title": "AI drafts; humans retain authority",
+      "subtitle": "Messages remain reviewable before any controlled send",
+      "durationSeconds": 8
+    },
+    {
+      "id": "settings-boundary",
+      "route": "/?section=settings&lang=en",
+      "action": "navigate",
+      "expectedHeading": "Public demo safety boundary",
+      "title": "Connectors are explicit operational boundaries",
+      "subtitle": "The public demo keeps credentials, uploads, and webhooks disabled",
+      "durationSeconds": 8
+    }
+  ]
+}
