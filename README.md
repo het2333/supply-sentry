@@ -1,332 +1,184 @@
-# SupplySentry
+# SupplySentry | Evidence-driven procurement execution agent
 
 English | [简体中文](README.zh-CN.md)
 
-**A stateful AI procurement execution agent for manufacturing teams.**
+[![CI](https://github.com/het2333/supply-sentry/actions/workflows/ci.yml/badge.svg)](https://github.com/het2333/supply-sentry/actions/workflows/ci.yml)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-one--command-2496ED?logo=docker&logoColor=white)](#quick-start)
+![Demo](https://img.shields.io/badge/Demo-publishing-orange)
 
-SupplySentry follows a purchase order after it is issued: it collects supplier commitments, tracks production and dispatch, detects delivery risk, drafts follow-ups, requests human approval for material decisions, and verifies final receipt against ERP or warehouse evidence.
+SupplySentry follows a purchase order after issue, turns unstructured supplier replies into traceable evidence, detects delivery risk, requests human approval for material differences, and executes only policy-approved actions through durable, retry-safe gateways.
 
-The project is built around five ideas: **business workflow, durable state, controlled tools, human approval, and measurable reliability**.
+> **Public portfolio boundary:** every visible record is synthetic. The public stack uses a mock/in-memory model runtime, writes only to tenant `t:public-demo`, and records outbound actions as `simulated_demo` with `externalDelivery=false`.
 
-## The problem
+<picture>
+  <source srcset="docs/assets/supplysentry-demo.gif" type="image/gif">
+  <img src="docs/assets/supplysentry-demo-poster.png" alt="SupplySentry synthetic public demo: supplier reply evidence, short-delivery approval, risk, SLA, notifications, and drafts" width="100%">
+</picture>
 
-Issuing a purchase order does not finish procurement work. Buyers still spend days or weeks checking email and chat threads, asking for delivery dates, tracking partial shipments, reconciling conflicting answers, and updating ERP records.
+[**Try Online — publishing after external verification**](#public-demo-status) · [**Run Locally**](#quick-start) · [Evaluation report](reports/evaluations/supplier-replies-v1.md) · [Architecture source](docs/architecture/supplysentry-system.drawio)
 
-This work is difficult to automate safely:
+| Durable workflow | Controlled side effects | Measured reliability |
+| --- | --- | --- |
+| Temporal state, waits, retries, approvals, and restart recovery | Permission, policy, version, idempotency, Outbox, and receipt checks | 240 executed contract cases with a committed dataset hash and reproducible runner |
 
-- Suppliers reply in free-form language such as “around next week” or “we can ship 100 units first”.
-- Order facts are split across ERP, email, attachments, messaging channels, and warehouse receipts.
-- A generated message is not proof that it was sent, and a carrier delivery event is not proof of warehouse receipt.
-- Quantity, price, and delivery-date differences can affect production and require a human decision.
-- Retrying an uncertain external call can send the same email or write the same ERP change twice.
-
-SupplySentry turns this work into a durable, evidence-backed process instead of treating the LLM as the system of record.
-
-## Business workflow
-
-```text
-Approved ERP PO ─┐
-                 ├─→ Validate PO and line items
-Verified email PO┘
-                         ↓
-PO Sent → Supplier Commitment → Fulfillment / Production
-        → Dispatch / Transit → Delivery / Goods Receipt
-                         ↓
-             Risk, SLA, notifications, and audit
-```
-
-During the lifecycle, the platform continuously runs the following loop:
+## Product workflow
 
 ```text
-SLA check
-  → detect no response, delay, quantity difference, or missing evidence
-  → generate a follow-up draft or recommended action
-  → human review when policy requires it
-  → persist an Outbox command
-  → send through Email / Hermes or write through an ERP connector
-  → save the external receipt
-  → update the order projection and next SLA
+supplier reply
+  → PO / supplier association
+  → structured evidence extraction
+  → deterministic schema and policy validation
+  → human approval when the difference is material
+  → controlled message or ERP command
+  → durable receipt, projection, SLA, risk, and audit update
 ```
 
-An inbound supplier reply follows a separate evidence path:
+The platform covers PO intake, supplier commitment, production/fulfillment, dispatch/transit, and delivery/goods receipt. It handles common procurement reality: vague dates, partial shipments, silent quantity shortfalls, conflicting replies, quoted-history contamination, missing evidence, and uncertain external results.
 
-```text
-Receive message
-  → identify tenant, supplier, thread, and candidate PO
-  → extract delivery, quantity, production, and shipment facts with AI
-  → validate against deterministic business schemas
-  → request approval for material differences or low-confidence results
-  → append evidence and advance the order state
-```
+Implemented surfaces include the order workbench, line-level evidence, suppliers, route and risk views, SLA, notifications, drafted messages, approvals, documents, history, configuration, and persisted English/Chinese UI preference.
+
+## Measured evaluation
+
+The published benchmark contains **240 fictional `synthetic_contract_case` records** covering Chinese, English, mixed-language, QQ-style formatting, dates, quantities, partial shipment, price/currency variance, production, transport, quoted history, and ambiguous PO association. These are not customer messages.
+
+The checked-in report is a real execution of `supplysentry-deterministic-v1`, not an estimated score:
+
+| Metric | Executed result |
+| --- | ---: |
+| Completed cases | **240/240** |
+| PO association accuracy | **100.00%** |
+| Missing-fact recall | **100.00%** |
+| Approval recall | **100.00%** |
+| End-to-end accepted-result rate | **100.00%** |
+| Fabrication rate | **0.00%** |
+
+Dataset SHA-256: `4452a076d5d0ea7d0de01fee9ea77007976db0d038b718bda2378c455399b331`
+
+The perfect result is a **deterministic contract baseline**: it proves the committed parser and validation rules reproduce their expected outputs on the committed synthetic dataset. It is not a customer-production metric and not a hosted-model generalization claim.
+
+**DeepSeek evaluation: not published.** The optional provider runner exists, but no 240-case DeepSeek report is presented without 240 successful provider calls. Token use and cost remain unavailable for the deterministic runner.
+
+- [Human-readable evaluation](reports/evaluations/supplier-replies-v1.md)
+- [Machine-readable results](reports/evaluations/supplier-replies-v1.json)
+- [Versioned dataset](evals/supplier-replies/v1/dataset.jsonl)
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    ERP[Odoo / ERP PO] --> API[Business API]
-    MAIL[Email PO intake] --> SAFE[Attachment security and human verification]
-    SAFE --> API
-    API --> DB[(SQLite repositories)]
-    DB --> WF[Temporal workflows]
-    WF --> CTX[Manufacturing Context snapshot]
-    CTX --> AI[DeepSeek Harness]
-    AI --> DEC[Structured decision]
-    DEC --> REVIEW{Policy or human approval}
-    REVIEW --> GW[Action Gateway]
-    GW --> OUT[(Durable Outbox)]
-    OUT --> EMAIL[SMTP / IMAP]
-    OUT --> HERMES[Hermes messaging gateway]
-    OUT --> ODOO[Odoo write and readback]
-    EMAIL --> EVIDENCE[Receipts and inbound evidence]
-    HERMES --> EVIDENCE
-    ODOO --> EVIDENCE
-    EVIDENCE --> DB
-    MCP[MCP tool bridge] --> GW
-    UI[Next.js workspace] --> API
-```
+![SupplySentry architecture: trusted runtime, messaging and enterprise integrations, and durable evidence](docs/architecture/supplysentry-system.svg)
+
+The model proposes; the business runtime decides. DeepSeek can extract candidate facts and recommend an action, but cannot directly approve a short delivery, mutate a PO, mark receipt, or contact a supplier. Commands cross the Action Gateway only after current-version, permission, policy, and idempotency checks.
 
 | Layer | Responsibility |
 | --- | --- |
-| Next.js console | Orders, suppliers, risks, SLA, approvals, drafts, configuration, and Chinese/English UI |
-| Business and control APIs | Tenant-scoped reads, versioned writes, authorization, and runtime control |
-| Temporal runtime | Long-running execution, retries, approval waits, and restart recovery |
-| DeepSeek Harness | Supplier-reply analysis and structured recommendations |
-| Manufacturing Context | Frozen evidence snapshot supplied to an agent decision |
-| Action Gateway | Permission, policy, version, idempotency, and side-effect enforcement |
-| Messaging and connectors | Inbox, Outbox, SMTP/IMAP, Odoo, signed webhooks, and delivery receipts |
-| Hermes bridge | Dynamic channel catalog, onboarding, inbound spool, and outbound delivery |
-| SQLite persistence | Business documents, events, approvals, leases, projections, and audit history |
-| MCP bridge | Controlled agent tools mapped to the same business action boundary |
+| Next.js console | Orders, risk, SLA, approvals, drafts, configuration, and bilingual UI |
+| Business / control APIs | Tenant-scoped reads, versioned writes, authorization, and runtime control |
+| Temporal worker | Durable execution, retries, approval waits, timers, and recovery |
+| Supplier Reply AI | Typed proposals from a frozen evidence context |
+| Policy + human approval | Schema checks and explicit decisions for material variance |
+| Action Gateway | Permission, idempotency, Outbox, receipt, and uncertain-result enforcement |
+| Hermes / email / ERP boundaries | Transport adapters and read-write-readback integrations |
+| SQLite / Temporal PostgreSQL | Business facts, projections, audit evidence, and workflow history |
 
-## Key engineering decisions
+Editable source: [Draw.io](docs/architecture/supplysentry-system.drawio) · [Embedded editable PNG](docs/architecture/supplysentry-system.drawio.png) · [Architecture verifier](scripts/docs/verify-architecture.mjs)
 
-### The model proposes; the business runtime decides
+## Quick start
 
-DeepSeek can extract candidate facts and recommend an action. It cannot directly approve a short delivery, change a PO, mark goods as received, or send a supplier message. Every material action is revalidated against the current order version, user permissions, policy, and connector readiness.
-
-### Free-form replies become evidence before business facts
-
-Supplier messages are associated using trusted thread identifiers, message IDs, supplier identity, and explicit PO references. AI output is checked against typed schemas. Missing values remain unknown, while quantity, price, or delivery-date differences enter human review.
-
-### Long-running work is durable
-
-Procurement execution can last for weeks. Temporal preserves workflow state and approval waits across process restarts. Persisted business facts remain authoritative, so a failed model call or worker restart does not require replaying the entire order.
-
-### External actions are retry-safe
-
-Outbound messages and ERP writes use an Outbox, idempotency keys, leases, optimistic versions, and external receipts. An ambiguous post-dispatch result is held for reconciliation instead of being blindly retried.
-
-### Partial shipment and short delivery are separate decisions
-
-A partial shipment keeps the remaining quantity open. Approving a short delivery permanently closes it. The UI shows the exact remainder and requires an authorized human decision before that effect is committed.
-
-### Messaging transport is separated from procurement policy
-
-Hermes supplies messaging adapters and onboarding for channels such as WeChat, WeCom, WhatsApp, Telegram, DingTalk, and Feishu. SupplySentry owns PO correlation, AI analysis, approvals, state transitions, and audit. A messaging adapter cannot modify procurement state directly.
-
-## Core capabilities
-
-- Five-stage PO execution state machine with line-level evidence.
-- ERP synchronization and secure email-attachment PO intake.
-- Supplier-reply parsing for delivery dates, quantities, production, and shipment facts.
-- SLA-driven follow-up drafts, escalation, notifications, and risk views.
-- Human approval for discrepancies, short delivery, and high-impact actions.
-- Durable Inbox and Outbox with delivery receipts and uncertain-result handling.
-- Odoo, SMTP/IMAP, signed webhook, MCP, and Hermes integration boundaries.
-- Supplier, route, risk, document, communication, and audit views.
-- Chinese and English interfaces with persisted browser preference.
-- Tenant isolation, role-based permissions, encrypted connector credentials, and append-only audit events.
-
-## Project ownership
-
-This project was designed and implemented as an end-to-end engineering project. The work includes:
-
-- Modeling the procurement lifecycle as states, events, approvals, and tools.
-- Designing PO, supplier, reply, evidence, SLA, risk, Outbox, and audit contracts.
-- Building the Temporal workflow runtime and DeepSeek adapter.
-- Implementing Action Gateway controls, idempotency, leases, and optimistic concurrency.
-- Integrating Odoo, email, MCP, and Hermes messaging channels.
-- Building the full-stack procurement workspace and bilingual interface.
-- Writing persistence, permission, recovery, connector, and interaction tests.
-- Preparing Docker runtime and deployment contracts.
-
-## Technology stack
-
-`TypeScript` · `Next.js 16` · `React 19` · `Temporal` · `DeepSeek` · `SQLite` · `MCP` · `Hermes Gateway` · `Odoo` · `SMTP/IMAP` · `Docker Compose`
-
-The project uses Temporal and a domain workflow runtime rather than LangGraph. The workflow must survive multi-week waits, process restarts, external acknowledgements, and human approvals while preserving business state outside model context.
-
-## Engineering validation
-
-The latest local validation for the current interface revision includes:
-
-| Check | Result |
-| --- | ---: |
-| Console tests | 358 / 358 passed |
-| Language and business-data preservation tests | 25 / 25 passed |
-| Production console build | Passed |
-| TypeScript type check | Passed |
-| Test files in the monorepo | 192 |
-| Procurement lifecycle stages | 5 |
-| Supported PO entry paths | 2 |
-
-The tests cover tenant isolation, permissions, optimistic version conflicts, idempotent retries, lease recovery, duplicate inbound messages, uncertain delivery results, human approval, connector failures, persisted browser remounts, and worker restart behavior.
-
-These are engineering reliability results, not model-quality claims. A reproducible supplier-reply evaluation set is the next measurement milestone. Planned metrics include delivery-date extraction accuracy, missing-fact recall, short-delivery recall, PO-association accuracy, human-review acceptance rate, end-to-end task success rate, latency, and token cost.
-
-## Interface languages
-
-The console supports **English and Simplified Chinese**. Use the **中文 / English** switch on the sign-in screen or in the workspace header. The preference is saved in this browser and survives refresh.
-
-- English entry: `http://127.0.0.1:3001/?lang=en`
-- Chinese entry: `http://127.0.0.1:3001/?lang=zh-CN`
-- Existing order links can add `&lang=en` without losing their order or tab parameters.
-
-UI labels, help, dialogs and dates are localized. Supplier names, material descriptions, original correspondence, attachments, user-entered drafts and audit evidence stay in their original language. Language changes do **not** translate outgoing messages, change tenant time zones, approve orders or trigger business writes. Cloud installations must deploy this source revision to enable these links.
-
-Dictionaries and display-only compatibility logic live in `apps/console/features/localization/`. Run `pnpm test:localization` after changes; `node scripts/extract-ui-messages.mjs` inventories source copy without reading business data or credentials.
-
-## Repository layout
-
-```text
-apps/
-  console/          Next.js procurement console
-  api/              Shared business and control API implementation
-  business-api/     Business API entry point
-  control-plane-api/ Control API entry point
-  temporal-worker/  Durable workflow worker
-  mcp-bridge/       MCP bridge for agent tools
-  validation/       Shared validation scenarios
-  demo*/            Runtime and connector demonstration programs
-  mock-model/       Deterministic model endpoint for local validation
-packages/
-  core/             Business contracts, policies, tasks, and approvals
-  agent/            Agent runtime and DeepSeek Harness adapter
-  persistence/      SQLite schema, migrations, and repositories
-  context/          Manufacturing context and projections
-  messaging/        Messaging contracts, persistence, and gateway
-  connectors/       ERP and email integrations
-  temporal-runtime/ Workflow definitions and client
-  supply-chain/     Procurement employee pack and execution nodes
-  workflow/         Workflow engine
-infra/
-  production/       Preview deployment image, topology, and contracts
-  temporal/         Local and production Temporal definitions
-  hermes/           Hermes bridge and onboarding services
-scripts/            Integration checks and deployment packaging
-docs/               Scope, architecture, runbooks, and design history
-```
-
-## Requirements
-
-- **Node.js 22.18 or later**; Node.js 24 LTS is recommended. Node.js 20 lacks the `node:sqlite` capability used by this project.
-- **pnpm 11.7.0**, pinned in `package.json`.
-- Docker with Compose when running Temporal or the Hermes stack.
-- Separately configured credentials for the external services you intend to use.
-
-## Getting started
+Prerequisites: Docker Engine with Compose and approximately 4 GB of available memory.
 
 ```bash
 git clone https://github.com/het2333/supply-sentry.git
 cd supply-sentry
+./scripts/demo/demo.sh up --build
+```
+
+Open `http://127.0.0.1:3002`, select English or Chinese, and click **Enter public demo**. The command generates local demo-only secrets in an ignored file and starts eight isolated services. No DeepSeek, email, ERP, Hermes, or customer credential is needed.
+
+```bash
+./scripts/demo/demo.sh status
+./scripts/demo/demo.sh verify
+./scripts/demo/demo.sh reset
+./scripts/demo/demo.sh down
+```
+
+For source development, use Node.js 24.20.0 and pnpm 11.7.0:
+
+```bash
 pnpm install --frozen-lockfile
 pnpm typecheck
-pnpm test:deploy:contracts
+pnpm test
+pnpm test:localization
 ```
 
-Start the APIs and console in separate terminals:
+## Engineering decisions
 
-```bash
-pnpm api:business     # http://127.0.0.1:4173
-pnpm api:control      # http://127.0.0.1:4174
-pnpm console         # http://127.0.0.1:3001
+- **State is outside the prompt.** Procurement work can last for weeks; Temporal and persisted domain facts survive restarts and approval waits.
+- **Free-form replies become evidence before facts.** Trusted thread metadata, supplier identity, explicit PO references, typed output, and validation determine whether a reply can update the projection.
+- **Unknown stays unknown.** Missing quantities, dates, or tracking numbers are not invented. Low-confidence or material differences enter review.
+- **Side effects are retry-safe.** Outbox commands use idempotency keys, leases, optimistic versions, external receipts, and reconciliation for ambiguous outcomes.
+- **Partial shipment is not short-delivery approval.** The former keeps the remainder open; the latter permanently closes it and requires authority.
+- **Transport is not business policy.** Hermes, SMTP/IMAP, Odoo, MCP, and signed webhooks terminate at controlled business boundaries.
+
+Technology: `TypeScript` · `Next.js 16` · `React 19` · `Temporal` · `DeepSeek` · `SQLite` · `PostgreSQL` · `MCP` · `Hermes Gateway` · `Odoo` · `SMTP/IMAP` · `Docker Compose`
+
+## Security boundaries
+
+The public demo is intentionally different from production:
+
+- fixed synthetic tenant `t:public-demo` and dedicated Docker volumes;
+- only the Console port is published; APIs, Temporal, PostgreSQL, and mock model stay private;
+- no production database, `/opt/readywork/shared`, Hermes state, mailbox, ERP, or provider credential is mounted;
+- uploads, configuration writes, inbound webhooks, and cross-tenant identifiers fail closed;
+- mutations carry a generation token, so a reset rejects stale writes;
+- outbound effects are intercepted as `simulated_demo` receipts with `externalDelivery=false`;
+- rate limits and periodic reset reduce abuse but do not replace production identity, HTTPS, WAF, backups, or monitoring.
+
+See the [security acceptance report](reports/security/public-demo-security-acceptance.md) and [media acceptance report](reports/demo/media-acceptance.md).
+
+### Public demo status
+
+The IP-based online demo is published in the README only after the exact server deployment passes the same end-to-end verifier used locally. Until then, use the one-command local demo above.
+
+## Repository structure
+
+```text
+apps/                 Console, APIs, workers, bridges, demos, and deterministic model
+packages/             Domain, workflow, agent, persistence, context, messaging, connectors
+infra/demo/           Isolated eight-service public-demo Compose topology
+evals/                Versioned synthetic evaluation dataset and schema
+reports/              Checked-in evaluation, security, and media evidence
+scripts/demo/         Build, start, reset, verify, capture, and server deployment tools
+scripts/docs/         Architecture and README contracts
+docs/architecture/    Editable Draw.io source and exported presentation assets
+.github/workflows/    CI, container smoke test, and GHCR publication
 ```
 
-These commands start the application processes. Authentication, AI processing, durable workflows, and external connections require the corresponding environment configuration.
+## Validation
 
-Configuration templates:
+CI runs frozen installation, type checking, the monorepo test suite, localization tests, deployment contracts, deterministic evaluation reproduction, demo seed checks, the Console production build, and an eight-container smoke test.
 
-- [Root runtime example](.env.example)
-- [Hermes example](infra/hermes/.env.example)
-- [Server preview example](infra/production/.env.preview.example)
-
-Provide actual values through your shell or deployment environment. Keep credentials in local configuration or the server secret store.
-
-## Authentication and agent runtime
-
-Demo authentication is disabled by default. Local development can explicitly enable `READYWORK_DEMO_AUTH=1` for the API process; it does not enable anonymous administrator access. Production rejects demo authentication and requires a production identity integration and an independent `READYWORK_SESSION_SECRET`.
-
-The production AI runtime uses DeepSeek Harness. Configure `READYWORK_DSH_REPO` and the provider credentials before starting the Temporal worker. The in-memory adapter is an explicit test option.
-
-```bash
-pnpm infra:temporal:up
-pnpm temporal:worker
-```
-
-See the [Temporal runbook](docs/TEMPORAL-V1-RUNBOOK.md) for setup and operations. ERP writes and outbound messages pass through business action controls and auditable execution records.
-
-## Validation commands
+Useful release gates:
 
 ```bash
 pnpm typecheck
-pnpm --dir apps/console exec tsc --noEmit --incremental false
 pnpm test
+pnpm test:localization
 pnpm test:deploy:contracts
-pnpm --filter @readywork/app-console lint
-pnpm --filter @readywork/app-console build
+node --test infra/demo/test/*.test.mjs
+pnpm eval:supplier-replies:verify
+pnpm eval:supplier-replies:check
+READYWORK_PUBLIC_DEMO=1 pnpm --filter @readywork/app-console build
 ```
 
-Runtime demonstrations are available through `pnpm demo`, `pnpm demo:dsh`, `pnpm demo:persist`, and `pnpm demo:mcp`. They validate selected runtime paths and are not evidence of a completed live procurement rollout.
+## Roadmap
 
-## Current status and next milestones
+- Publish a separately labeled 240-case hosted DeepSeek evaluation after every provider call succeeds.
+- Add production identity, HTTPS, WAF, backups, observability, and incident runbooks for a real deployment.
+- Validate production connector readiness per channel and ERP tenant; never infer readiness from the public simulation.
+- Expand calibrated human-review and end-to-end business outcome evaluation with authorized, anonymized datasets.
 
-Implemented product surfaces include the PO workspace, five-stage detail view, supplier directory, risk dashboard, SLA management, notifications, message drafts, connection setup, human approval, bilingual UI, and integration boundaries.
+## License
 
-The next portfolio milestones are:
+SupplySentry is licensed under [GNU Affero General Public License v3.0 only](LICENSE) (`AGPL-3.0-only`). Network users of a modified deployment must be offered the corresponding source as required by the AGPL.
 
-1. Publish a versioned evaluation dataset containing 200–300 anonymized supplier replies.
-2. Generate an evaluation report for extraction, correlation, human review, latency, and cost.
-3. Record a reproducible end-to-end demo from PO intake to supplier reply and receipt.
-4. Add a sanitized public demo deployment and production identity integration.
-
-## Deployment
-
-[infra/production](infra/production) contains the preview Docker image and Compose topology. The [deployment scripts](scripts/deploy) package application code and a separately handled database backup, then verify the payload on the server.
-
-Configure credentials and persistent storage before deployment. Release bundles can contain business data and are excluded from Git. The checked-in preview topology is specific to the existing environment; review the listen addresses and allowed origins for a new server.
-
-The [Hermes integration guide](infra/hermes/README.md) covers the messaging bridge and its configuration.
-
-## Source control and local data
-
-This repository contains source code, tests, dependency lockfiles, deployment scripts, documentation, and required static assets.
-
-The following remain local and are excluded by `.gitignore`:
-
-- Environment secrets, API keys, email authorization codes, and private keys.
-- Business databases, database backups, Hermes login state, and runtime sessions.
-- Dependencies, compiled output, OCR language caches, logs, and test reports.
-- Research checkouts, local agent work files, browser evidence, and release archives.
-
-Back up `data/` and `.readywork/` separately. They contain application state and are not disposable build caches. Cloning this repository does not restore existing orders, user sessions, or service credentials.
-
-Historical documents may refer to local `.research/`, `.superpowers/`, or `artifacts/` paths that are not included in the GitHub repository. The Chinese font used for document rendering and its license are retained under [apps/api/assets/fonts](apps/api/assets/fonts).
-
-## Documentation
-
-- [Product scope and acceptance criteria](docs/PROCUREMENT-V1-SCOPE.md)
-- [Platform roadmap](docs/PLATFORM-ROADMAP.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Manufacturing context runbook](docs/MANUFACTURING-CONTEXT-RUNBOOK.md)
-- [Temporal runbook](docs/TEMPORAL-V1-RUNBOOK.md)
-- [Chinese project guide](README.zh-CN.md)
-
-Detailed engineering documents currently remain in Chinese.
-
-## License and commercial use
-
-Unless you have a separate written commercial agreement with the copyright holder, the SupplySentry source code is licensed under the [GNU Affero General Public License v3.0 only](LICENSE) (`AGPL-3.0-only`). If you modify the software and make it available to users over a network, the AGPL requires you to offer those users the corresponding source code.
-
-Alternative commercial licensing is available for organizations that need to embed, modify, or operate SupplySentry without the AGPL obligations. See [Commercial licensing](LICENSE-COMMERCIAL.md) for the licensing route; no additional rights are granted until a separate agreement is executed.
-
-The SupplySentry name, logo, and brand assets are not licensed under the AGPL. See the [trademark policy](TRADEMARKS.md). Third-party components and bundled fonts remain subject to their respective licenses, including the inventory in [Third-party licenses](docs/THIRD-PARTY-LICENSES.md).
+Organizations that need different obligations may request a separately signed [commercial license](LICENSE-COMMERCIAL.md). The name and brand assets follow the [trademark policy](TRADEMARKS.md); dependencies retain their [third-party licenses](docs/THIRD-PARTY-LICENSES.md).
