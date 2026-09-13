@@ -4,6 +4,8 @@ export * from './supplier-replies/types.js';
 export * from './supplier-replies/dataset.js';
 export * from './supplier-replies/runner.js';
 export * from './supplier-replies/deterministic-runner.js';
+export * from './supplier-replies/scoring.js';
+export * from './supplier-replies/report.js';
 
 /**
  * Evaluations —— 基于事件日志与任务终态回放评测。

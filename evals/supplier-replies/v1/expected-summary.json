@@ -1,0 +1,740 @@
+{
+  "datasetHash": "4452a076d5d0ea7d0de01fee9ea77007976db0d038b718bda2378c455399b331",
+  "datasetVersion": "supplier-replies-v1",
+  "metrics": {
+    "acceptedResultRate": 1,
+    "approvalRecall": 1,
+    "associationAccuracy": 1,
+    "caseCount": 240,
+    "completedCases": 240,
+    "cost": null,
+    "fabricatedFacts": 0,
+    "fabricationRate": 0,
+    "fields": {
+      "currency": {
+        "f1": 1,
+        "falseNegative": 0,
+        "falsePositive": 0,
+        "precision": 1,
+        "recall": 1,
+        "truePositive": 30
+      },
+      "deliveryDate": {
+        "f1": 1,
+        "falseNegative": 0,
+        "falsePositive": 0,
+        "precision": 1,
+        "recall": 1,
+        "truePositive": 105
+      },
+      "eta": {
+        "f1": 1,
+        "falseNegative": 0,
+        "falsePositive": 0,
+        "precision": 1,
+        "recall": 1,
+        "truePositive": 30
+      },
+      "productionStatus": {
+        "f1": 1,
+        "falseNegative": 0,
+        "falsePositive": 0,
+        "precision": 1,
+        "recall": 1,
+        "truePositive": 30
+      },
+      "quantity": {
+        "f1": 1,
+        "falseNegative": 0,
+        "falsePositive": 0,
+        "precision": 1,
+        "recall": 1,
+        "truePositive": 150
+      },
+      "shipmentStatus": {
+        "f1": 1,
+        "falseNegative": 0,
+        "falsePositive": 0,
+        "precision": 1,
+        "recall": 1,
+        "truePositive": 90
+      },
+      "trackingNumber": {
+        "f1": 1,
+        "falseNegative": 0,
+        "falsePositive": 0,
+        "precision": 1,
+        "recall": 1,
+        "truePositive": 30
+      },
+      "unitPrice": {
+        "f1": 1,
+        "falseNegative": 0,
+        "falsePositive": 0,
+        "precision": 1,
+        "recall": 1,
+        "truePositive": 30
+      }
+    },
+    "materialVarianceApprovalRecall": 1,
+    "missingFactRecall": 1,
+    "perTag": {
+      "exact_date": {
+        "acceptedResultRate": 1,
+        "approvalRecall": 0,
+        "associationAccuracy": 1,
+        "caseCount": 30,
+        "completedCases": 30,
+        "cost": null,
+        "fabricatedFacts": 0,
+        "fabricationRate": 0,
+        "fields": {
+          "currency": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "deliveryDate": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "eta": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "productionStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "quantity": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "shipmentStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "trackingNumber": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "unitPrice": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          }
+        },
+        "materialVarianceApprovalRecall": null,
+        "missingFactRecall": 1,
+        "predictedFacts": 60,
+        "shortDeliveryApprovalRecall": null,
+        "tokenUsage": null
+      },
+      "missing_or_contradictory_facts": {
+        "acceptedResultRate": 1,
+        "approvalRecall": 1,
+        "associationAccuracy": 1,
+        "caseCount": 30,
+        "completedCases": 30,
+        "cost": null,
+        "fabricatedFacts": 0,
+        "fabricationRate": 0,
+        "fields": {
+          "currency": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "deliveryDate": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "eta": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "productionStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "quantity": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "shipmentStatus": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "trackingNumber": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "unitPrice": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          }
+        },
+        "materialVarianceApprovalRecall": null,
+        "missingFactRecall": 1,
+        "predictedFacts": 30,
+        "shortDeliveryApprovalRecall": null,
+        "tokenUsage": null
+      },
+      "price_or_currency_variance": {
+        "acceptedResultRate": 1,
+        "approvalRecall": 1,
+        "associationAccuracy": 1,
+        "caseCount": 30,
+        "completedCases": 30,
+        "cost": null,
+        "fabricatedFacts": 0,
+        "fabricationRate": 0,
+        "fields": {
+          "currency": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "deliveryDate": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "eta": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "productionStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "quantity": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "shipmentStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "trackingNumber": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "unitPrice": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          }
+        },
+        "materialVarianceApprovalRecall": 1,
+        "missingFactRecall": 1,
+        "predictedFacts": 90,
+        "shortDeliveryApprovalRecall": null,
+        "tokenUsage": null
+      },
+      "production_shipment_transport": {
+        "acceptedResultRate": 1,
+        "approvalRecall": 0,
+        "associationAccuracy": 1,
+        "caseCount": 30,
+        "completedCases": 30,
+        "cost": null,
+        "fabricatedFacts": 0,
+        "fabricationRate": 0,
+        "fields": {
+          "currency": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "deliveryDate": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "eta": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "productionStatus": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "quantity": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "shipmentStatus": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "trackingNumber": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "unitPrice": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          }
+        },
+        "materialVarianceApprovalRecall": null,
+        "missingFactRecall": 1,
+        "predictedFacts": 120,
+        "shortDeliveryApprovalRecall": null,
+        "tokenUsage": null
+      },
+      "quantity_or_partial_shipment": {
+        "acceptedResultRate": 1,
+        "approvalRecall": 1,
+        "associationAccuracy": 1,
+        "caseCount": 30,
+        "completedCases": 30,
+        "cost": null,
+        "fabricatedFacts": 0,
+        "fabricationRate": 0,
+        "fields": {
+          "currency": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "deliveryDate": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "eta": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "productionStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "quantity": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "shipmentStatus": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "trackingNumber": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "unitPrice": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          }
+        },
+        "materialVarianceApprovalRecall": null,
+        "missingFactRecall": 1,
+        "predictedFacts": 90,
+        "shortDeliveryApprovalRecall": 1,
+        "tokenUsage": null
+      },
+      "quoted_history_contamination": {
+        "acceptedResultRate": 1,
+        "approvalRecall": 0,
+        "associationAccuracy": 1,
+        "caseCount": 30,
+        "completedCases": 30,
+        "cost": null,
+        "fabricatedFacts": 0,
+        "fabricationRate": 0,
+        "fields": {
+          "currency": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "deliveryDate": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "eta": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "productionStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "quantity": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "shipmentStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "trackingNumber": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "unitPrice": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          }
+        },
+        "materialVarianceApprovalRecall": null,
+        "missingFactRecall": 1,
+        "predictedFacts": 60,
+        "shortDeliveryApprovalRecall": null,
+        "tokenUsage": null
+      },
+      "relative_or_vague_date": {
+        "acceptedResultRate": 1,
+        "approvalRecall": 1,
+        "associationAccuracy": 1,
+        "caseCount": 30,
+        "completedCases": 30,
+        "cost": null,
+        "fabricatedFacts": 0,
+        "fabricationRate": 0,
+        "fields": {
+          "currency": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "deliveryDate": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 15
+          },
+          "eta": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "productionStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "quantity": {
+            "f1": 1,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 1,
+            "recall": 1,
+            "truePositive": 30
+          },
+          "shipmentStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "trackingNumber": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "unitPrice": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          }
+        },
+        "materialVarianceApprovalRecall": null,
+        "missingFactRecall": 1,
+        "predictedFacts": 45,
+        "shortDeliveryApprovalRecall": null,
+        "tokenUsage": null
+      },
+      "wrong_or_ambiguous_association": {
+        "acceptedResultRate": 1,
+        "approvalRecall": 1,
+        "associationAccuracy": 1,
+        "caseCount": 30,
+        "completedCases": 30,
+        "cost": null,
+        "fabricatedFacts": 0,
+        "fabricationRate": 0,
+        "fields": {
+          "currency": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "deliveryDate": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "eta": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "productionStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "quantity": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "shipmentStatus": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "trackingNumber": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          },
+          "unitPrice": {
+            "f1": 0,
+            "falseNegative": 0,
+            "falsePositive": 0,
+            "precision": 0,
+            "recall": 0,
+            "truePositive": 0
+          }
+        },
+        "materialVarianceApprovalRecall": null,
+        "missingFactRecall": 1,
+        "predictedFacts": 0,
+        "shortDeliveryApprovalRecall": null,
+        "tokenUsage": null
+      }
+    },
+    "predictedFacts": 495,
+    "shortDeliveryApprovalRecall": 1,
+    "tokenUsage": null
+  },
+  "model": "supplysentry-deterministic-v1",
+  "promptVersion": "deterministic-patterns-v1",
+  "reportVersion": "supplier-reply-evaluation-v1",
+  "runner": "deterministic",
+  "schemaVersion": "supplier-reply-proposal-v1"
+}
