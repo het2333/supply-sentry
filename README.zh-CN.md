@@ -2,6 +2,157 @@
 
 [English](README.md) | 简体中文
 
+**面向制造企业采购团队的有状态 AI 采购执行 Agent。**
+
+SupplySentry 从采购订单发出后开始工作：收集供应商承诺、跟踪生产和发运、识别交付风险、生成催办草稿，在关键决策时请求人工审批，并根据 ERP 或仓库证据核验最终收货。
+
+项目围绕五个核心能力构建：**业务闭环、持久状态、受控工具、人工审批和可验证的工程可靠性**。
+
+## 项目背景
+
+采购订单发出并不代表采购工作结束。采购人员仍需在数天或数周内持续查看邮件和聊天记录、追问交期、跟踪部分发货、核对相互矛盾的回复，并更新 ERP。
+
+这些工作很难被安全地自动化：
+
+- 供应商经常回复“大概下周”或“先发 100 件”，没有固定格式。
+- 订单事实分散在 ERP、邮箱、附件、消息渠道和仓库收货记录中。
+- 生成邮件不等于已经发送，承运商显示送达也不等于仓库已经收货。
+- 数量、价格和交期差异会影响生产，需要采购人员作出业务决策。
+- 外部调用结果不明确时直接重试，可能造成重复发信或重复写入 ERP。
+
+SupplySentry 将这些工作组织成一条可恢复、有证据、可审核的业务流程，LLM 不作为业务事实的权威来源。
+
+## 核心业务流程
+
+```text
+ERP 已批准 PO ─┐
+               ├─→ 校验 PO 和行项目
+已核验邮件 PO ─┘
+                       ↓
+PO 发出 → 供应商承诺 → 生产 / 备货
+        → 发运 / 在途 → 交付 / 收货
+                       ↓
+             风险、SLA、通知和审计
+```
+
+订单生命周期中持续运行以下闭环：
+
+```text
+SLA 检查
+  → 识别无回复、延期、数量差异或证据缺失
+  → 生成跟进草稿或处理建议
+  → 根据策略进入人工审核
+  → 写入持久化 Outbox
+  → 通过 Email / Hermes 发送，或调用 ERP 连接器
+  → 保存真实外部回执
+  → 更新订单投影和下一次 SLA
+```
+
+供应商回复进入独立的证据链：
+
+```text
+接收消息
+  → 识别租户、供应商、会话和候选 PO
+  → AI 提取交期、数量、生产和发运事实
+  → 使用确定性业务 Schema 校验
+  → 重大差异或低置信度结果进入人工审批
+  → 追加证据并推进订单状态
+```
+
+## 系统架构
+
+```mermaid
+flowchart LR
+    ERP[Odoo / ERP 采购订单] --> API[业务 API]
+    MAIL[邮件 PO 导入] --> SAFE[附件安全检查与人工核验]
+    SAFE --> API
+    API --> DB[(SQLite 业务仓库)]
+    DB --> WF[Temporal 工作流]
+    WF --> CTX[制造上下文快照]
+    CTX --> AI[DeepSeek Harness]
+    AI --> DEC[结构化决策]
+    DEC --> REVIEW{策略或人工审批}
+    REVIEW --> GW[Action Gateway]
+    GW --> OUT[(持久化 Outbox)]
+    OUT --> EMAIL[SMTP / IMAP]
+    OUT --> HERMES[Hermes 消息网关]
+    OUT --> ODOO[Odoo 写入与读回]
+    EMAIL --> EVIDENCE[回执和入站证据]
+    HERMES --> EVIDENCE
+    ODOO --> EVIDENCE
+    EVIDENCE --> DB
+    MCP[MCP 工具桥] --> GW
+    UI[Next.js 工作台] --> API
+```
+
+| 层级 | 负责内容 |
+| --- | --- |
+| Next.js 工作台 | 订单、供应商、风险、SLA、审批、草稿、配置和中英文界面 |
+| 业务与控制 API | 租户隔离读取、版本化写入、权限检查和运行控制 |
+| Temporal Runtime | 长流程执行、失败重试、审批等待和重启恢复 |
+| DeepSeek Harness | 供应商回复分析和结构化建议 |
+| Manufacturing Context | 为一次 Agent 决策冻结可追溯的证据快照 |
+| Action Gateway | 检查权限、策略、版本、幂等和外部副作用 |
+| 消息与连接器 | Inbox、Outbox、SMTP/IMAP、Odoo、Webhook 和投递回执 |
+| Hermes Bridge | 动态渠道目录、扫码接入、入站缓冲和出站投递 |
+| SQLite | 业务单据、事件、审批、租约、投影和审计历史 |
+| MCP Bridge | 将受控 Agent 工具映射到统一业务操作边界 |
+
+## 关键技术设计
+
+- **模型提出建议，业务运行时作出决定**：DeepSeek 可以提取候选事实并推荐操作，但不能直接批准短交、修改 PO、确认收货或向供应商发消息。每个关键操作都由服务端根据当前订单版本、用户权限、策略和连接器状态重新校验。
+- **自由文本先成为证据**：系统根据可信邮件线程、Message-ID、供应商身份和明确 PO 引用关联消息。AI 输出经过类型化 Schema 校验；缺失值保持未知，数量、价格和交期差异进入人工审核。
+- **长流程跨重启恢复**：Temporal 保存流程状态和审批等待。模型调用失败或 Worker 重启后可以从持久化业务事实继续执行。
+- **外部操作安全重试**：外发消息和 ERP 写入使用 Outbox、幂等键、租约、乐观版本和真实回执。结果不明确时进入人工对账，避免重复执行。
+- **区分部分发货与永久短交**：部分发货继续等待剩余数量；批准短交永久关闭剩余数量，并要求有权限的人员确认。
+- **消息传输与采购规则分离**：Hermes 提供微信、企业微信、WhatsApp、Telegram、钉钉和飞书等渠道；SupplySentry 负责 PO 关联、AI 分析、审批、状态迁移和审计。
+
+## 核心能力
+
+- 五阶段 PO 执行状态机和行级证据。
+- ERP PO 同步和安全的邮件附件 PO 导入。
+- 从供应商回复中提取交期、数量、生产和发运事实。
+- SLA 驱动的催办草稿、升级、通知和风险看板。
+- 对差异、短交和高影响操作进行人工审批。
+- 带投递回执和结果不确定处理的持久化 Inbox / Outbox。
+- Odoo、SMTP/IMAP、签名 Webhook、MCP 和 Hermes 集成边界。
+- 中英文工作台、租户隔离、角色权限和追加式审计。
+
+## 本人负责内容
+
+该项目以端到端个人工程项目方式设计和实现，主要工作包括：
+
+- 将真实采购流程建模为状态、事件、审批和工具。
+- 设计 PO、供应商、回复、证据、SLA、风险、Outbox 和审计合同。
+- 实现 Temporal 工作流运行时和 DeepSeek 适配器。
+- 实现 Action Gateway、幂等、租约和乐观并发控制。
+- 接入 Odoo、邮件、MCP 和 Hermes 消息渠道。
+- 实现全栈采购工作台和中英文界面。
+- 编写持久化、权限、恢复、连接器和交互测试。
+- 准备 Docker 运行环境和部署合同。
+
+## 技术栈
+
+`TypeScript` · `Next.js 16` · `React 19` · `Temporal` · `DeepSeek` · `SQLite` · `MCP` · `Hermes Gateway` · `Odoo` · `SMTP/IMAP` · `Docker Compose`
+
+项目采用 Temporal 和领域工作流运行时，没有为了堆砌关键词使用 LangGraph。采购流程需要跨越数周等待、进程重启、外部回执和人工审批，业务状态也必须独立于模型上下文持久化。
+
+## 工程验证结果
+
+| 检查项 | 最近一次结果 |
+| --- | ---: |
+| Console 测试 | 358 / 358 通过 |
+| 语言切换与业务数据保护测试 | 25 / 25 通过 |
+| Console 生产构建 | 通过 |
+| TypeScript 类型检查 | 通过 |
+| Monorepo 测试文件 | 192 个 |
+| 采购生命周期阶段 | 5 个 |
+| PO 合法入口 | 2 类 |
+
+测试覆盖租户隔离、权限、乐观版本冲突、幂等重试、租约恢复、重复入站消息、投递结果不确定、人工审批、连接器故障、浏览器重新挂载和 Worker 重启。
+
+以上属于工程可靠性结果，不是模型准确率。下一项测量里程碑是建立可复现的供应商回复 Evaluation 数据集，评测交期抽取准确率、缺失事实 Recall、短交识别 Recall、PO 关联准确率、人工审核接受率、端到端成功率、延迟和 Token 成本。
+
 ## 中英文界面
 
 登录页和工作区页头支持 **中文 / English** 切换，刷新后保留选择。
@@ -12,18 +163,7 @@
 
 切换只影响界面、提示、弹窗及日期显示；供应商名称、物料描述、原始消息、文件、未发送草稿和业务证据保留原文。不会修改企业时区、审批订单或发送消息。云端需部署本次源码版本后才能使用。修改界面文案后运行 `pnpm test:localization` 检查回归。
 
-面向制造业的采购执行与供应商跟单平台。GitHub 项目名称为 SupplySentry；现有工程目录、`@readywork/*` 包、`READYWORK_*` 配置和部署服务仍使用 Readywork 标识。
-
-
-随时待命的 AI 员工班组。**底层通用，产品垂直**：一个 Business Runtime 微内核 + 插件化 Worker/Workflow/Skill/Tool/Context，再以 Employee Pack 形式交付行业员工（供应链、销售、财务、客服…）。
-
-> Harness 管 AI 怎么思考和行动；Business Runtime 管企业业务现在进行到哪一步。
-
-> **采购产品 V1 唯一口径：** [docs/PROCUREMENT-V1-SCOPE.md](docs/PROCUREMENT-V1-SCOPE.md)。逐页功能、视觉、数据合同和发布门槛见 [docs/NAVISIGHT-V1-ALIGNMENT.md](docs/NAVISIGHT-V1-ALIGNMENT.md)。当前 V1 以 Navisight 公开可验证的 `PO Sent → Supplier Commitment → Fulfilment / Production → Dispatch / Transit → Delivery / GRN` 为基线。仓库中的 RFQ、发票 / 应付、Teams 和通用运行时能力可以继续存在，但不计入采购执行 V1 的上线完成度。
->
-> **平台演进顺序：** 先完成 Navisight 采购员工 V1，并将其作为第一个 Employee Pack；随后依次建设通用 Governance、App Builder 和多员工主管台。完整约束见 [docs/PLATFORM-ROADMAP.md](docs/PLATFORM-ROADMAP.md)。
->
-> `docs/ARCHITECTURE.md`、`docs/V1-DESIGN.md` 和下述 demo 链记录的是早期平台运行时里程碑，不再定义采购产品 V1 范围。
+GitHub 项目名称为 SupplySentry；现有工程目录、`@readywork/*` 包、`READYWORK_*` 配置和部署服务仍使用早期 Readywork 标识。采购产品范围与验收标准见 [采购执行 V1 契约](docs/PROCUREMENT-V1-SCOPE.md)。
 
 ## 仓库结构
 
@@ -109,5 +249,16 @@ pnpm web           # 零依赖 Control Tower 仪表盘（备用）→ http://127
 - 一切业务状态通过领域事件驱动：`Task` 状态机 + `Wait/Resume/Retry/Approval` + 事件恢复
 
 启动 Temporal Worker 前必须显式设置 `READYWORK_DSH_REPO` 和远端模型的 `DEEPSEEK_API_KEY`。只有本地确定性回归才使用 `READYWORK_AGENT_RUNTIME=inmemory`；缺少 DSH 配置会直接失败，不会静默降级。
+
+## 当前状态与下一步
+
+已经实现的产品界面包括 PO 工作台、五阶段详情、供应商目录、风险看板、SLA、通知、消息草稿、连接配置、人工审批和中英文界面。
+
+下一阶段作品集目标：
+
+1. 发布包含 200～300 条脱敏供应商回复的版本化评测集。
+2. 生成抽取、关联、人工审核、延迟和成本 Evaluation Report。
+3. 录制从 PO 导入、供应商回复到最终收货的可复现演示视频。
+4. 提供脱敏公开体验环境并接入生产身份认证。
 
 详见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
