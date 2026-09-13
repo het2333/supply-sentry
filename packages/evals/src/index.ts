@@ -1,5 +1,8 @@
 import type { ApprovalRequest, DomainEvent, RuntimeHub, Task } from '@readywork/core';
 
+export * from './supplier-replies/types.js';
+export * from './supplier-replies/dataset.js';
+
 /**
  * Evaluations —— 基于事件日志与任务终态回放评测。
  * 不依赖 Agent 实现：只读 hub 的状态与事件，产出结构化评分，支持两次运行回归对比。

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/het2333/supply-sentry/evals/supplier-replies/v1/dataset.schema.json",
+  "title": "SupplySentry Supplier Reply Case v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["caseId", "datasetVersion", "provenance", "locale", "scenarioTags", "difficulty", "adversarialFlags", "receivedAt", "body", "candidates", "expected"],
+  "properties": {
+    "caseId": { "type": "string", "pattern": "^sr-v1-[0-9]{3}$" },
+    "datasetVersion": { "const": "supplier-replies-v1" },
+    "provenance": { "const": "synthetic_contract_case" },
+    "locale": { "enum": ["zh-CN", "en-US", "mixed", "qq-mail"] },
+    "scenarioTags": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "difficulty": { "enum": ["basic", "intermediate", "adversarial"] },
+    "adversarialFlags": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "receivedAt": { "type": "string", "format": "date-time" },
+    "body": { "type": "string", "minLength": 1 },
+    "candidates": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["supplierId", "poId", "supplierName", "poNumber"],
+        "properties": {
+          "supplierId": { "type": "string", "minLength": 1 }, "poId": { "type": "string", "minLength": 1 },
+          "supplierName": { "type": "string", "minLength": 1 }, "poNumber": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "expected": {
+      "type": "object", "additionalProperties": false,
+      "required": ["association", "extracted", "unknownFields", "evidence", "validation", "approvalRequired"],
+      "properties": {
+        "association": {
+          "type": "object", "additionalProperties": false, "required": ["status", "poId"],
+          "properties": { "status": { "enum": ["matched", "ambiguous", "unmatched"] }, "poId": { "type": ["string", "null"] } }
+        },
+        "extracted": {
+          "type": "object", "additionalProperties": false,
+          "required": ["deliveryDate", "quantity", "unitPrice", "currency", "productionStatus", "shipmentStatus", "trackingNumber", "eta"],
+          "properties": {
+            "deliveryDate": { "type": ["string", "null"] }, "quantity": { "type": ["string", "null"] },
+            "unitPrice": { "type": ["string", "null"] }, "currency": { "type": ["string", "null"] },
+            "productionStatus": { "type": ["string", "null"] }, "shipmentStatus": { "type": ["string", "null"] },
+            "trackingNumber": { "type": ["string", "null"] }, "eta": { "type": ["string", "null"] }
+          }
+        },
+        "unknownFields": { "type": "array", "uniqueItems": true, "items": { "enum": ["deliveryDate", "quantity", "unitPrice", "currency", "productionStatus", "shipmentStatus", "trackingNumber", "eta"] } },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false, "required": ["field", "start", "end", "text"],
+            "properties": {
+              "field": { "enum": ["deliveryDate", "quantity", "unitPrice", "currency", "productionStatus", "shipmentStatus", "trackingNumber", "eta"] },
+              "start": { "type": "integer", "minimum": 0 }, "end": { "type": "integer", "minimum": 1 }, "text": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "validation": { "enum": ["accepted", "review_required", "rejected"] },
+        "approvalRequired": { "type": "boolean" }
+      }
+    }
+  }
+}
