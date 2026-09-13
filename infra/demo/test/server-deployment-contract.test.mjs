@@ -65,6 +65,13 @@ test('server deployment is pinned to its isolated directory, project, and port',
   assert.doesNotMatch(deploy, /READYWORK_DEMO_PORT=3001/u);
 });
 
+test('server deployment validates the root-owned demo environment through sudo', async () => {
+  const deploy = await source('scripts/demo/deploy-server.sh');
+  assert.ok(deploy, 'server deployment script is missing');
+  assert.match(deploy, /sudo grep -qx 'READYWORK_DEMO_BIND_ADDRESS=0\.0\.0\.0' "\$ENV_FILE"/u);
+  assert.match(deploy, /sudo grep -qx 'READYWORK_DEMO_PORT=3002' "\$ENV_FILE"/u);
+});
+
 test('external verifier enters a public session, guards generation, exercises business state, simulation, denial, and reset', async () => {
   const verifier = await source('scripts/demo/verify-public-demo.mjs');
   assert.ok(verifier, 'external verifier is missing');

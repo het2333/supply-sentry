@@ -44,11 +44,11 @@ if [[ ! -f "$ENV_FILE" ]]; then
   temporary_env=''
 fi
 
-grep -qx 'READYWORK_DEMO_BIND_ADDRESS=0.0.0.0' "$ENV_FILE" || {
+sudo grep -qx 'READYWORK_DEMO_BIND_ADDRESS=0.0.0.0' "$ENV_FILE" || {
   printf 'Refusing deployment: %s must bind the approved public demo to 0.0.0.0.\n' "$ENV_FILE" >&2
   exit 2
 }
-grep -qx 'READYWORK_DEMO_PORT=3002' "$ENV_FILE" || {
+sudo grep -qx 'READYWORK_DEMO_PORT=3002' "$ENV_FILE" || {
   printf 'Refusing deployment: %s must use port 3002.\n' "$ENV_FILE" >&2
   exit 2
 }
