@@ -45,6 +45,65 @@ test("procurement Import means overseas sourcing rather than importing data", as
   assert.equal(translateReadyworkUiText("Ask anything about import POs…"), "询问有关进口采购订单的任何问题…");
 });
 
+test("English interface text translates labels without rewriting unknown business content", async () => {
+  const { translateReadyworkUiText } = await import("../features/localization/chinese-ui-localization.js");
+  assert.equal(translateReadyworkUiText("进口采购", "en"), "Import Procurement");
+  assert.equal(translateReadyworkUiText("保存更改", "en"), "Save changes");
+  assert.equal(translateReadyworkUiText("上海供应商说大概两周", "en"), "上海供应商说大概两周");
+  assert.equal(translateReadyworkUiText("constructor", "en"), "constructor");
+  assert.equal(translateReadyworkUiText("__proto__", "zh-CN"), "__proto__");
+  assert.equal(translateReadyworkUiText("显示第 1 至 10 项，共 25 项", "en"), "Showing 1 to 10 of 25 entries");
+  assert.equal(translateReadyworkUiText("编辑供应商 设置", "en"), "Edit supplier 设置");
+  assert.equal(translateReadyworkUiText(" · 返回总览", "en"), " · Back to Overview");
+  assert.equal(translateReadyworkUiText("返回本地采购", "en"), "Back to Local Procurement");
+});
+
+test("switching language preserves inputs, source evidence, handlers and later React updates", async () => {
+  const installed = installDom();
+  (globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
+  const { act, useState } = await import("react");
+  const { createRoot } = await import("react-dom/client");
+  const { ChineseUiLocalization } = await import("../features/localization/chinese-ui-localization.js");
+  function Probe({ language }: { language: "en" | "zh-CN" }) {
+    const [updated, setUpdated] = useState(false);
+    return <><ChineseUiLocalization language={language} />
+      <button id="action" onClick={() => setUpdated(!updated)} title={updated ? "设置" : "报表"}>{updated ? "通知" : "总览"}</button>
+      <input id="draft" defaultValue="供应商原话：设置" placeholder={updated ? "搜索供应商…" : "搜索采购订单…"} />
+      <textarea placeholder="搜索采购订单…" defaultValue="设置" />
+      <p data-preserve-language>设置</p><div contentEditable suppressContentEditableWarning>供应商</div>
+      {updated && <aside role="dialog">保存更改</aside>}
+    </>;
+  }
+  const root = createRoot(installed.host);
+  try {
+    await act(async () => { root.render(<Probe language="en" />); });
+    const button = document.querySelector<HTMLButtonElement>("#action")!;
+    const input = document.querySelector<HTMLInputElement>("#draft")!;
+    assert.equal(button.textContent, "Overview");
+    assert.equal(button.title, "Reports");
+    assert.equal(input.placeholder, "Search purchase orders…");
+    assert.equal(document.querySelector("textarea")!.placeholder, "Search purchase orders…");
+    assert.equal(document.querySelector("textarea")!.value, "设置");
+    assert.equal(document.querySelector("[data-preserve-language]")!.textContent, "设置");
+    assert.equal(document.querySelector("[contenteditable]")!.textContent, "供应商");
+    input.value = "未保存的供应商原话";
+    await act(async () => { button.click(); });
+    assert.equal(button.textContent, "Notifications");
+    assert.equal(document.querySelector("[role=dialog]")!.textContent, "Save changes");
+    await act(async () => { root.render(<Probe language="zh-CN" />); });
+    assert.equal(button.textContent, "通知");
+    assert.equal(button.title, "设置");
+    assert.equal(input.value, "未保存的供应商原话");
+    await act(async () => { root.render(<Probe language="en" />); button.click(); });
+    assert.equal(button.textContent, "Overview");
+    assert.equal(button.title, "Reports");
+    assert.equal(document.querySelector("[role=dialog]"), null);
+  } finally {
+    await act(async () => root.unmount());
+    installed.restore();
+  }
+});
+
 test("localizes aria-label, title, and placeholder after React updates an existing element", async () => {
   const installed = installDom();
   (globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;

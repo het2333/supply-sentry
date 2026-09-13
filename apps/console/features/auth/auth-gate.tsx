@@ -3,6 +3,7 @@
 import { type FormEvent, type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { LanguageSwitcher } from "@/features/localization/ui-language";
 import {
   apiRequest,
   READYWORK_AUTH_REQUIRED_EVENT,
@@ -30,6 +31,7 @@ function ReadyworkMark({ loading = false }: { loading?: boolean }) {
 
 function AuthBackdrop({ children }: { children: ReactNode }) {
   return <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f8fafc] px-4 py-12">
+    <LanguageSwitcher className="absolute right-5 top-5 z-20" />
     <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white via-[#f8fafc] to-[#eff3f9]/80" />
     <div className="pointer-events-none absolute right-10 top-24 hidden h-40 w-48 opacity-60 sm:block" style={{ backgroundImage: "radial-gradient(rgb(166, 176, 191) 1.2px, transparent 1.2px)", backgroundSize: "16px 16px" }} />
     <svg className="pointer-events-none absolute inset-x-0 bottom-0 h-64 w-full text-[#2563eb]/[0.06]" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
@@ -139,7 +141,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     <section className="relative z-10 w-full max-w-[620px]">
       <div className="mb-9 flex items-center justify-center gap-3.5">
         <ReadyworkMark />
-        <span className="text-[30px] font-bold tracking-[-0.02em] text-[#0f1729] sm:text-[40px]">READYWORK</span>
+        <span className="text-[30px] font-bold tracking-[-0.02em] text-[#0f1729] sm:text-[40px]">SupplySentry</span>
       </div>
       <div className="mb-9 text-center">
         <h1 className="text-[30px] font-bold tracking-[-0.02em] text-[#0f1729]">欢迎回来</h1>

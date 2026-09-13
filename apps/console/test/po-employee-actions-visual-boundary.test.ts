@@ -32,7 +32,8 @@ test("PO 文档快照: Download 和 Print 走服务器快照并在生成失败�
   assert.match(source, /正在生成打印视图…/);
   assert.match(documentSource, /window\.open\(/);
   assert.match(documentSource, /windowTarget\?\.close\(\)/);
-  assert.match(source, /alert\(/);
+  assert.match(source, /uiAlert\(/);
+  assert.match(source, /import \{ uiAlert \} from "@\/features\/localization\/ui-dialogs"/);
   assert.doesNotMatch(source, /outerHTML|innerHTML|document\.documentElement/);
 });
 

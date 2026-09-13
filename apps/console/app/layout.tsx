@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { AuthGate } from "@/features/auth/auth-gate";
-import { ChineseUiLocalization } from "@/features/localization/chinese-ui-localization";
+import { UiLanguageProvider } from "@/features/localization/ui-language";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Readywork — 采购执行工作区",
+  title: "SupplySentry — 采购执行工作区",
   description: "从供应商确认、生产、交付直至最终收货，全程跟踪采购订单。",
   icons: { icon: "/readywork/readywork-mark.svg" },
 };
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-CN">
-      <body><ChineseUiLocalization /><AuthGate>{children}</AuthGate></body>
+      <body><UiLanguageProvider><AuthGate>{children}</AuthGate></UiLanguageProvider></body>
     </html>
   );
 }

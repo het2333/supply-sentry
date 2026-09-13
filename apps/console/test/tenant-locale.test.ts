@@ -23,6 +23,15 @@ const preference = (
 
 const crossDayInstant = "2026-08-30T00:30:00.000Z";
 
+test("English dates keep the tenant time zone, date-only facts and numeric date preference", () => {
+  const preferences = preference("America/New_York", "DD MMM YYYY");
+  assert.equal(formatProcurementDate(crossDayInstant, preferences, "date-time", "—", "en"), "29 Aug 2026 20:30");
+  assert.equal(formatProcurementDate("2026-01-01", preferences, "date", "—", "en"), "01 Jan 2026");
+  assert.equal(formatProcurementDate(crossDayInstant, preferences, "short-date-time", "—", "en"), "29 Aug 20:30");
+  assert.equal(formatProcurementDate(crossDayInstant, preference("Asia/Shanghai", "YYYY-MM-DD"), "date-time", "—", "en"), "2026-08-30 08:30");
+  assert.equal(preferences.timeZone, "America/New_York");
+});
+
 test("采购日期格式：上海时区使用 YYYY-MM-DD", () => {
   assert.equal(
     formatProcurementDate(crossDayInstant, preference("Asia/Shanghai", "YYYY-MM-DD"), "date-time"),

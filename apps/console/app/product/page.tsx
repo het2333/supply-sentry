@@ -8,6 +8,7 @@ import {
 import { GeistSans } from "geist/font/sans";
 import { ReadyworkProductVisual } from "@/features/marketing/readywork-product-visuals";
 import { DemoRequestForm } from "./demo-request-form";
+import { LanguageSwitcher } from "@/features/localization/ui-language";
 
 const stages = [
   { title: "采购订单已发送", text: "采购订单已创建并发送给供应商。" },
@@ -103,6 +104,7 @@ export default function ProductPage() {
           <a href="#faq" className="transition hover:text-[#0b1220]">常见问题</a>
         </nav>
         <a href="#demo" className="ml-auto inline-flex h-8 items-center gap-2 rounded-[10px] border border-transparent bg-[#0b1220] px-3 text-[13px] font-medium tracking-[-0.005em] text-[#fafbfd]">申请演示<ArrowRight className="size-3.5" /></a>
+        <LanguageSwitcher className="ml-3" />
       </div>
     </header>
 

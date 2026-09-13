@@ -10,6 +10,7 @@ import { apiRequest, notifyAuthenticationRequired } from "@/features/shared/api-
 import { useProcurementLocale } from "@/features/procurement/tenant-preferences-context";
 import { useProcurementRealtimeRefresh, useProcurementRealtimeStatus } from "@/features/procurement/realtime-events";
 import { cn } from "@/lib/utils";
+import { LanguageSwitcher } from "@/features/localization/ui-language";
 
 export type ProcurementHeaderTarget = "home" | "orders" | "suppliers" | "notifications" | "message-drafts";
 
@@ -154,6 +155,7 @@ export function ProcurementGlobalHeader({
       ? "sticky top-0 border-b border-[#e5e9ef] bg-white/95 px-4 backdrop-blur-xl md:px-7 xl:pointer-events-none xl:absolute xl:right-7 xl:top-0 xl:w-auto xl:justify-end xl:gap-2.5 xl:border-0 xl:bg-transparent xl:px-0 xl:backdrop-blur-none"
       : "sticky top-0 border-b border-[#e5e9ef] bg-white/95 px-4 backdrop-blur-xl md:px-7",
   )}>
+    <LanguageSwitcher className={integrated ? "xl:pointer-events-auto" : ""} />
     <div className={cn("min-w-0 flex-1 lg:max-w-[340px]", integrated && "xl:hidden")}>
       <div className="truncate text-[17px] font-bold tracking-[-0.02em] text-[#182033]">{title}</div>
       <div className="mt-0.5 hidden text-[11px] text-[#939aa7] sm:block">PO 发出至交付收货 · 采购执行 V1</div>
@@ -180,7 +182,7 @@ export function ProcurementGlobalHeader({
         className="overflow-visible rounded-none border-0 bg-transparent shadow-none"
         inputClassName={cn("h-10 rounded-xl border border-[#dfe4eb] bg-[#fbfcfd] pl-10 pr-9 text-xs text-[#334056] transition placeholder:text-[#9da5b2] focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50", integrated && "xl:h-9")}
         listClassName="absolute right-0 top-12 z-50 w-[min(440px,calc(100vw-32px))] max-h-[430px] overflow-y-auto rounded-2xl border border-[#dfe4eb] bg-white p-1.5 shadow-[0_20px_55px_rgba(30,42,65,0.18)]"
-        renderItem={(item) => { const result = results.find((entry) => entry.id === item.id)!; const meta = kindMeta[result.kind]; const Icon = meta.icon; return <div className="flex w-full items-center gap-3 py-1"><span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", meta.tone)}><Icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="flex items-center gap-2"><span className="truncate text-xs font-semibold text-[#273248]">{result.title}</span><span className="shrink-0 text-[9px] font-semibold text-[#98a1ae]">{meta.label}</span></span><span className="mt-1 block truncate text-[11px] text-[#7f8999]">{result.subtitle}</span></span><span className="shrink-0 rounded-full bg-[#f1f3f6] px-2 py-1 text-[9px] font-medium text-[#758093]">{result.meta}</span></div>; }}
+        renderItem={(item) => { const result = results.find((entry) => entry.id === item.id)!; const meta = kindMeta[result.kind]; const Icon = meta.icon; return <div className="flex w-full items-center gap-3 py-1"><span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", meta.tone)}><Icon className="size-4" /></span><span className="min-w-0 flex-1"><span className="flex items-center gap-2"><span data-preserve-language className="truncate text-xs font-semibold text-[#273248]">{result.title}</span><span className="shrink-0 text-[9px] font-semibold text-[#98a1ae]">{meta.label}</span></span><span data-preserve-language className="mt-1 block truncate text-[11px] text-[#7f8999]">{result.subtitle}</span></span><span data-preserve-language className="shrink-0 rounded-full bg-[#f1f3f6] px-2 py-1 text-[9px] font-medium text-[#758093]">{result.meta}</span></div>; }}
       />
       {query ? <button type="button" aria-label="清空搜索" onClick={() => { setQuery(""); setResults([]); }} className="absolute right-2.5 top-2.5 z-10 text-[#a0a7b2] hover:text-[#596273]"><X className="size-4" /></button> : <span className="pointer-events-none absolute right-3 top-2.5 z-10 hidden rounded border border-[#e4e7ec] px-1.5 py-0.5 text-[9px] text-[#a0a7b2] sm:block">⌘K</span>}
     </div>}
@@ -203,13 +205,13 @@ export function ProcurementGlobalHeader({
 
     <div className={cn("relative hidden sm:block", integrated && "xl:pointer-events-auto")}>
       <button type="button" aria-label="打开当前用户菜单" onClick={() => { setAccountOpen((open) => !open); setNotificationOpen(false); }} className={cn("flex h-10 items-center gap-2 rounded-xl border border-[#e1e5eb] bg-white px-2.5 shadow-sm hover:bg-[#f7f9fb]", integrated && "xl:h-[38px] xl:w-[146px]")}>
-        <span className="flex size-7 items-center justify-center rounded-full bg-[#172033] text-[10px] font-bold text-white">{initials(account?.name)}</span>
-        <span className="hidden max-w-[110px] truncate text-xs font-semibold text-[#364156] xl:block">{account?.name ?? "读取身份…"}</span>
+        <span data-preserve-language={account ? true : undefined} className="flex size-7 items-center justify-center rounded-full bg-[#172033] text-[10px] font-bold text-white">{initials(account?.name)}</span>
+        <span data-preserve-language={account ? true : undefined} className="hidden max-w-[110px] truncate text-xs font-semibold text-[#364156] xl:block">{account?.name ?? "读取身份…"}</span>
         <ChevronDown className="size-3.5 text-[#929baa]" />
       </button>
       {accountOpen && <>
         <button type="button" aria-label="关闭用户菜单" className="fixed inset-0 z-40 cursor-default" onClick={() => setAccountOpen(false)} />
-        <div className="absolute right-0 top-12 z-50 w-64 rounded-2xl border border-[#dfe4eb] bg-white p-4 shadow-[0_20px_55px_rgba(30,42,65,0.18)]"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-full bg-[#172033] text-xs font-bold text-white">{initials(account?.name)}</span><div className="min-w-0"><div className="truncate text-sm font-bold text-[#273248]">{account?.name ?? "身份不可用"}</div><div className="mt-0.5 truncate text-[11px] text-[#8993a2]">{account?.username ?? "未登录"}</div></div></div><div className="mt-4 space-y-2 border-t border-[#edf0f4] pt-3"><div className="flex items-center gap-2 text-[11px] text-[#6e7889]"><UserRound className="size-3.5" />角色：{account?.role ?? "未知"}</div><div className="flex items-center gap-2 text-[11px] text-[#6e7889]"><Building2 className="size-3.5" />采购执行工作区</div></div><button type="button" onClick={() => void signOut()} disabled={loggingOut} className="mt-4 flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-[#e2e6ec] text-xs font-semibold text-[#667184] hover:bg-[#f7f9fb] disabled:opacity-50">{loggingOut ? <Loader2 className="size-3.5 animate-spin" /> : <LogOut className="size-3.5" />}退出登录</button></div>
+        <div className="absolute right-0 top-12 z-50 w-64 rounded-2xl border border-[#dfe4eb] bg-white p-4 shadow-[0_20px_55px_rgba(30,42,65,0.18)]"><div className="flex items-center gap-3"><span data-preserve-language={account ? true : undefined} className="flex size-10 items-center justify-center rounded-full bg-[#172033] text-xs font-bold text-white">{initials(account?.name)}</span><div className="min-w-0"><div data-preserve-language={account ? true : undefined} className="truncate text-sm font-bold text-[#273248]">{account?.name ?? "身份不可用"}</div><div data-preserve-language={account ? true : undefined} className="mt-0.5 truncate text-[11px] text-[#8993a2]">{account?.username ?? "未登录"}</div></div></div><div className="mt-4 space-y-2 border-t border-[#edf0f4] pt-3"><div className="flex items-center gap-2 text-[11px] text-[#6e7889]"><UserRound className="size-3.5" />角色：{account?.role ?? "未知"}</div><div className="flex items-center gap-2 text-[11px] text-[#6e7889]"><Building2 className="size-3.5" />采购执行工作区</div></div><button type="button" onClick={() => void signOut()} disabled={loggingOut} className="mt-4 flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-[#e2e6ec] text-xs font-semibold text-[#667184] hover:bg-[#f7f9fb] disabled:opacity-50">{loggingOut ? <Loader2 className="size-3.5 animate-spin" /> : <LogOut className="size-3.5" />}退出登录</button></div>
       </>}
     </div>
   </header>;

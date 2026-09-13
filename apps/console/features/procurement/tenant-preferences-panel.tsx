@@ -1,5 +1,7 @@
 "use client";
 
+import { uiConfirm } from "@/features/localization/ui-dialogs";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, BellRing, CalendarDays, CheckCircle2, Clock3, Factory, Globe2, History, Loader2, RefreshCw, Save, Umbrella } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -179,7 +181,7 @@ export function ProcurementTenantPreferencesPanel({ referenceLayout = false, onS
   async function save() {
     const resolvedReason = referenceLayout ? "通过配置页面更新常规设置。" : reason.trim();
     if (!data || saveInFlight.current || saveDisabled) return;
-    if (!referenceLayout && !window.confirm("确认更新常规设置？\n\n变更会版本化并写入审计；会影响后续 SLA 自动升级、工作日/节假日计算和制造交期风险，不会改写既有业务时间戳或历史快照。")) return;
+    if (!referenceLayout && !uiConfirm("确认更新常规设置？\n\n变更会版本化并写入审计；会影响后续 SLA 自动升级、工作日/节假日计算和制造交期风险，不会改写既有业务时间戳或历史快照。")) return;
     saveInFlight.current = true;
     setSaving(true);
     setActionError(null);

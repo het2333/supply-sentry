@@ -16,6 +16,18 @@ The codebase includes supplier-reply analysis, line-level order information, fol
 
 The authoritative scope and release criteria are documented in [Procurement V1 Scope](docs/PROCUREMENT-V1-SCOPE.md) and [V1 Alignment and Acceptance](docs/NAVISIGHT-V1-ALIGNMENT.md). RFQ, accounts-payable, Teams, and general-purpose runtime components also exist in the repository; their presence is separate from procurement V1 acceptance.
 
+## Interface languages
+
+The console supports **English and Simplified Chinese**. Use the **中文 / English** switch on the sign-in screen or in the workspace header. The preference is saved in this browser and survives refresh.
+
+- English entry: `http://127.0.0.1:3001/?lang=en`
+- Chinese entry: `http://127.0.0.1:3001/?lang=zh-CN`
+- Existing order links can add `&lang=en` without losing their order or tab parameters.
+
+UI labels, help, dialogs and dates are localized. Supplier names, material descriptions, original correspondence, attachments, user-entered drafts and audit evidence stay in their original language. Language changes do **not** translate outgoing messages, change tenant time zones, approve orders or trigger business writes. Cloud installations must deploy this source revision to enable these links.
+
+Dictionaries and display-only compatibility logic live in `apps/console/features/localization/`. Run `pnpm test:localization` after changes; `node scripts/extract-ui-messages.mjs` inventories source copy without reading business data or credentials.
+
 ## Repository layout
 
 ```text

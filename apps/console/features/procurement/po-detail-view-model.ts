@@ -7,6 +7,8 @@ export type PoDetailRecord = Record<string, unknown>;
 export type PoDetailItemRow = {
   id: string;
   label: string;
+  /** True only when the renderer must localize a missing-material label. */
+  labelIsFallback?: true;
   reference: string;
   sku?: string;
   category?: string;
@@ -95,6 +97,7 @@ export function buildPoDetailItemRows(input: {
     return {
       id,
       label: text(line.description) ?? text(line.itemId) ?? `行 ${index + 1}`,
+      ...(!text(line.description) && !text(line.itemId) ? { labelIsFallback: true as const } : {}),
       reference: text(line.lineNumber) ?? text(line.itemId) ?? "未记录编号",
       ...(sku === undefined ? {} : { sku }),
       category: text(line.category) ?? text(line.itemCategory),

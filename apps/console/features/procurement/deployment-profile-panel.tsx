@@ -1,5 +1,7 @@
 "use client";
 
+import { uiConfirm } from "@/features/localization/ui-dialogs";
+
 import { useCallback, useEffect, useState } from "react";
 import { AlertCircle, CheckCircle2, Database, History, Loader2, Mail, RefreshCw, Save, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -90,7 +92,7 @@ export function ProcurementDeploymentProfilePanel() {
   async function save() {
     if (!data?.permissions.configure || saving || reason.trim().length < 10) return;
     const selected = modes.find((item) => item.id === mode)!;
-    if (!window.confirm(`确认采用“${selected.title}”？\n\n该变更会写入租户级审计，但不会自动同步 Odoo、接受邮件 PO 或生成业务事实。`)) return;
+    if (!uiConfirm(`确认采用“${selected.title}”？\n\n该变更会写入租户级审计，但不会自动同步 Odoo、接受邮件 PO 或生成业务事实。`)) return;
     setSaving(true);
     setError(null);
     setNotice(null);

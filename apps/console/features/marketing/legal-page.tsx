@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import type { ReactNode } from "react";
+import { LanguageSwitcher } from "@/features/localization/ui-language";
 
 export type LegalSection = {
   id: string;
@@ -31,6 +32,7 @@ export function LegalPage({
           <a href="/product#faq" className="transition hover:text-[#0b1220]">常见问题</a>
         </nav>
         <a href="/product#demo" className="ml-auto inline-flex h-8 items-center rounded-[10px] bg-[#0b1220] px-3 text-[13px] font-medium text-[#fafbfd]">申请演示</a>
+        <LanguageSwitcher className="ml-3" />
       </div>
     </header>
 

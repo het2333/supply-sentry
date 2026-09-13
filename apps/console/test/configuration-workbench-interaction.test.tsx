@@ -229,6 +229,40 @@ test("取消微信扫码会话失败时保留弹窗并明示错误", async () =>
   }
 });
 
+test("English connection cards translate platform diagnostics but preserve custom adapter evidence", async () => {
+  const { host, restore } = installDom();
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async () => json({
+    effective: { countryCode: "CN", workingDays: [1, 2, 3, 4, 5], timeZone: "Asia/Shanghai", dateFormat: "YYYY-MM-DD" },
+  })) as typeof fetch;
+  (globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
+  const React = await import("react");
+  const { act } = React;
+  const { createRoot } = await import("react-dom/client");
+  const { ChineseUiLocalization } = await import("../features/localization/chinese-ui-localization.js");
+  const { ProcurementTenantPreferencesProvider } = await import("../features/procurement/tenant-preferences-context.js");
+  const { ProcurementChannelConnectionsPanel } = await import("../features/procurement/channel-connections-panel.js");
+  const root = createRoot(host);
+  const source = connections.map((item) => item.id === "email" ? { ...item, healthMessage: "真实适配器已加载" }
+    : item.id === "deepseek" ? { ...item, connectionType: "设置", healthMessage: "设置" } : item);
+  try {
+    await act(async () => {
+      root.render(<><ChineseUiLocalization language="en" /><ProcurementTenantPreferencesProvider>
+        {(["communication", "ai"] as const).map((category) => <ProcurementChannelConnectionsPanel key={category} category={category} connections={source} manageable={false} loading={false} sourceLoaded onOpen={() => {}} onDisconnect={() => {}} />)}
+      </ProcurementTenantPreferencesProvider></>);
+      await wait();
+    });
+    assert.match(document.querySelector('[data-connection-id="email"]')?.textContent ?? "", /Live adapter loaded/);
+    const adapter = document.querySelector('[data-connection-id="deepseek"]')?.textContent ?? "";
+    assert.match(adapter, /设置/);
+    assert.doesNotMatch(adapter, /Settings/);
+  } finally {
+    await act(async () => root.unmount());
+    globalThis.fetch = originalFetch;
+    restore();
+  }
+});
+
 test("Configuration aligns manager/admin clicks, WeChat boundary, auto-send switch, Escape and focus", async () => {
   const { host, restore } = installDom();
   const originalFetch = globalThis.fetch;

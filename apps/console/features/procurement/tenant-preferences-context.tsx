@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { apiRequest } from "@/features/shared/api-client";
+import { useUiLanguage } from "@/features/localization/ui-language";
 import {
   DEFAULT_PROCUREMENT_TENANT_PREFERENCES,
   formatProcurementDate,
@@ -97,11 +98,12 @@ export function useProcurementTenantPreferences(): ProcurementTenantPreferencesC
 
 export function useProcurementLocale() {
   const { preferences } = useProcurementTenantPreferences();
+  const { language } = useUiLanguage();
   return useMemo(() => ({
     preferences,
-    formatDate: (value: string | number | Date | null | undefined, fallback = "—") => formatProcurementDate(value, preferences, "date", fallback),
-    formatDateTime: (value: string | number | Date | null | undefined, fallback = "—") => formatProcurementDate(value, preferences, "date-time", fallback),
-    formatShortDateTime: (value: string | number | Date | null | undefined, fallback = "—") => formatProcurementDate(value, preferences, "short-date-time", fallback),
-    formatTime: (value: string | number | Date | null | undefined, fallback = "—") => formatProcurementDate(value, preferences, "time", fallback),
-  }), [preferences]);
+    formatDate: (value: string | number | Date | null | undefined, fallback = "—") => formatProcurementDate(value, preferences, "date", fallback, language),
+    formatDateTime: (value: string | number | Date | null | undefined, fallback = "—") => formatProcurementDate(value, preferences, "date-time", fallback, language),
+    formatShortDateTime: (value: string | number | Date | null | undefined, fallback = "—") => formatProcurementDate(value, preferences, "short-date-time", fallback, language),
+    formatTime: (value: string | number | Date | null | undefined, fallback = "—") => formatProcurementDate(value, preferences, "time", fallback, language),
+  }), [preferences, language]);
 }

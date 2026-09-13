@@ -1,5 +1,7 @@
 "use client";
 
+import { uiConfirm } from "@/features/localization/ui-dialogs";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, CheckCircle2, Edit3, Loader2, Mail, Send, Trash2, X } from "lucide-react";
 import { apiRequest, ReadyworkApiError } from "@/features/shared/api-client";
@@ -133,7 +135,7 @@ export function ProcurementMessageDrafts({ onOpenSla, onOpenSettings }: {
     } catch (requestError) { setError(errorText(requestError)); } finally { setBusy(null); }
   }
   async function discard() {
-    if (!selected || !data.capabilities.discard || !window.confirm("确定丢弃这封邮件草稿吗？此操作将记录到审计轨迹。")) return;
+    if (!selected || !data.capabilities.discard || !uiConfirm("确定丢弃这封邮件草稿吗？此操作将记录到审计轨迹。")) return;
     setBusy("discard"); setError(null); setNotice(null);
     try {
       const result = await apiRequest<{ item: Draft; events: EventItem[] }>(`/api/procurement/message-drafts/${encodeURIComponent(selected.id)}/discard`, { method: "POST", body: { expectedVersion: selected.version, reason: "Discarded by a procurement user in the Web workbench" } });

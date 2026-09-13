@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { compileMessageTemplates, ENGLISH_UI_OVERRIDES } from "./english-ui-text";
+import type { UiLanguage } from "./ui-language-preference";
+import enPlatform from "./en-platform.json";
+import enOrders from "./en-orders.json";
+import enSettings from "./en-settings.json";
 
 /**
- * Readywork 当前以简体中文作为唯一界面语言。业务对象、供应商原文、
- * 邮件正文和机器枚举不经过这里，避免展示翻译影响真实读写协议。
+ * Display-only compatibility layer for existing UI copy. Business evidence,
+ * editable values and machine protocols are preserved, never rewritten in storage.
  */
 export const READYWORK_ZH_CN_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "Overview": "总览",
@@ -1061,12 +1066,32 @@ const DYNAMIC_RULES: ReadonlyArray<readonly [RegExp, (...parts: string[]) => str
   [/^The server is currently at version (\d+)\. Review the latest facts before resubmitting\.$/, (version) => `服务器当前版本为 ${version}。重新提交前请检查最新事实。`],
 ];
 
-export function translateReadyworkUiText(value: string): string {
+export const READYWORK_EN_TEXT: Readonly<Record<string, string>> = Object.freeze({
+  ...Object.fromEntries(Object.entries(READYWORK_ZH_CN_TEXT).reverse().map(([english, chinese]) => [chinese, english])),
+  ...enPlatform,
+  ...enOrders,
+  ...enSettings,
+  ...ENGLISH_UI_OVERRIDES,
+});
+const ENGLISH_TEMPLATES = compileMessageTemplates(READYWORK_EN_TEXT);
+
+export function translateReadyworkUiText(value: string, language: UiLanguage = "zh-CN"): string {
   const leading = value.match(/^\s*/)?.[0] ?? "";
   const trailing = value.match(/\s*$/)?.[0] ?? "";
   const normalized = value.trim().replace(/\s+/g, " ");
   if (!normalized) return value;
-  const exact = READYWORK_ZH_CN_TEXT[normalized];
+  if (language === "en") {
+    const exact = Object.hasOwn(READYWORK_EN_TEXT, normalized) ? READYWORK_EN_TEXT[normalized] : undefined;
+    if (exact) return `${leading}${exact}${trailing}`;
+    if (!/[\u3400-\u9fff]/u.test(normalized)) return value;
+    for (const { pattern, prefix, suffix, target, slots } of ENGLISH_TEMPLATES) {
+      if ((prefix && !normalized.startsWith(prefix)) || (suffix && !normalized.endsWith(suffix))) continue;
+      const match = normalized.match(pattern);
+      if (match) return `${leading}${target.replace(/\{\d+\}/g, (slot) => match[slots.indexOf(slot) + 1] ?? slot)}${trailing}`;
+    }
+    return value;
+  }
+  const exact = Object.hasOwn(READYWORK_ZH_CN_TEXT, normalized) ? READYWORK_ZH_CN_TEXT[normalized] : undefined;
   if (exact) return `${leading}${exact}${trailing}`;
   for (const [pattern, replacement] of DYNAMIC_RULES) {
     const match = normalized.match(pattern);
@@ -1075,64 +1100,69 @@ export function translateReadyworkUiText(value: string): string {
   return value;
 }
 
-function localizeElement(element: Element) {
-  if (element.closest("[data-preserve-language], textarea, pre, code, script, style")) return;
-  for (const attribute of ["aria-label", "title", "placeholder"] as const) {
-    const value = element.getAttribute(attribute);
-    if (!value) continue;
-    const translated = translateReadyworkUiText(value);
-    if (translated !== value) element.setAttribute(attribute, translated);
-  }
-}
+const PRESERVE_SELECTOR = '[data-preserve-language], pre, code, script, style, [contenteditable="true"], [contenteditable=""], [contenteditable="plaintext-only"]';
+const LOCALIZED_ATTRIBUTES = ["aria-label", "aria-description", "title", "placeholder", "alt"] as const;
+type OriginalText = { source: string; rendered: string };
+type OriginalNode = Map<string, OriginalText>;
 
-function localizeTree(root: Node) {
-  if (root.nodeType === Node.TEXT_NODE) {
-    const parent = root.parentElement;
-    if (!parent || parent.closest("[data-preserve-language], textarea, pre, code, script, style")) return;
-    const value = root.nodeValue ?? "";
-    const translated = translateReadyworkUiText(value);
-    if (translated !== value) root.nodeValue = translated;
-    return;
-  }
-  if (!(root instanceof Element)) return;
-  localizeElement(root);
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
-  let node = walker.nextNode();
-  while (node) {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const parent = node.parentElement;
-      if (parent && !parent.closest("[data-preserve-language], textarea, pre, code, script, style")) {
-        const value = node.nodeValue ?? "";
-        const translated = translateReadyworkUiText(value);
-        if (translated !== value) node.nodeValue = translated;
-      }
-    } else if (node instanceof Element) {
-      localizeElement(node);
-    }
-    node = walker.nextNode();
-  }
-}
-
-export function ChineseUiLocalization() {
+// Kept under its previous export for compatibility with existing consumers/tests.
+export function ChineseUiLocalization({ language = "zh-CN" }: { language?: UiLanguage } = {}) {
+  const originals = useRef(new WeakMap<Node, OriginalNode>());
   useEffect(() => {
-    document.documentElement.lang = "zh-CN";
-    document.title = translateReadyworkUiText(document.title);
-    localizeTree(document.body);
+    document.documentElement.lang = language;
+    function translated(node: Node, key: string, current: string, preserve: boolean): string {
+      let fields = originals.current.get(node);
+      if (!fields) { fields = new Map(); originals.current.set(node, fields); }
+      const previous = fields.get(key);
+      const source = previous?.rendered === current ? previous.source : current;
+      const rendered = preserve ? source : translateReadyworkUiText(source, language);
+      fields.set(key, { source, rendered });
+      return rendered;
+    }
+    function localizeNode(node: Node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const parent = node.parentElement;
+        if (!parent) return;
+        const current = node.nodeValue ?? "";
+        const result = translated(node, "text", current, !!parent.closest(`${PRESERVE_SELECTOR}, textarea`));
+        // Change text-node data only. Replacing elements would detach React's
+        // nodes and break event handlers, reconciliation and unsaved form state.
+        if (result !== current) node.nodeValue = result;
+      } else if (node instanceof Element) {
+        for (const attribute of LOCALIZED_ATTRIBUTES) {
+          const current = node.getAttribute(attribute);
+          if (!current) continue;
+          const result = translated(node, attribute, current, !!node.closest(PRESERVE_SELECTOR));
+          if (result !== current) node.setAttribute(attribute, result);
+        }
+      }
+    }
+    function localizeTree(root: Node) {
+      localizeNode(root);
+      if (!(root instanceof Element)) return;
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) { localizeNode(node); node = walker.nextNode(); }
+    }
+    const options: MutationObserverInit = {
+      childList: true, subtree: true, characterData: true, attributes: true,
+      attributeFilter: [...LOCALIZED_ATTRIBUTES, "data-preserve-language", "contenteditable"],
+    };
     const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === "characterData") localizeTree(mutation.target);
-        if (mutation.type === "attributes" && mutation.target instanceof Element) localizeElement(mutation.target);
-        for (const node of mutation.addedNodes) localizeTree(node);
+      observer.disconnect();
+      try {
+        for (const mutation of mutations) {
+          if (mutation.type === "characterData") localizeNode(mutation.target);
+          if (mutation.type === "attributes") localizeTree(mutation.target);
+          for (const node of mutation.addedNodes) localizeTree(node);
+        }
+      } finally {
+        observer.observe(document.documentElement, options);
       }
     });
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-      attributes: true,
-      attributeFilter: ["aria-label", "title", "placeholder"],
-    });
+    localizeTree(document.documentElement);
+    observer.observe(document.documentElement, options);
     return () => observer.disconnect();
-  }, []);
+  }, [language]);
   return null;
 }

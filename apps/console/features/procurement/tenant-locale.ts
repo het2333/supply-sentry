@@ -29,11 +29,12 @@ export function formatProcurementDate(
   preferences: ProcurementTenantPreferences,
   presentation: DatePresentation = "date-time",
   fallback = "—",
+  language: "zh-CN" | "en" = "zh-CN",
 ): string {
   if (value === null || value === undefined || value === "") return fallback;
   if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value) && presentation === "date") {
     const [year, month, day] = value.split("-") as [string, string, string];
-    return orderedDate(year, month, day, preferences.dateFormat);
+    return orderedDate(year, month, day, preferences.dateFormat, language);
   }
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return typeof value === "string" ? value : fallback;
@@ -53,8 +54,8 @@ export function formatProcurementDate(
     const day = part("day");
     const time = `${part("hour")}:${part("minute")}`;
     if (presentation === "time") return time;
-    if (presentation === "short-date-time") return `${orderedShortDate(month, day, preferences.dateFormat)} ${time}`;
-    const fullDate = orderedDate(year, month, day, preferences.dateFormat);
+    if (presentation === "short-date-time") return `${orderedShortDate(month, day, preferences.dateFormat, language)} ${time}`;
+    const fullDate = orderedDate(year, month, day, preferences.dateFormat, language);
     return presentation === "date" ? fullDate : `${fullDate} ${time}`;
   } catch {
     return fallback;
@@ -84,15 +85,17 @@ export function procurementCalendarDateDaysBefore(value: Date, timeZone: string,
   return new Date(Date.UTC(year, month - 1, day - Math.max(0, Math.trunc(daysBefore)))).toISOString().slice(0, 10);
 }
 
-function orderedDate(year: string, month: string, day: string, format: ProcurementDateFormat): string {
-  if (format === "DD MMM YYYY") return `${year}年${Number(month)}月${Number(day)}日`;
+const ENGLISH_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function orderedDate(year: string, month: string, day: string, format: ProcurementDateFormat, language: "zh-CN" | "en"): string {
+  if (format === "DD MMM YYYY") return language === "en" ? `${day} ${ENGLISH_MONTHS[Number(month) - 1]} ${year}` : `${year}年${Number(month)}月${Number(day)}日`;
   if (format === "DD/MM/YYYY") return `${day}/${month}/${year}`;
   if (format === "MM/DD/YYYY") return `${month}/${day}/${year}`;
   return `${year}-${month}-${day}`;
 }
 
-function orderedShortDate(month: string, day: string, format: ProcurementDateFormat): string {
-  if (format === "DD MMM YYYY") return `${Number(month)}月${Number(day)}日`;
+function orderedShortDate(month: string, day: string, format: ProcurementDateFormat, language: "zh-CN" | "en"): string {
+  if (format === "DD MMM YYYY") return language === "en" ? `${day} ${ENGLISH_MONTHS[Number(month) - 1]}` : `${Number(month)}月${Number(day)}日`;
   if (format === "DD/MM/YYYY") return `${day}/${month}`;
   if (format === "MM/DD/YYYY") return `${month}/${day}`;
   return `${month}-${day}`;

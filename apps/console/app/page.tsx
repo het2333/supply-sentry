@@ -99,6 +99,7 @@ import {
 import { ProcurementPoIntake } from "@/features/procurement/po-intake";
 import { ProcurementGlobalHeader, type ProcurementHeaderTarget } from "@/features/procurement/global-header";
 import { ProcurementSecurityEventsPanel } from "@/features/procurement/security-events-panel";
+import { LanguageSwitcher } from "@/features/localization/ui-language";
 import { poNavigationIntentFromValue, resetNavigationScroll, resolveNavigationSection, resolveNavigationViewMode, sectionFromNavigationValue, type PurchaseOrderNavigationIntent, type ReadyworkSection as Section } from "@/features/procurement/navigation-state";
 import { poDetailTabFromNavigationValue, type PoDetailTabId } from "@/features/procurement/po-detail-navigation";
 import { procurementHeaderPresentation, READYWORK_PROCUREMENT_VISUAL_TOKENS } from "@/features/procurement/visual-tokens";
@@ -2058,7 +2059,7 @@ function ReadyworkPageContent() {
               style={{ height: READYWORK_PROCUREMENT_VISUAL_TOKENS.sidebarHeaderHeightPx }}
             >
               <div className={cn("flex shrink-0 items-center justify-center rounded-[9px] text-white shadow-sm", procurementSection ? "bg-[#2563eb] shadow-blue-200" : "bg-slate-950", sidebarOpen ? "size-[30px]" : "size-[34px]")}><Command className="size-4" /></div>
-              {sidebarOpen && <div className="min-w-0"><div className="truncate text-[17px] font-bold tracking-[-0.02em] text-[#0f172a]">{activePack?.branding.productName ?? "READYWORK"}</div></div>}
+              {sidebarOpen && <div className="min-w-0"><div className="truncate text-[17px] font-bold tracking-[-0.02em] text-[#0f172a]">{!activePack?.branding.productName || /^(?:Readywork|READYWORK)$/.test(activePack.branding.productName) ? "SupplySentry" : activePack.branding.productName}</div></div>}
             </div>
             <div className="mx-3 h-px shrink-0 bg-[#eef2f7]" />
             <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
@@ -2067,7 +2068,7 @@ function ReadyworkPageContent() {
             </nav>
             <div className="mx-3 h-px shrink-0 bg-[#eef2f7]" />
             <div className={cn("flex shrink-0 items-center gap-2 px-4 py-3.5", !sidebarOpen && "flex-col px-0")}>
-              {sidebarOpen && <div className="min-w-0 flex-1"><div className="truncate text-[11px] font-medium text-slate-500">{tenantName}</div><div className="truncate text-[10.5px] text-slate-400">{activeDepartment}</div></div>}
+              {sidebarOpen && <div className="min-w-0 flex-1"><div data-preserve-language className="truncate text-[11px] font-medium text-slate-500">{tenantName}</div><div data-preserve-language className="truncate text-[10.5px] text-slate-400">{activeDepartment}</div></div>}
               <button type="button" aria-label={sidebarOpen ? "收起导航" : "展开导航"} onClick={() => setSidebarOpen((v) => !v)} className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-[#e2e8f0] bg-white text-slate-500 shadow-sm transition-colors hover:bg-slate-100 hover:text-slate-900">
                 {sidebarOpen ? <ChevronLeft className="size-4" /> : <ChevronRight className="size-4" />}
               </button>
@@ -2079,7 +2080,7 @@ function ReadyworkPageContent() {
           {procurementSection ? <ProcurementGlobalHeader title={currentSectionTitle} onNavigate={navigateFromProcurementHeader} integrated={procurementHeader.integrated} showSearch={procurementHeader.showSearch} /> : <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/85 px-4 backdrop-blur-xl md:px-6">
             <div className="flex items-center gap-3">
               <div className="hidden items-center gap-2 text-xs text-slate-400 sm:flex">
-                <span>Readywork</span>
+                <span>SupplySentry</span>
                 <span>/</span>
                 {section === "employees" ? (
                   <select value={selectedId} onChange={(e) => setSelectedId(e.target.value)} className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 outline-none">
@@ -2091,6 +2092,7 @@ function ReadyworkPageContent() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <LanguageSwitcher />
               {section === "employees" && (
                 <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1">
                   {([["business", "业务视图"], ["developer", "开发者视图"]] as [ViewMode, string][]).map(([id, label]) => (
@@ -2513,7 +2515,7 @@ function ReadyworkPageContent() {
                       <div className="flex flex-wrap items-center gap-2">
                         <div className="relative"><Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" /><input value={connectorQuery} onChange={(event) => setConnectorQuery(event.target.value)} placeholder="搜索 ERP、邮箱、WMS…" className="h-9 w-56 rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-xs outline-none focus:border-slate-400" /></div>
                         <select value={connectorCategory} onChange={(event) => setConnectorCategory(event.target.value)} className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs outline-none">
-                          {connectorCategories.map((category) => <option key={category}>{category}</option>)}
+                          {connectorCategories.map((category) => <option key={category} value={category}>{category}</option>)}
                         </select>
                       </div>
                     </CardHeader>

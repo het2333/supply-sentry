@@ -1,5 +1,7 @@
 "use client";
 
+import { uiPrompt } from "@/features/localization/ui-dialogs";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, CheckCircle2, FileText, Inbox, Loader2, Plus, RefreshCw, ShieldCheck, Trash2 } from "lucide-react";
 import { apiRequest, ReadyworkApiError } from "@/features/shared/api-client";
@@ -77,7 +79,7 @@ export function ProcurementPoIntake({ onOpenOrder }: { onOpenOrder: (poId?: stri
   };
   const reject = async () => {
     if (!selected) return;
-    const reason = window.prompt("请填写阻断原因。该操作会保留原邮件与审计证据。", selected.rejectionReason ?? "不是采购订单或内容无法核验");
+    const reason = uiPrompt("请填写阻断原因。该操作会保留原邮件与审计证据。", selected.rejectionReason ?? "不是采购订单或内容无法核验");
     if (!reason?.trim()) return;
     setBusy(true); setError(null);
     try { await apiRequest(`/api/procurement/po-intake/${encodeURIComponent(selected.id)}/reject`, { method: "POST", body: { expectedVersion: selected.version, reason: reason.trim() } }); await load(); }

@@ -35,11 +35,11 @@ test("public production surfaces use only the Readywork product brand", () => {
   assert.match(form, /`readywork-demo:\$\{window\.crypto\.randomUUID\(\)\}`/);
 });
 
-test("authenticated workspace surfaces use the Readywork product brand only", () => {
+test("authenticated workspace uses SupplySentry without another product's brand", () => {
   for (const relative of workspaceBrandFiles) {
     assert.doesNotMatch(source(relative), /Navi(?:Sight)? Assistant|ReadyCrew/i, relative);
   }
-  assert.match(source("../app/layout.tsx"), /title:\s*"Readywork — 采购执行工作区"/);
+  assert.match(source("../app/layout.tsx"), /title:\s*"SupplySentry — 采购执行工作区"/);
 });
 
 test("public product visuals are self-owned local assets or React geometry", () => {
