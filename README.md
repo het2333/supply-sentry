@@ -5,7 +5,7 @@ English | [简体中文](README.zh-CN.md)
 [![CI](https://github.com/het2333/supply-sentry/actions/workflows/ci.yml/badge.svg)](https://github.com/het2333/supply-sentry/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-one--command-2496ED?logo=docker&logoColor=white)](#quick-start)
-![Demo](https://img.shields.io/badge/Demo-publishing-orange)
+![Demo](https://img.shields.io/badge/Demo-local_verified-2E7D32)
 
 SupplySentry follows a purchase order after issue, turns unstructured supplier replies into traceable evidence, detects delivery risk, requests human approval for material differences, and executes only policy-approved actions through durable, retry-safe gateways.
 
@@ -16,7 +16,7 @@ SupplySentry follows a purchase order after issue, turns unstructured supplier r
   <img src="docs/assets/supplysentry-demo-poster.png" alt="SupplySentry synthetic public demo: supplier reply evidence, short-delivery approval, risk, SLA, notifications, and drafts" width="100%">
 </picture>
 
-[**Try Online — publishing after external verification**](#public-demo-status) · [**Run Locally**](#quick-start) · [Evaluation report](reports/evaluations/supplier-replies-v1.md) · [Architecture source](docs/architecture/supplysentry-system.drawio)
+[**Watch the 61-second walkthrough**](https://github.com/het2333/supply-sentry/releases/download/v1.0.0-portfolio/supplysentry-walkthrough-v1.0.0.mp4) · [**Online demo paused**](#public-demo-status) · [**Run Locally**](#quick-start) · [Evaluation report](reports/evaluations/supplier-replies-v1.md) · [Architecture source](docs/architecture/supplysentry-system.drawio)
 
 | Durable workflow | Controlled side effects | Measured reliability |
 | --- | --- | --- |
@@ -137,7 +137,7 @@ See the [security acceptance report](reports/security/public-demo-security-accep
 
 ### Public demo status
 
-The IP-based online demo is published in the README only after the exact server deployment passes the same end-to-end verifier used locally. Until then, use the one-command local demo above.
+No hosted endpoint is currently advertised. The previously prepared server capacity has been reassigned, so the truthful, fully verified entry point is the one-command local demo above. A future hosted URL will be added only after the exact release image passes the same internal-reset and credential-free external verification modes.
 
 ## Repository structure
 

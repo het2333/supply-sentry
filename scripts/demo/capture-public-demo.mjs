@@ -3,6 +3,10 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { chromium } from 'playwright-core';
+import {
+  publicDemoRetryAfterMilliseconds,
+  withPublicDemoRateLimitRecovery,
+} from './capture-rate-limit.mjs';
 
 const root = resolve(import.meta.dirname, '../..');
 const storyPath = resolve(root, 'scripts/demo/capture-story.json');
@@ -42,6 +46,33 @@ async function waitForStablePage() {
   await page.waitForTimeout(1_200);
 }
 
+async function loadScene(scene, index, attemptNumber) {
+  let retryAfterMilliseconds = 0;
+  const recordRateLimit = (response) => {
+    retryAfterMilliseconds = Math.max(
+      retryAfterMilliseconds,
+      publicDemoRetryAfterMilliseconds(response.status(), response.headers()['retry-after']),
+    );
+  };
+  page.on('response', recordRateLimit);
+  try {
+    if (attemptNumber > 1) {
+      await page.reload({ waitUntil: 'domcontentloaded' });
+    } else if (index === 0) {
+      await page.goto(new URL(scene.route, baseUrl).href, { waitUntil: 'domcontentloaded' });
+    } else if (index > 1) {
+      await page.evaluate((route) => {
+        window.history.pushState(null, '', route);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }, scene.route);
+    }
+    await waitForStablePage();
+    return retryAfterMilliseconds;
+  } finally {
+    page.off('response', recordRateLimit);
+  }
+}
+
 async function addCaption(scene) {
   await page.evaluate(({ title, subtitle }) => {
     document.querySelector('[data-capture-caption]')?.remove();
@@ -69,15 +100,10 @@ async function addCaption(scene) {
 try {
   for (let index = 0; index < story.scenes.length; index += 1) {
     const scene = story.scenes[index];
-    if (index === 0) {
-      await page.goto(new URL(scene.route, baseUrl).href, { waitUntil: 'domcontentloaded' });
-    } else if (index > 1) {
-      await page.evaluate((route) => {
-        window.history.pushState(null, '', route);
-        window.dispatchEvent(new PopStateEvent('popstate'));
-      }, scene.route);
-    }
-    await waitForStablePage();
+    await withPublicDemoRateLimitRecovery({
+      attempt: (attemptNumber) => loadScene(scene, index, attemptNumber),
+      wait: (milliseconds) => page.waitForTimeout(milliseconds),
+    });
     await page.getByRole('heading', { name: new RegExp(scene.expectedHeading, 'iu') }).first().waitFor({ state: 'visible', timeout: 15_000 });
 
     if (scene.action === 'enter-public-demo') {

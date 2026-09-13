@@ -160,7 +160,7 @@ test('snapshot deterministically masks contact fields, drops deep credentials, a
     });
     const supplier = snapshotEntities(created.snapshot).find((entity) => entity['entityType'] === 'supplier')!;
     const attributes = supplier['attributes'] as Record<string, any>;
-    assert.equal(attributes['contacts'][0].email, '2***@qq.com');
+    assert.equal(attributes['contacts'][0].email, 's***@supplysentry.invalid');
     assert.equal(attributes['contacts'][0].phone, '138****8000');
     assert.equal(attributes['EMAIL_ADDRESS'], 'u***@example.com');
     assert.deepEqual(attributes['contactEmail'], [
@@ -370,7 +370,7 @@ test('snapshot applies commercial-term permissions without dropping the root', (
     assert.equal((approved.snapshot['root'] as Record<string, any>)['attributes']['unitPrice'], 127);
     assert.equal('commercialTerm' in (attemptedBypass.snapshot['root'] as Record<string, any>)['attributes'], false);
     const bypassSupplier = snapshotEntities(attemptedBypass.snapshot).find((entity) => entity['entityType'] === 'supplier')!;
-    assert.equal(bypassSupplier['attributes']['contacts'][0].email, '2***@qq.com');
+    assert.equal(bypassSupplier['attributes']['contacts'][0].email, 's***@supplysentry.invalid');
     assert.equal('commercialTerm' in (operateBypass.snapshot['root'] as Record<string, any>)['attributes'], false);
     assert.equal((trustedCommercialAction.snapshot['root'] as Record<string, any>)['attributes']['commercialTerm'], 'NET30');
     const trustedSupplier = snapshotEntities(trustedCommercialAction.snapshot)

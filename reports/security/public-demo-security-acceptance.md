@@ -4,7 +4,7 @@ Acceptance scope: the isolated public portfolio demo defined by `infra/demo/comp
 
 ## Decision
 
-The local public-demo build is accepted for publication subject to the remote deployment checks below. Its trust boundary is a dedicated synthetic tenant and dedicated Docker storage; all externally visible actions are intercepted as simulated receipts.
+The local public-demo build is accepted for publication as a one-command Docker demo. Its trust boundary is a dedicated synthetic tenant and dedicated Docker storage; all externally visible actions are intercepted as simulated receipts. No hosted endpoint is currently advertised.
 
 ## Verified boundaries
 
@@ -12,7 +12,7 @@ The local public-demo build is accepted for publication subject to the remote de
 | --- | --- | --- |
 | Only the Console is published | `infra/demo/compose.yml` contains the stack's only `ports:` mapping on `console`; APIs, mock model, Temporal, PostgreSQL, worker, and reset worker remain on the private `demo` network. | Pass |
 | Local bind is loopback-only | `scripts/demo/demo.sh` creates `READYWORK_DEMO_BIND_ADDRESS=127.0.0.1` and port `3002`. | Pass |
-| Server bind is explicit | `scripts/demo/deploy-server.sh` creates and re-checks `READYWORK_DEMO_BIND_ADDRESS=0.0.0.0` and port `3002`. | Pass by deployment contract; remote evidence pending |
+| Server bind is explicit | `scripts/demo/deploy-server.sh` creates and re-checks `READYWORK_DEMO_BIND_ADDRESS=0.0.0.0` and port `3002`. | Pass by deployment contract; no active hosted deployment |
 | Deployment directory is isolated | The server script refuses every target other than `/opt/supplysentry-demo` and explicitly forbids `/opt/readywork/shared`. | Pass |
 | Business and workflow storage are separate | Business state uses `supplysentry_demo_data`; Temporal PostgreSQL uses `supplysentry_demo_temporal_data`. | Pass |
 | Production state is not mounted | The Compose topology mounts only the two named demo volumes. It does not mount production SQLite files, `/opt/readywork/shared`, Hermes state, customer files, or host credential directories. | Pass |
@@ -26,38 +26,41 @@ The local public-demo build is accepted for publication subject to the remote de
 
 ## Local end-to-end acceptance evidence
 
-The full eight-service Docker topology was started locally and `scripts/demo/verify-public-demo.mjs` completed successfully against the Console proxy. The verifier covered entry, session establishment, reset, seeded workbench loading, stale-generation denial, notification mutation, risk persistence, simulated external action, capability denials, and final reset.
+The full eight-service Docker topology was started locally and `scripts/demo/verify-public-demo.mjs` completed successfully against the Console proxy in both modes. Internal mode covered reset, entry, session establishment, seeded workbench loading, stale-generation denial, notification mutation, risk persistence, executable short-delivery approval, projection update, simulated external action, capability denials, and final reset. Credential-free external mode repeated the public boundary checks and did not call the internal reset endpoint.
 
 Observed result:
 
 ```json
 {
   "ok": true,
+  "verificationMode": "internal_reset",
   "tenantId": "t:public-demo",
-  "generation": 7,
+  "generation": 16,
   "purchaseOrders": 5,
+  "approval": "approved",
   "simulatedReceipt": {
     "receiptKind": "simulated_demo",
     "externalDelivery": false
   },
-  "resetRestored": true
+  "resetRestored": true,
+  "resetVerification": "verified_internal"
 }
 ```
 
 The generation value is expected to change on later executions. It is evidence of the recorded run, not a fixed product constant.
 
-## Remote deployment acceptance checklist
+## Future hosted deployment acceptance checklist
 
-Before the README may describe `http://47.102.116.148:3002` as an online demo, the exact released image must pass all of the following on the server:
+Before the README may describe any URL as an online demo, the exact released image must pass all of the following on the selected server:
 
 1. GHCR image for the released commit is pulled successfully.
 2. `docker compose ... up -d --wait` reports all eight services healthy/running.
 3. The verifier runs from inside `control-api` against `http://console:3001` and returns `ok: true`.
-4. An external request to `http://47.102.116.148:3002/` succeeds.
+4. An external request to the candidate public URL succeeds without an internal token.
 5. No API, Temporal, PostgreSQL, or mock-model port is externally published.
 6. The deployment directory is `/opt/supplysentry-demo`; neither `/opt/readywork/shared` nor any production volume is referenced.
 
-Remote status: **pending deployment and external verification**.
+Hosted status: **paused; no public endpoint is currently advertised**.
 
 ## Residual risk
 

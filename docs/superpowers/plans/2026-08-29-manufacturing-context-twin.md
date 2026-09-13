@@ -671,7 +671,7 @@ test('snapshot masks contacts for read-only scope and never changes after source
   const first = fixture.store.createSnapshot({ employeeId: 'ai:po', rootEntityId: fixture.po.id,
     purpose: 'po_supplier_commitment', scope: { permission: 'read', entityTypes: ['purchase_order','supplier','contact'], includeContactDetails: false, includeCommercialTerms: false } });
   const supplier = (first.snapshot['entities'] as Array<Record<string, any>>).find((entity) => entity['entityType'] === 'supplier')!;
-  assert.equal((supplier['attributes'] as Record<string, any>)['contacts'][0].email, '2***@qq.com');
+  assert.equal((supplier['attributes'] as Record<string, any>)['contacts'][0].email, 's***@supplysentry.invalid');
   fixture.store.appendEvidence(externalStatusEvidence(fixture.po.id, 'confirmed', 'v2'));
   const loaded = fixture.store.getSnapshot(first.id)!;
   assert.equal(loaded.contentHash, first.contentHash);

@@ -31,7 +31,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm test:localization
-      - run: node --test scripts/docs/test/*.test.mjs scripts/demo/test/capture-public-demo.test.mjs
+      - run: node --test scripts/docs/test/*.test.mjs scripts/demo/test/*.test.mjs
       - run: node scripts/docs/verify-architecture.mjs
       - run: node scripts/docs/verify-readme.mjs --local
       - run: node --test infra/demo/test/*.test.mjs

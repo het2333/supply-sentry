@@ -1,6 +1,6 @@
 /**
  * 报价与订单员工（销售侧）全流程 —— 真实客户邮箱：
- *   客户 supplier.demo@example.com 发来询价 → IMAP 真收 → 路由到报价员工
+ *   合成客户 supplier.demo@example.com 发来询价 → IMAP 真收 → 路由到报价员工
  *   → 选型 → 核价 → 低毛利审批 → 生成报价单 → 真发报价邮件给客户。
  *
  * 用法：pnpm demo:sales
@@ -20,7 +20,7 @@ const requiredEnv = (k: string) => {
   return value;
 };
 
-const CUSTOMER_EMAIL = env('CUSTOMER_EMAIL', 'supplier@supplysentry.invalid');
+const CUSTOMER_EMAIL = env('CUSTOMER_EMAIL', 'supplier.demo@example.com');
 const MAIL_USER = requiredEnv('NETEASE_MAIL_USER');
 const MAIL_PASS = requiredEnv('NETEASE_MAIL_PASS');
 

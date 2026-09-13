@@ -3,7 +3,12 @@ set -eu
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 REPO_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/../.." && pwd)
-CAPTURE_DIR=${1:-"$REPO_ROOT/artifacts/media/supplysentry-demo"}
+CAPTURE_INPUT=${1:-"$REPO_ROOT/artifacts/media/supplysentry-demo"}
+if [ -d "$CAPTURE_INPUT" ]; then
+  CAPTURE_DIR=$CAPTURE_INPUT
+else
+  CAPTURE_DIR=$(CDPATH= cd -- "$(dirname -- "$CAPTURE_INPUT")" && pwd)
+fi
 ASSET_DIR="$REPO_ROOT/docs/assets"
 REPORT_DIR="$REPO_ROOT/reports/demo"
 MP4="$CAPTURE_DIR/supplysentry-walkthrough.mp4"

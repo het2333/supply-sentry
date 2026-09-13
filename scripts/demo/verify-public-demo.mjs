@@ -2,9 +2,20 @@
 
 import assert from 'node:assert/strict';
 
-const baseUrl = new URL(process.argv[2] ?? process.env.READYWORK_DEMO_URL ?? 'http://127.0.0.1:3002/');
-const internalToken = process.env.READYWORK_INTERNAL_CALLBACK_TOKEN?.trim();
-if (!internalToken) throw new Error('READYWORK_INTERNAL_CALLBACK_TOKEN is required for reset verification');
+function option(name) {
+  const index = process.argv.indexOf(name);
+  if (index === -1) return undefined;
+  const value = process.argv[index + 1];
+  if (!value || value.startsWith('--')) throw new Error(`${name} requires a value`);
+  return value;
+}
+
+const positionalUrl = process.argv.slice(2).find((argument, index, arguments_) => (
+  !argument.startsWith('--') && arguments_[index - 1] !== '--base-url'
+));
+const baseUrl = new URL(option('--base-url') ?? positionalUrl ?? process.env.READYWORK_DEMO_URL ?? 'http://127.0.0.1:3002/');
+const internalToken = process.env.READYWORK_INTERNAL_CALLBACK_TOKEN?.trim() || null;
+const verificationMode = internalToken ? 'internal_reset' : 'external_public';
 
 const targetPoId = 'purchase-order:public-demo:awaiting-confirmation';
 let cookie = '';
@@ -45,6 +56,7 @@ function workbenchItems(workbench, section) {
 }
 
 async function reset() {
+  assert.ok(internalToken, 'internal reset token is unavailable in external public verification');
   const result = await call('/internal/demo/reset', {
     method: 'POST',
     headers: { 'x-readywork-internal-token': internalToken },
@@ -54,7 +66,7 @@ async function reset() {
   return result.body;
 }
 
-console.log(`Verifying SupplySentry public demo at ${baseUrl.origin}`);
+console.log(`Verifying SupplySentry public demo at ${baseUrl.origin} (${verificationMode})`);
 
 const home = await call('/');
 expectStatus(home, 200, 'console');
@@ -64,7 +76,7 @@ expectStatus(entry, 200, 'public demo entry');
 assert.equal(entry.body?.demoMode, true);
 assert.match(cookie, /^readywork_session=rw1\./u);
 
-await reset();
+if (internalToken) await reset();
 const status = await call('/api/public-demo/status');
 expectStatus(status, 200, 'public demo status');
 assert.equal(status.body?.tenantId, 't:public-demo');
@@ -82,7 +94,7 @@ assert.ok(Number.isSafeInteger(purchaseOrder.version) && purchaseOrder.version >
 
 const beforeNotifications = await call('/api/procurement/notifications?filter=all');
 expectStatus(beforeNotifications, 200, 'initial notifications');
-assert.ok(beforeNotifications.body?.counts?.unread > 0, 'seeded demo must include unread notifications');
+if (internalToken) assert.ok(beforeNotifications.body?.counts?.unread > 0, 'freshly reset demo must include unread notifications');
 
 const staleMutation = await call('/api/procurement/notifications/read-all', {
   method: 'POST',
@@ -130,6 +142,39 @@ assert.ok(
   'risk activity was not persisted',
 );
 
+const shortDeliveryApprovalId = 'approval:public-demo:short-delivery';
+const approvalResult = await call(`/api/procurement/execution/approvals/${encodeURIComponent(shortDeliveryApprovalId)}`);
+expectStatus(approvalResult, 200, 'short-delivery approval');
+assert.equal(approvalResult.body?.approval?.poId, targetPoId, 'short-delivery approval is not linked to the expected purchase order');
+let approvalState = approvalResult.body.approval.status;
+if (approvalState === 'pending') {
+  const approvalDecision = await call('/api/procurement/execution/decide_confirmation', {
+    method: 'POST',
+    mutation: true,
+    headers: { 'idempotency-key': `public-demo-verifier-approval-${generation}` },
+    body: {
+      aggregateId: shortDeliveryApprovalId,
+      expectedVersion: purchaseOrder.version,
+      decision: 'approved',
+      shortfallDisposition: 'cancel_remainder',
+      reason: 'Public demo verification accepts the synthetic short delivery.',
+    },
+  });
+  assert.ok([200, 201].includes(approvalDecision.response.status), `short-delivery approval failed: ${JSON.stringify(approvalDecision.body)}`);
+  assert.equal(approvalDecision.body?.approval?.status, 'approved');
+  assert.equal(approvalDecision.body?.approval?.shortfallDisposition, 'cancel_remainder');
+  assert.equal(approvalDecision.body?.aggregate?.document?.id, targetPoId);
+  assert.equal(approvalDecision.body?.aggregate?.document?.status, 'confirmed');
+  approvalState = 'approved';
+} else {
+  assert.equal(approvalState, 'approved', `unexpected short-delivery approval state: ${String(approvalState)}`);
+}
+
+const approvedWorkbenchResult = await call('/api/procurement/workbench');
+expectStatus(approvedWorkbenchResult, 200, 'approved workbench projection');
+const approvedPurchaseOrder = workbenchItems(approvedWorkbenchResult.body, 'purchaseOrders').find((item) => item.id === targetPoId);
+assert.equal(approvedPurchaseOrder?.status, 'confirmed', 'approved purchase order projection was not updated');
+
 const simulatedAction = await call('/api/public-demo/simulated-actions', {
   method: 'POST',
   mutation: true,
@@ -150,32 +195,41 @@ for (const deniedRequest of [
   assert.equal(denied.body?.code, 'PUBLIC_DEMO_CAPABILITY_DISABLED');
 }
 
-const finalReset = await reset();
-assert.equal(finalReset.generation, generation + 1, 'final reset did not advance generation exactly once');
-generation = finalReset.generation;
+let resetRestored = false;
+let resetVerification = 'server_internal_only';
+if (internalToken) {
+  const finalReset = await reset();
+  assert.equal(finalReset.generation, generation + 1, 'final reset did not advance generation exactly once');
+  generation = finalReset.generation;
 
-const restoredWorkbenchResult = await call('/api/procurement/workbench');
-expectStatus(restoredWorkbenchResult, 200, 'restored workbench');
-const restoredWorkbench = restoredWorkbenchResult.body;
-assert.equal(workbenchItems(restoredWorkbench, 'purchaseOrders').length, purchaseOrders.length, 'seeded purchase order count was not restored');
-assert.equal(
-  restoredWorkbench.exceptions.items.some((item) => item.objectId === targetPoId && item.type === 'manual_purchase_order_risk'),
-  false,
-  'final reset did not remove the verification risk',
-);
+  const restoredWorkbenchResult = await call('/api/procurement/workbench');
+  expectStatus(restoredWorkbenchResult, 200, 'restored workbench');
+  const restoredWorkbench = restoredWorkbenchResult.body;
+  assert.equal(workbenchItems(restoredWorkbench, 'purchaseOrders').length, purchaseOrders.length, 'seeded purchase order count was not restored');
+  assert.equal(
+    restoredWorkbench.exceptions.items.some((item) => item.objectId === targetPoId && item.type === 'manual_purchase_order_risk'),
+    false,
+    'final reset did not remove the verification risk',
+  );
 
-const restoredNotifications = await call('/api/procurement/notifications?filter=all');
-expectStatus(restoredNotifications, 200, 'restored notifications');
-assert.equal(restoredNotifications.body?.counts?.unread, beforeNotifications.body.counts.unread, 'final reset did not restore notification state');
+  const restoredNotifications = await call('/api/procurement/notifications?filter=all');
+  expectStatus(restoredNotifications, 200, 'restored notifications');
+  assert.equal(restoredNotifications.body?.counts?.unread, beforeNotifications.body.counts.unread, 'final reset did not restore notification state');
+  resetRestored = true;
+  resetVerification = 'verified_internal';
+}
 
 console.log(JSON.stringify({
   ok: true,
+  verificationMode,
   tenantId: 't:public-demo',
   generation,
   purchaseOrders: purchaseOrders.length,
+  approval: approvalState,
   simulatedReceipt: {
     receiptKind: simulatedAction.body.output.receiptKind,
     externalDelivery: simulatedAction.body.output.externalDelivery,
   },
-  resetRestored: true,
+  resetRestored,
+  resetVerification,
 }, null, 2));

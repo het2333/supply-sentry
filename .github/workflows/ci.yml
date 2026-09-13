@@ -30,7 +30,7 @@ jobs:
       - run: pnpm test
       - run: pnpm test:localization
       - name: Verify portfolio documentation contracts
-        run: node --test scripts/docs/test/*.test.mjs scripts/demo/test/capture-public-demo.test.mjs
+        run: node --test scripts/docs/test/*.test.mjs scripts/demo/test/*.test.mjs
       - run: node scripts/docs/verify-architecture.mjs
       - run: node scripts/docs/verify-readme.mjs --local
       - name: Verify public-demo deployment contracts

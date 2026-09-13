@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { test } from 'node:test';
-import { openPersistence } from '@readywork/persistence';
+import { createProcurementRepository, openPersistence } from '@readywork/persistence';
 import {
   PUBLIC_DEMO_IDS,
   PUBLIC_DEMO_SEED_VERSION,
@@ -53,6 +53,45 @@ test('public demo reset seeds a coherent eight-scenario tenant and preserves eve
     const attachment = store.db.prepare(`SELECT content,sha256 FROM procurement_attachments
       WHERE tenant_id='t:public-demo' AND id='attachment:public-demo:packing-list'`).get() as { content: Uint8Array; sha256: string };
     assert.equal(createHash('sha256').update(attachment.content).digest('hex'), attachment.sha256);
+  } finally {
+    store.close();
+  }
+});
+
+test('public demo short-delivery approval is backed by executable confirmation evidence', () => {
+  const store = openPersistence(':memory:', { tenantId: 't:public-demo' });
+  try {
+    resetPublicDemo(store.db, new Date('2026-09-13T04:00:00.000Z'));
+    const repository = createProcurementRepository(store.db, 't:public-demo');
+    const approval = repository.getExecutionApproval(PUBLIC_DEMO_IDS.shortDeliveryApproval);
+    assert.equal(approval?.status, 'pending');
+    assert.ok(approval, 'seeded short-delivery approval is missing');
+    assert.ok(repository.getDocument('confirmation', approval.objectId), 'approval confirmation evidence is missing');
+
+    const result = repository.executeProcurementMutation({
+      action: 'decide_confirmation',
+      idempotencyKey: 'public-demo-test-short-delivery-approval',
+      payloadHash: 'public-demo-test-short-delivery-approval-hash',
+      actorId: 'h:public-demo-manager',
+      permission: 'approve',
+      aggregateId: approval.id,
+      expectedVersion: 1,
+      occurredAt: '2026-09-13T04:01:00.000Z',
+      decision: 'approved',
+      shortfallDisposition: 'cancel_remainder',
+      reason: '接受本次短交并关闭剩余数量',
+    });
+
+    assert.equal(result.approval?.status, 'approved');
+    assert.equal(result.aggregate.document.status, 'confirmed');
+    assert.equal(result.aggregate.version, 2);
+    const poLine = repository.listLines('purchase_order_line', PUBLIC_DEMO_IDS.awaitingConfirmationPo)[0];
+    assert.ok(poLine, 'seeded short-delivery purchase-order line is missing');
+    const projection = repository.getPurchaseOrderLineQuantityProjection(poLine.id);
+    assert.equal(projection?.orderedQty, 800);
+    assert.equal(projection?.confirmedQty, 640);
+    assert.equal(projection?.cancelledQty, 160);
+    assert.equal(projection?.shippedQty, 0);
   } finally {
     store.close();
   }

@@ -49,8 +49,12 @@ test('repository landing pages expose the runnable portfolio story in both langu
   }
   assert.match(english, /docs\/assets\/supplysentry-demo\.gif/u);
   assert.match(english, /docs\/assets\/supplysentry-demo-poster\.png/u);
-  assert.match(english, /Try Online/u);
+  assert.match(english, /Online demo paused/u);
   assert.match(english, /Run Locally/u);
+  assert.match(english, /supplysentry-walkthrough-v1\.0\.0\.mp4/u);
+  assert.match(chinese, /supplysentry-walkthrough-v1\.0\.0\.mp4/u);
+  assert.doesNotMatch(english, /47\.102\.116\.148:3002/u);
+  assert.doesNotMatch(chinese, /47\.102\.116\.148:3002/u);
   assert.match(english, /Durable workflow/u);
   assert.match(english, /Controlled side effects/u);
   assert.match(english, /Measured reliability/u);

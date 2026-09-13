@@ -5,7 +5,7 @@
 [![CI](https://github.com/het2333/supply-sentry/actions/workflows/ci.yml/badge.svg)](https://github.com/het2333/supply-sentry/actions/workflows/ci.yml)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-blue.svg)](LICENSE)
 [![Docker](https://img.shields.io/badge/Docker-一键启动-2496ED?logo=docker&logoColor=white)](#快速开始)
-![Demo](https://img.shields.io/badge/Demo-发布中-orange)
+![Demo](https://img.shields.io/badge/Demo-本地已验收-2E7D32)
 
 SupplySentry 从采购订单发出后开始工作：将供应商的自由文本回复变成可追溯证据，识别交付风险，在重大差异时请求人工审批，并仅通过可审计、可幂等重试的网关执行策略允许的操作。
 
@@ -16,7 +16,7 @@ SupplySentry 从采购订单发出后开始工作：将供应商的自由文本�
   <img src="docs/assets/supplysentry-demo-poster.png" alt="SupplySentry 合成公开演示：供应商回复证据、短交审批、风险、SLA、通知和草稿" width="100%">
 </picture>
 
-[**在线体验——外网验收后发布**](#公开演示状态) · [**本地运行**](#快速开始) · [评测报告](reports/evaluations/supplier-replies-v1.md) · [架构图源文件](docs/architecture/supplysentry-system.drawio)
+[**观看 61 秒完整演示**](https://github.com/het2333/supply-sentry/releases/download/v1.0.0-portfolio/supplysentry-walkthrough-v1.0.0.mp4) · [**在线 Demo 暂停**](#公开演示状态) · [**本地运行**](#快速开始) · [评测报告](reports/evaluations/supplier-replies-v1.md) · [架构图源文件](docs/architecture/supplysentry-system.drawio)
 
 | 可恢复长流程 | 受控外部操作 | 可量化可靠性 |
 | --- | --- | --- |
@@ -137,7 +137,7 @@ pnpm test:localization
 
 ### 公开演示状态
 
-只有 IP 形式的云端 Demo 在精确服务器部署通过与本地一致的端到端验证后，README 才会公布链接。当前请使用上面的一键本地 Demo。
+当前不公布任何在线体验地址。此前准备的服务器资源已调整用途，因此目前真实且完整验收过的入口是上面的一键本地 Demo。未来只有当精确 Release 镜像同时通过内部重置模式与无凭据外网模式验收后，才会加入新的托管地址。
 
 ## 仓库结构
 

@@ -24,7 +24,7 @@ test('CI pins the toolchain and gates tests, localization, evaluation, seed, bui
     /scripts\/docs\/test/u,
     /verify-architecture\.mjs/u,
     /verify-readme\.mjs --local/u,
-    /capture-public-demo\.test\.mjs/u,
+    /scripts\/demo\/test\/\*\.test\.mjs/u,
     /eval:supplier-replies:verify/u,
     /eval:supplier-replies:check/u,
     /scripts\/evals\/test/u,
@@ -72,7 +72,7 @@ test('server deployment validates the root-owned demo environment through sudo',
   assert.match(deploy, /sudo grep -qx 'READYWORK_DEMO_PORT=3002' "\$ENV_FILE"/u);
 });
 
-test('external verifier enters a public session, guards generation, exercises business state, simulation, denial, and reset', async () => {
+test('verifier covers public business state while keeping external verification independent from internal reset credentials', async () => {
   const verifier = await source('scripts/demo/verify-public-demo.mjs');
   assert.ok(verifier, 'external verifier is missing');
   for (const pattern of [
@@ -83,7 +83,9 @@ test('external verifier enters a public session, guards generation, exercises bu
     /simulated_demo/u,
     /externalDelivery/u,
     /\/api\/procurement\/notifications/u,
+    /decide_confirmation/u,
     /\/internal\/demo\/reset/u,
+    /server_internal_only/u,
     /PUBLIC_DEMO_CAPABILITY_DISABLED/u,
   ]) assert.match(verifier, pattern);
   assert.doesNotMatch(verifier, /sk-[A-Za-z0-9]{16,}|@qq\.com|\/opt\/readywork\/shared/u);

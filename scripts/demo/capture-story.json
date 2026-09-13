@@ -37,9 +37,9 @@
     },
     {
       "id": "partial-shipment-approval",
-      "route": "/?section=orders&poId=purchase-order%3Apublic-demo%3Apartial&returnTo=home&poTab=overview&lang=en",
+      "route": "/?section=orders&poId=purchase-order%3Apublic-demo%3Aawaiting-confirmation&returnTo=home&poTab=overview&lang=en",
       "action": "navigate",
-      "expectedHeading": "PO-DEMO-1004",
+      "expectedHeading": "PO-DEMO-1002",
       "title": "Partial shipment is not silent short delivery",
       "subtitle": "The remaining quantity stays open until an authorized decision",
       "durationSeconds": 8

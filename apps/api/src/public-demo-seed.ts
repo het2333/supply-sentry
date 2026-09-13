@@ -1,6 +1,13 @@
 import type { DatabaseSync } from 'node:sqlite';
 import { createHash } from 'node:crypto';
-import type { Communication, PurchaseOrder, PurchaseOrderLine, Supplier } from '@readywork/core';
+import type {
+  Communication,
+  PurchaseOrder,
+  PurchaseOrderConfirmation,
+  PurchaseOrderConfirmationLine,
+  PurchaseOrderLine,
+  Supplier,
+} from '@readywork/core';
 import { createProcurementRepository } from '@readywork/persistence';
 import { PUBLIC_DEMO_TENANT_ID } from './public-demo-mode.js';
 
@@ -177,12 +184,17 @@ function saveVagueReply(db: DatabaseSync, resetAt: string): void {
 }
 
 function saveApprovalAndReceipts(db: DatabaseSync, resetAt: string, generation: number): void {
+  const repository = createProcurementRepository(db, PUBLIC_DEMO_TENANT_ID);
+  const po = repository.getDocument<PurchaseOrder>('purchase_order', PUBLIC_DEMO_IDS.awaitingConfirmationPo);
+  const poLine = repository.listLines<PurchaseOrderLine>('purchase_order_line', PUBLIC_DEMO_IDS.awaitingConfirmationPo)[0];
+  if (!po || !poLine) throw new Error('Public demo short-delivery purchase order is missing');
+  const confirmationId = 'confirmation:public-demo:short-delivery';
   const approval = {
     id: PUBLIC_DEMO_IDS.shortDeliveryApproval,
     tenantId: PUBLIC_DEMO_TENANT_ID,
     kind: 'supplier_confirmation',
-    objectId: 'confirmation:public-demo:short-delivery',
-    poId: PUBLIC_DEMO_IDS.partialShipmentPo,
+    objectId: confirmationId,
+    poId: PUBLIC_DEMO_IDS.awaitingConfirmationPo,
     status: 'pending',
     requestedBy: 'ai:public-demo:procurement',
     requestedAt: shifted(resetAt, -1),
@@ -192,6 +204,38 @@ function saveApprovalAndReceipts(db: DatabaseSync, resetAt: string, generation: 
     (tenant_id,id,kind,object_id,status,json,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)`).run(
       PUBLIC_DEMO_TENANT_ID, approval.id, approval.kind, approval.objectId, approval.status, JSON.stringify(approval), approval.requestedAt, approval.requestedAt,
     );
+
+  const confirmation: PurchaseOrderConfirmation = {
+    id: confirmationId,
+    tenantId: PUBLIC_DEMO_TENANT_ID,
+    sourceSystem: 'public-demo',
+    externalId: 'DEMO-CONFIRMATION-1002',
+    status: 'pending_approval',
+    createdAt: approval.requestedAt,
+    updatedAt: approval.requestedAt,
+    poId: po.document.id,
+    supplierId: po.document.supplierId,
+    confirmedAt: approval.requestedAt,
+    supplierReference: 'DEMO-SUPPLIER-REPLY-1002',
+    approvalId: approval.id,
+  };
+  const confirmationLine: PurchaseOrderConfirmationLine = {
+    id: 'confirmation-line:public-demo:short-delivery',
+    confirmationId,
+    poLineId: poLine.id,
+    lineNumber: poLine.lineNumber,
+    itemId: poLine.itemId,
+    description: poLine.description,
+    uom: poLine.uom,
+    confirmedQty: 640,
+    promisedAt: shifted(resetAt, 192),
+    confirmedUnitPrice: poLine.unitPrice,
+    quantityVariance: -160,
+    unitPriceVariance: 0,
+    requiresApproval: true,
+  };
+  repository.saveDocument('confirmation', confirmation);
+  repository.saveLine('confirmation_line', confirmation.id, confirmationLine);
 
   const receipts = [
     {
@@ -264,7 +308,7 @@ function saveSupportingViews(db: DatabaseSync, resetAt: string): void {
     (tenant_id,id,fingerprint,type,severity,title,message,tag,object_type,object_id,evidence_json,status,version,created_at,updated_at)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,'unread',1,?,?)`).run(
       PUBLIC_DEMO_TENANT_ID, 'notification:public-demo:short-delivery', 'public-demo:short-delivery:g1', 'approval_required', 'high',
-      '短交待审批', 'PO-DEMO-1004 供应商只确认 800/1000 件。', '需审批', 'purchase_order', PUBLIC_DEMO_IDS.partialShipmentPo,
+      '短交待审批', 'PO-DEMO-1002 供应商只确认 640/800 件。', '需审批', 'purchase_order', PUBLIC_DEMO_IDS.awaitingConfirmationPo,
       JSON.stringify({ approvalId: PUBLIC_DEMO_IDS.shortDeliveryApproval, synthetic: true }), shifted(resetAt, -1), shifted(resetAt, -1),
     );
 
