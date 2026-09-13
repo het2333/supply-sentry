@@ -36,6 +36,7 @@ jobs:
       - name: Verify public-demo deployment contracts
         run: node --test infra/demo/test/*.test.mjs
       - run: pnpm eval:supplier-replies:verify
+      - run: node --test scripts/evals/test/*.test.mjs
       - run: pnpm eval:supplier-replies:check
       - name: Verify deterministic public-demo seed
         run: pnpm exec tsx --test scripts/demo/test/seed-public-demo.test.ts

@@ -45,7 +45,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.6095000000000041,
+        "latencyMs": 0.6063329999999922,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -141,7 +141,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.29749999999999943,
+        "latencyMs": 0.2877080000000092,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -237,7 +237,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.3169589999999971,
+        "latencyMs": 0.3197499999999991,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -333,7 +333,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.03633299999999906,
+        "latencyMs": 0.035041999999990026,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -429,7 +429,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.029541000000001816,
+        "latencyMs": 0.027833000000001107,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -525,7 +525,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.01833299999999838,
+        "latencyMs": 0.018416000000001986,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -621,7 +621,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.013041999999998666,
+        "latencyMs": 0.013791999999995141,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -717,7 +717,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.01112499999999983,
+        "latencyMs": 0.011167000000000371,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -813,7 +813,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.021332999999998492,
+        "latencyMs": 0.021374999999991928,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -909,7 +909,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.025540999999996927,
+        "latencyMs": 0.02816699999999628,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1005,7 +1005,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.013165999999998235,
+        "latencyMs": 0.014291999999997529,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1101,7 +1101,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.009582999999999231,
+        "latencyMs": 0.010374999999996248,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1197,7 +1197,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.007957999999995025,
+        "latencyMs": 0.007999999999995566,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1293,7 +1293,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006666000000002725,
+        "latencyMs": 0.006791999999990139,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1389,7 +1389,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00491699999999895,
+        "latencyMs": 0.005165999999988458,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1485,7 +1485,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005707999999998492,
+        "latencyMs": 0.009292000000002076,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1581,7 +1581,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004917000000006055,
+        "latencyMs": 0.005375000000000796,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1677,7 +1677,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005541000000000906,
+        "latencyMs": 0.005916999999996619,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1773,7 +1773,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004291999999999518,
+        "latencyMs": 0.004624999999990109,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1869,7 +1869,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005458000000004404,
+        "latencyMs": 0.0057910000000021,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -1965,7 +1965,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0038749999999936335,
+        "latencyMs": 0.0040830000000084965,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2061,7 +2061,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005167000000000144,
+        "latencyMs": 0.005250000000003752,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2157,7 +2157,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0038330000000001974,
+        "latencyMs": 0.004041999999998325,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2253,7 +2253,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005041999999995994,
+        "latencyMs": 0.005209000000007791,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2349,7 +2349,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0037499999999965894,
+        "latencyMs": 0.004041999999998325,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2445,7 +2445,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004125000000001933,
+        "latencyMs": 0.005583000000001448,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2541,7 +2541,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003750000000003695,
+        "latencyMs": 0.0040000000000048885,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2637,7 +2637,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0039579999999972415,
+        "latencyMs": 0.006499999999988404,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2733,7 +2733,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0036249999999995453,
+        "latencyMs": 0.0038330000000001974,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2829,7 +2829,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003791999999997131,
+        "latencyMs": 0.0050829999999990605,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -2920,7 +2920,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.01591699999999463,
+        "latencyMs": 0.019332999999988942,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3011,7 +3011,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.026250000000004547,
+        "latencyMs": 0.027416000000002327,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3102,7 +3102,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004208000000005541,
+        "latencyMs": 0.004582999999996673,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3193,7 +3193,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.022208999999996593,
+        "latencyMs": 0.02087499999998954,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3284,7 +3284,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004083000000001391,
+        "latencyMs": 0.004333000000002585,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3375,7 +3375,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006915999999996814,
+        "latencyMs": 0.006791000000006875,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3466,7 +3466,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003540999999998462,
+        "latencyMs": 0.003791000000006761,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3557,7 +3557,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.015999999999998238,
+        "latencyMs": 0.006624999999999659,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3648,7 +3648,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003667000000000087,
+        "latencyMs": 0.0037080000000031532,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3739,7 +3739,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005916999999996619,
+        "latencyMs": 0.006166999999990708,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3830,7 +3830,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003540999999998462,
+        "latencyMs": 0.0036669999999929814,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -3921,7 +3921,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005832999999995536,
+        "latencyMs": 0.006000000000000227,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4012,7 +4012,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0034580000000019595,
+        "latencyMs": 0.0037090000000006285,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4103,7 +4103,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005750000000006139,
+        "latencyMs": 0.005041999999988889,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4194,7 +4194,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00333299999999781,
+        "latencyMs": 0.003583000000006109,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4285,7 +4285,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005541000000000906,
+        "latencyMs": 0.004791000000011536,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4376,7 +4376,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0035420000000030427,
+        "latencyMs": 0.004666000000000281,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4467,7 +4467,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005708999999995967,
+        "latencyMs": 0.004958999999999492,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4558,7 +4558,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003500000000002501,
+        "latencyMs": 0.004666999999997756,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4649,7 +4649,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0055419999999983816,
+        "latencyMs": 0.00462500000000432,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4740,7 +4740,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0035420000000030427,
+        "latencyMs": 0.004417000000003668,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -4831,7 +4831,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0045409999999961315,
+        "latencyMs": 0.004750000000001364,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5013,7 +5013,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004666999999997756,
+        "latencyMs": 0.004499999999993065,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5104,7 +5104,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00433400000000006,
+        "latencyMs": 0.010374999999996248,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5195,7 +5195,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0044169999999965626,
+        "latencyMs": 0.004958999999999492,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5286,7 +5286,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004166999999995369,
+        "latencyMs": 0.004374999999996021,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5377,7 +5377,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0044169999999965626,
+        "latencyMs": 0.004792000000009011,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5468,7 +5468,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004708000000000823,
+        "latencyMs": 0.004457999999999629,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5559,7 +5559,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004542000000000712,
+        "latencyMs": 0.00491600000000858,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5660,7 +5660,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.007791999999994914,
+        "latencyMs": 0.007208000000005654,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5766,7 +5766,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006249999999994316,
+        "latencyMs": 0.006375000000005571,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5872,7 +5872,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004542000000000712,
+        "latencyMs": 0.006709000000000742,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -5978,7 +5978,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.014749999999999375,
+        "latencyMs": 0.011458000000004631,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6084,7 +6084,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005334000000004835,
+        "latencyMs": 0.006166999999990708,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6190,7 +6190,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005000000000002558,
+        "latencyMs": 0.005375000000000796,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6296,7 +6296,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0040000000000048885,
+        "latencyMs": 0.005791999999999575,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6402,7 +6402,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.008333000000000368,
+        "latencyMs": 0.004666000000000281,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6508,7 +6508,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00433400000000006,
+        "latencyMs": 0.00549999999999784,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6614,7 +6614,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004874999999998408,
+        "latencyMs": 0.004292000000006624,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6720,7 +6720,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0040410000000008495,
+        "latencyMs": 0.0049999999999954525,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6826,7 +6826,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005416000000003862,
+        "latencyMs": 0.006875000000007958,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -6932,7 +6932,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0037909999999996558,
+        "latencyMs": 0.005291999999997188,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7038,7 +7038,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0047919999999948,
+        "latencyMs": 0.006000000000000227,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7144,7 +7144,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003875000000000739,
+        "latencyMs": 0.004792000000009011,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7250,7 +7250,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004833000000004972,
+        "latencyMs": 0.005375000000000796,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7356,7 +7356,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003832999999993092,
+        "latencyMs": 0.003916000000003805,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7462,7 +7462,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004791000000004431,
+        "latencyMs": 0.0049999999999954525,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7568,7 +7568,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0037499999999965894,
+        "latencyMs": 0.0039579999999972415,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7674,7 +7674,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004832999999997867,
+        "latencyMs": 0.0050829999999990605,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7780,7 +7780,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003750000000003695,
+        "latencyMs": 0.0040000000000048885,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7886,7 +7886,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005040999999998519,
+        "latencyMs": 0.005083999999996536,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -7992,7 +7992,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003832999999993092,
+        "latencyMs": 0.0038749999999936335,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -8098,7 +8098,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003958999999994717,
+        "latencyMs": 0.005083999999996536,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -8310,7 +8310,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003875000000000739,
+        "latencyMs": 0.005332999999993149,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -8416,7 +8416,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005165999999995563,
+        "latencyMs": 0.004458999999997104,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -8522,7 +8522,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.007542000000000826,
+        "latencyMs": 0.009042000000007988,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -8628,7 +8628,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005833000000002642,
+        "latencyMs": 0.004165999999997894,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -8734,7 +8734,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005375000000000796,
+        "latencyMs": 0.006083000000003835,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -8840,7 +8840,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.01991699999999952,
+        "latencyMs": 0.021708000000003835,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -8946,7 +8946,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.019791000000005,
+        "latencyMs": 0.015999999999991132,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9052,7 +9052,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.007332999999995593,
+        "latencyMs": 0.006833000000000311,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9158,7 +9158,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.014374999999994031,
+        "latencyMs": 0.014583999999999264,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9264,7 +9264,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005916999999996619,
+        "latencyMs": 0.0062080000000008795,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9370,7 +9370,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004458000000006734,
+        "latencyMs": 0.004582999999996673,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9476,7 +9476,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005207999999996105,
+        "latencyMs": 0.005375000000000796,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9582,7 +9582,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.008124999999999716,
+        "latencyMs": 0.008916999999996733,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9688,7 +9688,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006500000000002615,
+        "latencyMs": 0.005707999999998492,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9794,7 +9794,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004958000000002016,
+        "latencyMs": 0.004375000000010232,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -9900,7 +9900,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005417000000001337,
+        "latencyMs": 0.005332999999993149,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10006,7 +10006,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004249999999998977,
+        "latencyMs": 0.004458999999997104,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10218,7 +10218,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004249999999998977,
+        "latencyMs": 0.004416999999989457,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10324,7 +10324,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004083000000001391,
+        "latencyMs": 0.0050420000000030996,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10430,7 +10430,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.009208000000000993,
+        "latencyMs": 0.008291999999997302,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10536,7 +10536,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005000000000002558,
+        "latencyMs": 0.005291999999997188,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10642,7 +10642,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005917000000003725,
+        "latencyMs": 0.0040830000000084965,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10748,7 +10748,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004083000000001391,
+        "latencyMs": 0.004125000000001933,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10854,7 +10854,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00491699999999895,
+        "latencyMs": 0.005207999999996105,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -10960,7 +10960,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003916999999994175,
+        "latencyMs": 0.0040420000000125356,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11066,7 +11066,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004833000000004972,
+        "latencyMs": 0.005165999999988458,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11172,7 +11172,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0038330000000001974,
+        "latencyMs": 0.004208999999988805,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11278,7 +11278,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004916000000001475,
+        "latencyMs": 0.005416999999994232,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11384,7 +11384,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003834000000004778,
+        "latencyMs": 0.00416700000000958,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11490,7 +11490,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00491699999999895,
+        "latencyMs": 0.0050829999999990605,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11596,7 +11596,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003791999999997131,
+        "latencyMs": 0.0040000000000048885,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11702,7 +11702,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004750000000001364,
+        "latencyMs": 0.0051660000000026685,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11808,7 +11808,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003875000000000739,
+        "latencyMs": 0.004249999999998977,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -11914,7 +11914,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005000000000002558,
+        "latencyMs": 0.0051250000000067075,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12025,7 +12025,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.009875000000000966,
+        "latencyMs": 0.009333999999995513,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12141,7 +12141,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0067500000000038085,
+        "latencyMs": 0.0072499999999990905,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12257,7 +12257,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006540999999998576,
+        "latencyMs": 0.007542000000000826,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12373,7 +12373,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005083000000006166,
+        "latencyMs": 0.005500000000012051,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12489,7 +12489,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005290999999999713,
+        "latencyMs": 0.005666000000005056,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12605,7 +12605,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004874999999998408,
+        "latencyMs": 0.0051660000000026685,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12721,7 +12721,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005666999999995426,
+        "latencyMs": 0.005749999999991928,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12837,7 +12837,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004624999999997215,
+        "latencyMs": 0.004874999999998408,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -12953,7 +12953,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00433400000000006,
+        "latencyMs": 0.005583000000001448,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13069,7 +13069,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00491699999999895,
+        "latencyMs": 0.005666000000005056,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13185,7 +13185,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004415999999999087,
+        "latencyMs": 0.004666000000000281,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13301,7 +13301,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005791999999999575,
+        "latencyMs": 0.005875000000003183,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13417,7 +13417,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004249999999998977,
+        "latencyMs": 0.004708000000007928,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13533,7 +13533,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005333000000000254,
+        "latencyMs": 0.005708000000012703,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13649,7 +13649,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004374999999996021,
+        "latencyMs": 0.00462500000000432,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13765,7 +13765,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004582999999996673,
+        "latencyMs": 0.005875000000003183,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13881,7 +13881,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005124999999999602,
+        "latencyMs": 0.005375000000000796,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -13997,7 +13997,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004374999999996021,
+        "latencyMs": 0.004750000000001364,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -14113,7 +14113,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005209000000000685,
+        "latencyMs": 0.005666000000005056,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -14229,7 +14229,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004458999999997104,
+        "latencyMs": 0.0048340000000024475,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -14345,7 +14345,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004958999999999492,
+        "latencyMs": 0.005250000000003752,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -14461,7 +14461,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005417000000001337,
+        "latencyMs": 0.00462500000000432,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -14577,7 +14577,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00433400000000006,
+        "latencyMs": 0.005666000000005056,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -14693,7 +14693,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00520800000000321,
+        "latencyMs": 0.0047089999999911925,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -14809,7 +14809,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004249999999998977,
+        "latencyMs": 0.004541000000003237,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -14925,7 +14925,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0050829999999990605,
+        "latencyMs": 0.00549999999999784,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15041,7 +15041,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00433400000000006,
+        "latencyMs": 0.004707999999993717,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15157,7 +15157,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005375000000000796,
+        "latencyMs": 0.006083000000003835,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15273,7 +15273,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005167000000000144,
+        "latencyMs": 0.004458999999997104,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15389,7 +15389,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004458999999997104,
+        "latencyMs": 0.303875000000005,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15495,7 +15495,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.008874999999996191,
+        "latencyMs": 0.01429200000001174,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15591,7 +15591,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005375000000000796,
+        "latencyMs": 0.007041000000000963,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15687,7 +15687,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005249999999996646,
+        "latencyMs": 0.005207999999996105,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15783,7 +15783,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005916999999996619,
+        "latencyMs": 0.00720900000000313,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15879,7 +15879,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005207999999996105,
+        "latencyMs": 0.0048340000000024475,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -15975,7 +15975,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003875000000000739,
+        "latencyMs": 0.004041999999998325,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16071,7 +16071,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004333000000002585,
+        "latencyMs": 0.0038750000000078444,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16167,7 +16167,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0040000000000048885,
+        "latencyMs": 0.004458999999997104,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16263,7 +16263,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.26337500000000347,
+        "latencyMs": 0.003999999999990678,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16359,7 +16359,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.012500000000002842,
+        "latencyMs": 0.0037080000000031532,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16455,7 +16455,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005915999999999144,
+        "latencyMs": 0.004165999999997894,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16551,7 +16551,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006000000000000227,
+        "latencyMs": 0.003958999999994717,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16647,7 +16647,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.005292000000004293,
+        "latencyMs": 0.006042000000007874,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16743,7 +16743,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004041999999998325,
+        "latencyMs": 0.0036249999999995453,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16839,7 +16839,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003917000000001281,
+        "latencyMs": 0.004541000000003237,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -16935,7 +16935,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004332999999995479,
+        "latencyMs": 0.0038749999999936335,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17031,7 +17031,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003958000000004347,
+        "latencyMs": 0.004709000000005403,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17127,7 +17127,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003667000000000087,
+        "latencyMs": 0.003583000000006109,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17223,7 +17223,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003583000000006109,
+        "latencyMs": 0.0037500000000108002,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17319,7 +17319,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0037499999999965894,
+        "latencyMs": 0.004459000000011315,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17415,7 +17415,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0037920000000042364,
+        "latencyMs": 0.0037500000000108002,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17511,7 +17511,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003500000000002501,
+        "latencyMs": 0.004374999999996021,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17703,7 +17703,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0036249999999995453,
+        "latencyMs": 0.004542000000000712,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17799,7 +17799,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003583999999996479,
+        "latencyMs": 0.0037920000000042364,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17895,7 +17895,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0035419999999959373,
+        "latencyMs": 0.004375000000010232,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -17991,7 +17991,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003834000000004778,
+        "latencyMs": 0.0036249999999995453,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18087,7 +18087,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0036249999999995453,
+        "latencyMs": 0.004500000000007276,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18183,7 +18183,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0036249999999995453,
+        "latencyMs": 0.0037500000000108002,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18279,7 +18279,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003500000000002501,
+        "latencyMs": 0.004499999999993065,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18364,7 +18364,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006000000000000227,
+        "latencyMs": 0.005541999999991276,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18512,7 +18512,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004249999999998977,
+        "latencyMs": 0.00420799999999133,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18586,7 +18586,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0044169999999965626,
+        "latencyMs": 0.004540999999989026,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18660,7 +18660,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0030830000000037217,
+        "latencyMs": 0.004333000000002585,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18734,7 +18734,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0034999999999953957,
+        "latencyMs": 0.0036249999999995453,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18882,7 +18882,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0032500000000013074,
+        "latencyMs": 0.003458000000009065,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -18956,7 +18956,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0026659999999978368,
+        "latencyMs": 0.0027919999999994616,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19030,7 +19030,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.002957999999999572,
+        "latencyMs": 0.0038339999999976726,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19104,7 +19104,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00274999999999892,
+        "latencyMs": 0.0028339999999928978,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19178,7 +19178,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0030420000000006553,
+        "latencyMs": 0.003291999999987638,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19252,7 +19252,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0026670000000024174,
+        "latencyMs": 0.0028329999999954225,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19326,7 +19326,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.002834000000000003,
+        "latencyMs": 0.0030420000000077607,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19400,7 +19400,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.002708000000005484,
+        "latencyMs": 0.003084000000001197,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19474,7 +19474,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.002957999999999572,
+        "latencyMs": 0.003250000000008413,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19548,7 +19548,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.002625000000001876,
+        "latencyMs": 0.0027079999999983784,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19622,7 +19622,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0027919999999994616,
+        "latencyMs": 0.003167000000004805,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19696,7 +19696,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00274999999999892,
+        "latencyMs": 0.0028330000000096334,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19770,7 +19770,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0029159999999990305,
+        "latencyMs": 0.003333999999995285,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19844,7 +19844,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.002625000000001876,
+        "latencyMs": 0.002666000000004942,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19918,7 +19918,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0027919999999994616,
+        "latencyMs": 0.0028750000000030695,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -19992,7 +19992,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.002833000000002528,
+        "latencyMs": 0.0027909999999877755,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20066,7 +20066,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0029159999999990305,
+        "latencyMs": 0.0029579999999924667,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20140,7 +20140,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.00304199999999355,
+        "latencyMs": 0.003292000000001849,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20214,7 +20214,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004249999999998977,
+        "latencyMs": 0.00462500000000432,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20288,7 +20288,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0033749999999983515,
+        "latencyMs": 0.003458000000009065,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20362,7 +20362,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0034170000000059986,
+        "latencyMs": 0.003542000000010148,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20436,7 +20436,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003084000000001197,
+        "latencyMs": 0.0030000000000001137,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20510,7 +20510,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0032909999999972683,
+        "latencyMs": 0.0029580000000066775,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20590,7 +20590,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006500000000002615,
+        "latencyMs": 0.005665999999990845,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20676,7 +20676,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0045000000000001705,
+        "latencyMs": 0.00462500000000432,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20762,7 +20762,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003917000000001281,
+        "latencyMs": 0.004041999999998325,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20848,7 +20848,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0048340000000024475,
+        "latencyMs": 0.004958000000002016,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -20934,7 +20934,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003834000000004778,
+        "latencyMs": 0.0038330000000001974,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21020,7 +21020,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0039579999999972415,
+        "latencyMs": 0.004082999999994286,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21106,7 +21106,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006000000000000227,
+        "latencyMs": 0.003540999999998462,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21192,7 +21192,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004041999999998325,
+        "latencyMs": 0.0060829999999896245,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21278,7 +21278,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003750000000003695,
+        "latencyMs": 0.005375000000000796,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21364,7 +21364,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0035420000000030427,
+        "latencyMs": 0.003958999999994717,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21450,7 +21450,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003500000000002501,
+        "latencyMs": 0.005707999999998492,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21536,7 +21536,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.007167000000002588,
+        "latencyMs": 0.008167000000000257,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21622,7 +21622,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006959000000001936,
+        "latencyMs": 0.007041000000000963,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21708,7 +21708,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004415999999999087,
+        "latencyMs": 0.0039579999999972415,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21794,7 +21794,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0034580000000019595,
+        "latencyMs": 0.004584000000008359,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21880,7 +21880,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003500000000002501,
+        "latencyMs": 0.0036249999999995453,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -21966,7 +21966,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0032910000000043738,
+        "latencyMs": 0.004166999999995369,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22052,7 +22052,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003375000000005457,
+        "latencyMs": 0.003500000000002501,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22138,7 +22138,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0031250000000042633,
+        "latencyMs": 0.003958999999994717,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22224,7 +22224,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003208999999998241,
+        "latencyMs": 0.003374999999991246,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22310,7 +22310,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0032500000000013074,
+        "latencyMs": 0.003292000000001849,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22396,7 +22396,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003375000000005457,
+        "latencyMs": 0.0035829999999918982,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22482,7 +22482,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003124999999997158,
+        "latencyMs": 0.003166999999990594,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22568,7 +22568,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0032500000000013074,
+        "latencyMs": 0.003416999999998893,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22654,7 +22654,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003500000000002501,
+        "latencyMs": 0.0037080000000031532,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22740,7 +22740,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.0067079999999961615,
+        "latencyMs": 0.0072499999999990905,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22826,7 +22826,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003750000000003695,
+        "latencyMs": 0.0041660000000121045,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22912,7 +22912,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.003791999999997131,
+        "latencyMs": 0.0040000000000048885,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -22998,7 +22998,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.004166999999995369,
+        "latencyMs": 0.0040000000000048885,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -23084,7 +23084,7 @@
       "metadata": {
         "cost": null,
         "inputTokens": null,
-        "latencyMs": 0.006541999999996051,
+        "latencyMs": 0.0034999999999882903,
         "model": "supplysentry-deterministic-v1",
         "outputTokens": null,
         "promptVersion": "deterministic-patterns-v1",
@@ -23133,7 +23133,7 @@
   ],
   "datasetHash": "4452a076d5d0ea7d0de01fee9ea77007976db0d038b718bda2378c455399b331",
   "datasetVersion": "supplier-replies-v1",
-  "generatedAt": "2026-09-13T16:43:21.518Z",
+  "generatedAt": "2026-09-13T18:12:44.045Z",
   "metrics": {
     "acceptedResultRate": 1,
     "approvalRecall": 1,
@@ -23210,8 +23210,8 @@
       }
     },
     "latencyMs": {
-      "p50": 0.004415999999999087,
-      "p95": 0.01833299999999838
+      "p50": 0.004707999999993717,
+      "p95": 0.018416000000001986
     },
     "materialVarianceApprovalRecall": 1,
     "missingFactRecall": 1,
@@ -23292,8 +23292,8 @@
           }
         },
         "latencyMs": {
-          "p50": 0.005541000000000906,
-          "p95": 0.3169589999999971
+          "p50": 0.006499999999988404,
+          "p95": 0.3197499999999991
         },
         "materialVarianceApprovalRecall": null,
         "missingFactRecall": 1,
@@ -23377,8 +23377,8 @@
           }
         },
         "latencyMs": {
-          "p50": 0.003750000000003695,
-          "p95": 0.006959000000001936
+          "p50": 0.0040000000000048885,
+          "p95": 0.0072499999999990905
         },
         "materialVarianceApprovalRecall": null,
         "missingFactRecall": 1,
@@ -23462,8 +23462,8 @@
           }
         },
         "latencyMs": {
-          "p50": 0.00491699999999895,
-          "p95": 0.019791000000005
+          "p50": 0.005165999999988458,
+          "p95": 0.015999999999991132
         },
         "materialVarianceApprovalRecall": 1,
         "missingFactRecall": 1,
@@ -23547,8 +23547,8 @@
           }
         },
         "latencyMs": {
-          "p50": 0.004958999999999492,
-          "p95": 0.0067500000000038085
+          "p50": 0.00549999999999784,
+          "p95": 0.009333999999995513
         },
         "materialVarianceApprovalRecall": null,
         "missingFactRecall": 1,
@@ -23632,8 +23632,8 @@
           }
         },
         "latencyMs": {
-          "p50": 0.0047919999999948,
-          "p95": 0.008333000000000368
+          "p50": 0.005083999999996536,
+          "p95": 0.009042000000007988
         },
         "materialVarianceApprovalRecall": null,
         "missingFactRecall": 1,
@@ -23717,8 +23717,8 @@
           }
         },
         "latencyMs": {
-          "p50": 0.003917000000001281,
-          "p95": 0.012500000000002842
+          "p50": 0.004165999999997894,
+          "p95": 0.00720900000000313
         },
         "materialVarianceApprovalRecall": null,
         "missingFactRecall": 1,
@@ -23802,8 +23802,8 @@
           }
         },
         "latencyMs": {
-          "p50": 0.0044169999999965626,
-          "p95": 0.022208999999996593
+          "p50": 0.004666999999997756,
+          "p95": 0.02087499999998954
         },
         "materialVarianceApprovalRecall": null,
         "missingFactRecall": 1,
@@ -23887,7 +23887,7 @@
           }
         },
         "latencyMs": {
-          "p50": 0.002957999999999572,
+          "p50": 0.003167000000004805,
           "p95": 0.004917000000006055
         },
         "materialVarianceApprovalRecall": null,
@@ -23907,5 +23907,5 @@
   "reportVersion": "supplier-reply-evaluation-v1",
   "runner": "deterministic",
   "schemaVersion": "supplier-reply-proposal-v1",
-  "sourceRevision": "170f0e7107156aa6941811959d8e9e9573949dee"
+  "sourceRevision": "50f3315a9a2c48b6105be50ddbe9b77fa820914b"
 }

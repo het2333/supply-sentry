@@ -4,8 +4,8 @@
 - Dataset SHA-256: `4452a076d5d0ea7d0de01fee9ea77007976db0d038b718bda2378c455399b331`
 - Runner: `deterministic` / `supplysentry-deterministic-v1`
 - Prompt / schema: `deterministic-patterns-v1` / `supplier-reply-proposal-v1`
-- Generated: `2026-09-13T16:43:21.518Z`
-- Source revision: `170f0e7107156aa6941811959d8e9e9573949dee`
+- Generated: `2026-09-13T18:12:44.045Z`
+- Source revision: `50f3315a9a2c48b6105be50ddbe9b77fa820914b`
 
 ## Results
 

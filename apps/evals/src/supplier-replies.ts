@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -84,19 +85,26 @@ async function main(): Promise<void> {
   const runnerId = option('--runner', 'deterministic')!;
   const datasetPath = resolve(option('--dataset', resolve(repositoryRoot, 'evals/supplier-replies/v1/dataset.jsonl'))!);
   const digestPath = resolve(dirname(datasetPath), 'dataset.sha256');
-  const reportDirectory = resolve(option('--report-dir', resolve(repositoryRoot, 'reports/evaluations'))!);
+  const check = process.argv.includes('--check');
+  const publishedReportDirectory = resolve(option('--report-dir', resolve(repositoryRoot, 'reports/evaluations'))!);
+  const temporaryReportDirectory = check ? await mkdtemp(resolve(tmpdir(), 'supplysentry-eval-check-')) : null;
+  const reportDirectory = temporaryReportDirectory ?? publishedReportDirectory;
   const concurrency = Number(option('--concurrency', runnerId === 'deepseek' ? '1' : '8'));
   if (!Number.isSafeInteger(concurrency) || concurrency < 1 || concurrency > 32) throw new Error('--concurrency must be an integer from 1 to 32');
-  const report = await runSupplierReplyEvaluation({ runnerId, datasetPath, digestPath, reportDirectory, concurrency });
-  const summary = summarizeSupplierReplyReport(report);
-  const expectedPath = resolve(dirname(datasetPath), 'expected-summary.json');
-  if (process.argv.includes('--write-expected')) await writeFile(expectedPath, stableJson(summary));
-  if (process.argv.includes('--check')) {
-    const expected = await readFile(expectedPath, 'utf8');
-    const actual = stableJson(summary);
-    if (actual !== expected) throw new Error('Deterministic supplier reply summary differs from expected-summary.json');
+  try {
+    const report = await runSupplierReplyEvaluation({ runnerId, datasetPath, digestPath, reportDirectory, concurrency });
+    const summary = summarizeSupplierReplyReport(report);
+    const expectedPath = resolve(dirname(datasetPath), 'expected-summary.json');
+    if (process.argv.includes('--write-expected')) await writeFile(expectedPath, stableJson(summary));
+    if (check) {
+      const expected = await readFile(expectedPath, 'utf8');
+      const actual = stableJson(summary);
+      if (actual !== expected) throw new Error('Deterministic supplier reply summary differs from expected-summary.json');
+    }
+    console.log(JSON.stringify({ cases: report.metrics.caseCount, completed: report.metrics.completedCases, datasetHash: report.datasetHash, runner: report.runner, associationAccuracy: report.metrics.associationAccuracy, acceptedResultRate: report.metrics.acceptedResultRate, fabricationRate: report.metrics.fabricationRate }));
+  } finally {
+    if (temporaryReportDirectory) await rm(temporaryReportDirectory, { recursive: true, force: true });
   }
-  console.log(JSON.stringify({ cases: report.metrics.caseCount, completed: report.metrics.completedCases, datasetHash: report.datasetHash, runner: report.runner, associationAccuracy: report.metrics.associationAccuracy, acceptedResultRate: report.metrics.acceptedResultRate, fabricationRate: report.metrics.fabricationRate }));
 }
 
 void main().catch((error) => {

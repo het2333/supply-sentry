@@ -36,6 +36,7 @@ jobs:
       - run: node scripts/docs/verify-readme.mjs --local
       - run: node --test infra/demo/test/*.test.mjs
       - run: pnpm eval:supplier-replies:verify
+      - run: node --test scripts/evals/test/*.test.mjs
       - run: pnpm eval:supplier-replies:check
       - run: pnpm exec tsx --test scripts/demo/test/seed-public-demo.test.ts
       - run: pnpm --filter @readywork/app-console build
