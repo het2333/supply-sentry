@@ -176,7 +176,7 @@ function saveVagueReply(db: DatabaseSync, resetAt: string): void {
     );
 }
 
-function saveApprovalAndReceipts(db: DatabaseSync, resetAt: string): void {
+function saveApprovalAndReceipts(db: DatabaseSync, resetAt: string, generation: number): void {
   const approval = {
     id: PUBLIC_DEMO_IDS.shortDeliveryApproval,
     tenantId: PUBLIC_DEMO_TENANT_ID,
@@ -223,7 +223,8 @@ function saveApprovalAndReceipts(db: DatabaseSync, resetAt: string): void {
       attempts: 1,
       connectorResult: {
         receiptKind: 'simulated_demo', outcome: receipt.outcome, externalDelivery: false,
-        reference: `SIM-${receipt.outcome.toUpperCase()}-${receipt.id.slice(-8)}`, generation: 1,
+        connector: receipt.action.endsWith('amend') ? 'erp' : 'email', action: receipt.action,
+        reference: `SIM-${receipt.outcome.toUpperCase()}-${receipt.id.slice(-8)}`, generatedAt: shifted(resetAt, -3), generation,
       },
       createdAt: shifted(resetAt, -3),
       updatedAt: shifted(resetAt, -3),
@@ -291,7 +292,10 @@ function saveScenarioCatalog(db: DatabaseSync, resetAt: string, generation: numb
   const insert = db.prepare(`INSERT INTO public_demo_scenarios
     (tenant_id,id,kind,label,payload_json,created_at) VALUES (?,?,?,?,?,?)`);
   for (const id of Object.values(PUBLIC_DEMO_IDS)) {
-    insert.run(PUBLIC_DEMO_TENANT_ID, id, id.includes('purchase-order') ? 'purchase_order' : id.split(':')[0]!, labels[id]!, JSON.stringify({ generation, synthetic: true }), resetAt);
+    const simulationOutcome = id === PUBLIC_DEMO_IDS.delayedImportPo || id === PUBLIC_DEMO_IDS.uncertainReceipt
+      ? 'uncertain'
+      : 'accepted';
+    insert.run(PUBLIC_DEMO_TENANT_ID, id, id.includes('purchase-order') ? 'purchase_order' : id.split(':')[0]!, labels[id]!, JSON.stringify({ generation, synthetic: true, simulationOutcome }), resetAt);
   }
 }
 
@@ -299,7 +303,7 @@ export function seedPublicDemo(db: DatabaseSync, input: { resetAt: string; gener
   saveSuppliers(db, input.resetAt);
   savePurchaseOrders(db, input.resetAt);
   saveVagueReply(db, input.resetAt);
-  saveApprovalAndReceipts(db, input.resetAt);
+  saveApprovalAndReceipts(db, input.resetAt, input.generation);
   saveSupportingViews(db, input.resetAt);
   saveScenarioCatalog(db, input.resetAt, input.generation);
   return {

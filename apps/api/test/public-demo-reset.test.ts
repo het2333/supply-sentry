@@ -77,6 +77,13 @@ test('public demo reset increments generation and restores a mutated purchase or
       resetAt: '2026-09-13T05:00:00.000Z',
       status: 'healthy',
     });
+    const receipts = store.db.prepare(`SELECT json FROM procurement_outbox
+      WHERE tenant_id='t:public-demo' ORDER BY id`).all() as Array<{ json: string }>;
+    assert.deepEqual(
+      receipts.map((row) => JSON.parse(row.json).connectorResult.generation),
+      [2, 2],
+      'reseeded receipt metadata must belong to the visible generation',
+    );
   } finally {
     store.close();
   }

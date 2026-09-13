@@ -1119,6 +1119,8 @@ export interface FailProcurementOutboxInput {
   readonly leaseToken: string;
   readonly failedAt: string;
   readonly error: string;
+  /** Redacted acknowledgement retained when a dispatch result is uncertain. */
+  readonly connectorResult?: Readonly<Record<string, unknown>>;
   /** True when the connector may have accepted the external side effect. */
   readonly uncertain?: boolean;
   /** Omit to make the failure terminal; provide a future time to schedule a retry. */
@@ -5325,6 +5327,7 @@ class SqliteProcurementRepository implements ProcurementRepository {
         status: retryAt === undefined ? 'failed' as const : 'pending' as const,
         updatedAt: failedAt,
         error: errorMessage,
+        ...(input.connectorResult ? { connectorResult: safeConnectorResult(input.connectorResult) } : {}),
         ...(retryAt === undefined ? { failedAt } : { nextAttemptAt: retryAt }),
       };
       delete failed.leaseOwner;
@@ -7502,6 +7505,31 @@ function redactProcurementOutboxError(value: string): string {
 }
 
 function safeConnectorResult(value: Readonly<Record<string, unknown>>): Record<string, unknown> {
+  if (value['receiptKind'] === 'simulated_demo') {
+    const outcome = value['outcome'];
+    const externalDelivery = value['externalDelivery'];
+    const generation = value['generation'];
+    const connector = typeof value['connector'] === 'string' ? value['connector'].trim() : '';
+    const action = typeof value['action'] === 'string' ? value['action'].trim() : '';
+    const reference = typeof value['reference'] === 'string' ? value['reference'].trim() : '';
+    const generatedAt = typeof value['generatedAt'] === 'string' ? value['generatedAt'].trim() : '';
+    if ((outcome !== 'accepted' && outcome !== 'uncertain') || externalDelivery !== false
+      || !Number.isSafeInteger(generation) || Number(generation) <= 0
+      || !connector || connector.length > 200 || !action || action.length > 200
+      || !reference || reference.length > 200 || !generatedAt || !Number.isFinite(Date.parse(generatedAt))) {
+      throw new ProcurementValidationError('INVALID_INPUT', 'connectorResult simulated_demo 回执无效');
+    }
+    return {
+      receiptKind: 'simulated_demo',
+      outcome,
+      externalDelivery: false,
+      connector,
+      action,
+      reference,
+      generatedAt,
+      generation: Number(generation),
+    };
+  }
   const result: Record<string, unknown> = {};
   if (typeof value['id'] === 'number' && Number.isSafeInteger(value['id']) && value['id'] > 0) result['id'] = value['id'];
   if (typeof value['readbackMatches'] === 'boolean') result['readbackMatches'] = value['readbackMatches'];

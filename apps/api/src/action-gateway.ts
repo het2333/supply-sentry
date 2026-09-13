@@ -4,6 +4,11 @@ import type { ConnectorExecutionContext, ConnectorExecutionResult } from '@ready
 import type { EditorNodeDef, EditorRunMode } from './editor.js';
 import { initializeControlPlaneSchema } from '@readywork/persistence';
 import { redactSensitive, redactSensitiveValue } from './http-errors.js';
+import {
+  createSimulatedDemoReceipt,
+  isPublicDemoTenant,
+  recordSimulatedDemoReceipt,
+} from './public-demo-receipts.js';
 
 const ACTION_GATEWAY_SCHEMA = `
 CREATE TABLE IF NOT EXISTS action_executions (
@@ -82,6 +87,33 @@ export class ActionGateway {
     if (replay) return { ...replay, replayed: true };
     const active = this.inFlight.get(executionKey);
     if (active) return { ...(await active), replayed: true };
+
+    if (isPublicDemoTenant(input.tenantId)) {
+      if (!this.db) throw new Error('Public demo ActionGateway requires persistent demo state');
+      const scenarioId = publicDemoScenarioId(resolved.args);
+      const receipt = createSimulatedDemoReceipt({
+        db: this.db,
+        tenantId: input.tenantId,
+        scenarioId,
+        connector: resolved.connector,
+        action: resolved.action,
+        idempotencyKey,
+      });
+      const simulated: ActionGatewayResult = receipt.outcome === 'accepted'
+        ? { ok: true, idempotencyKey, connector: resolved.connector, action: resolved.action, output: receipt }
+        : {
+            ok: false,
+            idempotencyKey,
+            connector: resolved.connector,
+            action: resolved.action,
+            output: receipt,
+            error: '公开演示模拟回执状态不确定，已转人工对账',
+            recoveryState: 'manual_reconciliation',
+          };
+      this.storeFinal(input, simulated);
+      recordSimulatedDemoReceipt(this.db, { receipt, scenarioId, source: 'action_gateway' });
+      return simulated;
+    }
 
     const employee = this.hub.org.getAI(input.employeeId);
     if (!employee) throw new Error(`AI 员工不存在: ${input.employeeId}`);
@@ -278,6 +310,14 @@ export class ActionGateway {
     try { return JSON.parse(json) as ActionGatewayResult; }
     catch { return { ok: false, idempotencyKey, connector: 'unknown', action: 'unknown', error: '历史副作用结果无法读取' }; }
   }
+}
+
+function publicDemoScenarioId(input: Record<string, unknown>): string {
+  for (const key of ['poId', 'businessObjectId', 'aggregateId', 'rfqId', 'invoiceId'] as const) {
+    const value = input[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  throw new Error('Public demo action is missing a seeded scenario binding');
 }
 
 function required(input: Record<string, unknown>, fields: string[]): Record<string, unknown> {

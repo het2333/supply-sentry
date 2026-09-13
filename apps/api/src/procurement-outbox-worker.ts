@@ -19,6 +19,12 @@ import type { AttachmentObjectStorage } from './attachment-object-storage.js';
 import { loadProcurementAttachmentContent } from './procurement-attachment-content.js';
 import { normalizeDraftRecipient } from './procurement-message-drafts.js';
 import type { OdooRuntimeResolver, ResolvedOdooRuntime } from './odoo-runtime-resolver.js';
+import {
+  createSimulatedDemoReceipt,
+  isPublicDemoReceipt,
+  isPublicDemoTenant,
+  recordSimulatedDemoReceipt,
+} from './public-demo-receipts.js';
 
 export interface OutboxConnectorPort {
   execute(connectorId: string, action: string, input: Record<string, unknown>, context: ConnectorExecutionContext): Promise<ConnectorExecutionResult>;
@@ -77,11 +83,15 @@ export class ProcurementOutboxWorker {
 
   async runTenant(tenantId: string): Promise<ProcurementOutboxRunResult> {
     const repository = createProcurementRepository(this.db, tenantId);
-    const connectors = this.connectorsForTenant(tenantId);
     const startedAt = this.now().toISOString();
-    const readyConnectorIds = new Set(connectors.listCredentials()
-      .filter((item) => item.status === 'connected' && connectors.getCredential(item.id) !== undefined)
-      .map((item) => item.connectorId));
+    const publicDemo = isPublicDemoTenant(tenantId);
+    const connectors = publicDemo ? undefined : this.connectorsForTenant(tenantId);
+    const readyConnectorIds = publicDemo
+      ? new Set((this.db.prepare(`SELECT DISTINCT connector_id FROM procurement_outbox
+          WHERE tenant_id=? AND status='blocked'`).all(tenantId) as Array<{ connector_id: string }>).map((item) => item.connector_id))
+      : new Set(connectors!.listCredentials()
+          .filter((item) => item.status === 'connected' && connectors!.getCredential(item.id) !== undefined)
+          .map((item) => item.connectorId));
     for (const connectorId of readyConnectorIds) {
       repository.requeueBlockedOutboxMessages({ connectorId, requeuedAt: startedAt, limit: this.batchSize });
     }
@@ -92,6 +102,19 @@ export class ProcurementOutboxWorker {
     for (const message of claimed) {
       try {
         const { result, sentAttachments, externalDispatchStarted } = await this.dispatch(tenantId, repository, message, connectors);
+        if (!result.ok && isPublicDemoReceipt(result.output) && result.output.outcome === 'uncertain') {
+          const finishedAt = this.now();
+          repository.failOutboxMessage({
+            id: message.id,
+            leaseToken: requiredLeaseToken(message),
+            failedAt: finishedAt.toISOString(),
+            error: '公开演示模拟回执状态不确定，需人工对账',
+            uncertain: true,
+            connectorResult: result.output,
+          });
+          summary.failed += 1;
+          continue;
+        }
         if (!result.ok) {
           const failure = new ConnectorDispatchError(result.error ?? '连接器执行失败');
           throw externalDispatchStarted ? new ExternalDispatchStartedError(failure) : failure;
@@ -102,7 +125,8 @@ export class ProcurementOutboxWorker {
           leaseToken: requiredLeaseToken(message),
           completedAt: finishedAt.toISOString(),
           ...(sentAttachments ? { sentAttachments } : {}),
-          ...(result.output && (message.channel === 'email' || message.channel === 'whatsapp') ? { connectorResult: {
+          ...(isPublicDemoReceipt(result.output) ? { connectorResult: result.output }
+          : result.output && (message.channel === 'email' || message.channel === 'whatsapp') ? { connectorResult: {
             message_id: result.output['message_id'],
             accepted_at: result.output['accepted_at'] ?? result.output['sent_at'],
             delivery_status: result.output['delivery_status'] ?? (message.channel === 'email' ? 'sent' : undefined),
@@ -147,9 +171,30 @@ export class ProcurementOutboxWorker {
     tenantId: string,
     repository: ProcurementRepository,
     message: ProcurementOutboxMessage,
-    connectors: OutboxConnectorPort,
+    connectors: OutboxConnectorPort | undefined,
   ): Promise<{ result: ConnectorExecutionResult; sentAttachments?: readonly ProcurementOutboxAttachmentSnapshot[]; externalDispatchStarted?: boolean }> {
     if (message.tenantId !== tenantId) throw new ConfigurationDispatchError('outbox 消息租户与当前 worker 不一致');
+    if (isPublicDemoTenant(tenantId)) {
+      const receipt = createSimulatedDemoReceipt({
+        db: this.db,
+        tenantId,
+        scenarioId: message.aggregateId,
+        connector: message.connectorId,
+        action: message.action,
+        idempotencyKey: message.idempotencyKey,
+        generatedAt: this.now().toISOString(),
+      });
+      recordSimulatedDemoReceipt(this.db, { receipt, scenarioId: message.aggregateId, source: 'procurement_outbox' });
+      return {
+        result: receipt.outcome === 'accepted'
+          ? { ok: true, output: receipt }
+          : { ok: false, output: receipt, error: '公开演示模拟回执状态不确定' },
+        ...(message.action === 'rfq.send' || message.action === 'purchase_order.send'
+          ? { sentAttachments: parseAttachmentSnapshots(message.payload['attachments']) }
+          : {}),
+      };
+    }
+    if (!connectors) throw new ConfigurationDispatchError('连接器运行时不可用');
     const resolved = await resolveConnectorAction(this.db, tenantId, repository, message, this.objectStorage);
     // Email is the first completed vertical slice. WhatsApp remains on its
     // existing real adapter until its own gateway adapter is registered.
