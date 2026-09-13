@@ -53,6 +53,7 @@ venv/
 *.tar.gz
 *.tgz
 /revenue_chart.png
+/reports/evaluations/deepseek-local/
 
 # Logs, temporary files and operating-system metadata
 *.log
