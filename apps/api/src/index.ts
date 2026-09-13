@@ -113,7 +113,7 @@ import { reconcileTemporalRun, reconcileTemporalRuns } from './temporal-run-reco
 import { createManufacturingContextRuntime } from './manufacturing-context-worker.js';
 import { handleManufacturingContextRequest } from './manufacturing-context-routes.js';
 import { submitPublicDemoRequest } from './public-demo-requests.js';
-import { PublicDemoResetInProgressError, readPublicDemoStatus, resetPublicDemo } from './public-demo-reset.js';
+import { PUBLIC_DEMO_IDS, PublicDemoResetInProgressError, readPublicDemoStatus, resetPublicDemo } from './public-demo-reset.js';
 import {
   currentPublicDemoGeneration,
   PublicDemoGenerationConflictError,
@@ -270,7 +270,7 @@ const hermesControl = process.env['READYWORK_HERMES_DASHBOARD_TOKEN']
       token: async () => process.env['READYWORK_HERMES_DASHBOARD_TOKEN'] ?? '',
     })
   : undefined;
-const actionGateway = new ActionGateway(store?.db, hub, rt.context, connectorControlPlanes);
+const actionGateway = new ActionGateway(requisitionDb, hub, rt.context, connectorControlPlanes);
 const attachmentObjectStorageConfig = loadAttachmentObjectStorageConfig();
 const attachmentObjectStorage = attachmentObjectStorageConfig ? new S3AttachmentObjectStorage(attachmentObjectStorageConfig) : undefined;
 const procurementOutboxWorker = store?.db ? new ProcurementOutboxWorker(
@@ -1446,6 +1446,44 @@ const server = createServer(async (req, res) => {
         }
       }
     }
+    if (method === 'POST' && path === '/api/public-demo/simulated-actions') {
+      if (!publicDemoMode()) return sendJson(res, 404, { error: '未找到路由' });
+      if (!workbenchSession) return sendJson(res, 401, { error: '未登录或会话已过期', code: 'UNAUTHORIZED' });
+      const body = await readBody(req);
+      const scenarioId = String(body['scenarioId'] ?? '');
+      const allowedScenarios = new Set<string>([
+        PUBLIC_DEMO_IDS.awaitingConfirmationPo,
+        PUBLIC_DEMO_IDS.delayedImportPo,
+      ]);
+      if (!allowedScenarios.has(scenarioId)) {
+        return sendJson(res, 422, { error: '公开演示动作必须绑定允许的合成订单', code: 'INVALID_PUBLIC_DEMO_SCENARIO' });
+      }
+      const generation = currentPublicDemoGeneration(requisitionDb);
+      const result = await actionGateway.execute({
+        runId: `run:public-demo:verification:${generation}:${scenarioId}`,
+        tenantId: workbenchSession.tenantId,
+        employeeId: 'ai:public-demo:procurement',
+        node: {
+          id: 'node:public-demo:simulated-email',
+          kind: 'tool',
+          name: '模拟供应商邮件',
+          label: '邮件询价',
+          detail: '公开演示验收动作',
+          type: 'connector.email.send_supplier_email',
+          typeVersion: 1,
+          inputs: [],
+          outputs: [],
+        } as import('./editor.js').EditorNodeDef,
+        input: {
+          aggregateId: scenarioId,
+          to: 'supplier@example.test',
+          subject: 'SupplySentry public demo simulation',
+          body: 'Synthetic demonstration only. No external message is delivered.',
+        },
+        mode: 'autonomous',
+      });
+      return sendJson(res, result.ok ? 200 : 422, result);
+    }
     let workbenchConnectorReady: ((connectorId: string) => boolean) | undefined;
     if (workbenchSession && path.startsWith('/api/procurement/workbench/context/')) {
       try {
@@ -1667,8 +1705,8 @@ const server = createServer(async (req, res) => {
 
     const controlTenantId = session?.tenantId ?? TENANT_ID;
     const controlEmployeeId = url.searchParams.get('employee_id') ?? employees.procurement.id;
-    const scopedEmployee = hub.org.getAI(controlEmployeeId);
-    if (scopedEmployee && scopedEmployee.tenantId !== controlTenantId) return sendJson(res, 404, { error: '员工不存在' });
+    const employeeCandidate = hub.org.getAI(controlEmployeeId);
+    const scopedEmployee = employeeCandidate?.tenantId === controlTenantId ? employeeCandidate : undefined;
     const editorStore = editorStores.forScope({ tenantId: controlTenantId, employeeId: controlEmployeeId });
     const connectorControlPlane = connectorControlPlanes.forTenant(controlTenantId);
     const odooRuntime = session ? odooRuntimeResolver.resolve(session.tenantId) : undefined;

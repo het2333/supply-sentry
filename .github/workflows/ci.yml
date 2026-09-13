@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.7.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm test:localization
+      - name: Verify public-demo deployment contracts
+        run: node --test infra/demo/test/*.test.mjs
+      - run: pnpm eval:supplier-replies:verify
+      - run: pnpm eval:supplier-replies:check
+      - name: Verify deterministic public-demo seed
+        run: pnpm exec tsx --test scripts/demo/test/seed-public-demo.test.ts
+      - name: Build console
+        run: pnpm --filter @readywork/app-console build
+
+  container-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    needs: verify
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start isolated public demo
+        run: ./scripts/demo/demo.sh up --build
+      - name: Verify public demo over its published boundary
+        run: docker compose --project-name supplysentry-demo --env-file infra/demo/.env -f infra/demo/compose.yml exec -T control-api node /app/scripts/demo/verify-public-demo.mjs http://console:3001
+      - name: Stop public demo without deleting persistent volumes
+        if: always()
+        run: ./scripts/demo/demo.sh down

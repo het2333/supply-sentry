@@ -121,6 +121,46 @@ test('public demo HTTP entry creates only the fixed limited session', async () =
       status: 'healthy',
     });
 
+    const notifications = await fetch(`http://127.0.0.1:${port}/api/procurement/notifications?filter=all`, {
+      headers: { cookie: cookie.split(';')[0]! },
+    });
+    assert.equal(notifications.status, 200, 'tenant-neutral procurement routes must not inherit the default tenant employee');
+    assert.ok(Array.isArray((await notifications.json() as { items: unknown[] }).items));
+
+    const simulatedAction = await fetch(`http://127.0.0.1:${port}/api/public-demo/simulated-actions`, {
+      method: 'POST',
+      headers: {
+        cookie: cookie.split(';')[0]!,
+        'content-type': 'application/json',
+        'x-readywork-demo-generation': '1',
+      },
+      body: JSON.stringify({ scenarioId: 'purchase-order:public-demo:awaiting-confirmation' }),
+    });
+    assert.equal(simulatedAction.status, 200, diagnostics);
+    const simulatedActionBody = await simulatedAction.json() as {
+      ok: boolean;
+      connector: string;
+      action: string;
+      output: { receiptKind: string; outcome: string; externalDelivery: boolean; generation: number };
+    };
+    assert.deepEqual({
+      ok: simulatedActionBody.ok,
+      connector: simulatedActionBody.connector,
+      action: simulatedActionBody.action,
+      receiptKind: simulatedActionBody.output.receiptKind,
+      outcome: simulatedActionBody.output.outcome,
+      externalDelivery: simulatedActionBody.output.externalDelivery,
+      generation: simulatedActionBody.output.generation,
+    }, {
+      ok: true,
+      connector: 'email',
+      action: 'send',
+      receiptKind: 'simulated_demo',
+      outcome: 'accepted',
+      externalDelivery: false,
+      generation: 1,
+    });
+
     const denied = await fetch(`http://127.0.0.1:${port}/api/editor/workflows`, {
       headers: { cookie: cookie.split(';')[0]! },
     });

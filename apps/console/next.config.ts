@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
       { source: "/api/employee-packs/:path*", destination: `${controlPlaneBase}/api/employee-packs/:path*` },
       { source: "/api/employees", destination: `${controlPlaneBase}/api/employees` },
       { source: "/api/employees/:path*", destination: `${controlPlaneBase}/api/employees/:path*` },
+      { source: "/internal/demo/reset", destination: `${controlPlaneBase}/internal/demo/reset` },
       { source: "/api/:path*", destination: `${apiBase}/api/:path*` },
     ];
   },
