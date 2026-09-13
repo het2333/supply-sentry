@@ -1,0 +1,184 @@
+name: supplysentry-demo
+
+x-demo-environment: &demo-environment
+  READYWORK_PUBLIC_DEMO: "1"
+  READYWORK_PUBLIC_DEMO_TENANT: t:public-demo
+  READYWORK_PUBLIC_DEMO_SIMULATION_POLICY: simulated_demo
+
+x-app-service: &app-service
+  image: ${READYWORK_DEMO_IMAGE:-ghcr.io/het2333/supply-sentry-demo:latest}
+  restart: unless-stopped
+  init: true
+  networks: [demo]
+
+x-api-environment: &api-environment
+  <<: *demo-environment
+  NODE_ENV: production
+  DB_PATH: /app/data/public-demo.sqlite
+  READYWORK_API_HOST: 0.0.0.0
+  READYWORK_ALLOWED_ORIGINS: http://127.0.0.1:3002,http://localhost:3002
+  READYWORK_TRUST_PROXY: "1"
+  READYWORK_SESSION_SECRET: ${READYWORK_SESSION_SECRET:?READYWORK_SESSION_SECRET is required}
+  READYWORK_INTERNAL_CALLBACK_TOKEN: ${READYWORK_INTERNAL_CALLBACK_TOKEN:?READYWORK_INTERNAL_CALLBACK_TOKEN is required}
+  READYWORK_INTERNAL_TOKEN: ${READYWORK_INTERNAL_TOKEN:?READYWORK_INTERNAL_TOKEN is required}
+  READYWORK_MODEL_BASE_URL: http://mock-model:18080
+  READYWORK_MODEL_API_KEY: public-demo-local-model
+  TEMPORAL_ADDRESS: temporal:7233
+  TEMPORAL_NAMESPACE: default
+  TEMPORAL_TASK_QUEUE: readywork-public-demo
+
+services:
+  temporal-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: ${READYWORK_TEMPORAL_DB_PASSWORD:?READYWORK_TEMPORAL_DB_PASSWORD is required}
+      POSTGRES_DB: temporal
+    volumes:
+      - temporal_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal -d temporal"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    networks: [demo]
+
+  temporal:
+    image: temporalio/auto-setup:1.28.1
+    restart: unless-stopped
+    depends_on:
+      temporal-db:
+        condition: service_healthy
+    environment:
+      DB: postgres12
+      DB_PORT: "5432"
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: ${READYWORK_TEMPORAL_DB_PASSWORD:?READYWORK_TEMPORAL_DB_PASSWORD is required}
+      POSTGRES_SEEDS: temporal-db
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health", "--address", "temporal:7233"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    networks: [demo]
+
+  mock-model:
+    <<: *app-service
+    command: ["node", "--import", "tsx", "apps/mock-model/src/index.ts"]
+    environment:
+      <<: *demo-environment
+      READYWORK_MOCK_MODEL_HOST: 0.0.0.0
+      READYWORK_MOCK_MODEL_PORT: "18080"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:18080/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  business-api:
+    <<: *app-service
+    command: ["node", "--import", "tsx", "apps/business-api/src/index.ts"]
+    depends_on:
+      temporal:
+        condition: service_healthy
+      mock-model:
+        condition: service_healthy
+    environment:
+      <<: *api-environment
+      PORT: "4173"
+    volumes:
+      - demo_data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4173/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 15s
+
+  control-api:
+    <<: *app-service
+    command: ["node", "--import", "tsx", "apps/control-plane-api/src/index.ts"]
+    depends_on:
+      business-api:
+        condition: service_healthy
+    environment:
+      <<: *api-environment
+      PORT: "4174"
+    volumes:
+      - demo_data:/app/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4174/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 15s
+
+  temporal-worker:
+    <<: *app-service
+    command: ["node", "--import", "tsx", "apps/temporal-worker/src/index.ts"]
+    depends_on:
+      business-api:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    environment:
+      <<: *api-environment
+      READYWORK_AGENT_RUNTIME: inmemory
+    volumes:
+      - demo_data:/app/data
+
+  reset-worker:
+    <<: *app-service
+    command: ["node", "scripts/demo/reset-worker.mjs"]
+    depends_on:
+      control-api:
+        condition: service_healthy
+    environment:
+      <<: *demo-environment
+      READYWORK_DEMO_API_URL: http://control-api:4174
+      READYWORK_INTERNAL_CALLBACK_TOKEN: ${READYWORK_INTERNAL_CALLBACK_TOKEN:?READYWORK_INTERNAL_CALLBACK_TOKEN is required}
+      READYWORK_DEMO_RESET_INTERVAL_MS: "3600000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('node:fs').accessSync('/tmp/readywork-demo-reset-ready')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  console:
+    <<: *app-service
+    working_dir: /app/apps/console
+    command: ["node", "node_modules/next/dist/bin/next", "start", "-H", "0.0.0.0", "-p", "3001"]
+    depends_on:
+      control-api:
+        condition: service_healthy
+      reset-worker:
+        condition: service_healthy
+    environment:
+      <<: *demo-environment
+      NODE_ENV: production
+      READYWORK_API_BASE_URL: http://business-api:4173
+      READYWORK_CONTROL_PLANE_BASE_URL: http://control-api:4174
+    ports:
+      - "${READYWORK_DEMO_BIND_ADDRESS:-127.0.0.1}:${READYWORK_DEMO_PORT:-3002}:3001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3001/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 15s
+
+volumes:
+  demo_data:
+    name: supplysentry_demo_data
+  temporal_data:
+    name: supplysentry_demo_temporal_data
+
+networks:
+  demo:
+    name: supplysentry_demo_network
+    driver: bridge

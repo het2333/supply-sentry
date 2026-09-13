@@ -104,6 +104,15 @@ test('production configuration fails closed and never exposes secret values', ()
   assert.equal(serializedAdapter.includes('secret-value'), false);
 });
 
+test('public demo production mode starts without object storage credentials because uploads are disabled', () => {
+  assert.equal(loadAttachmentObjectStorageConfig({
+    NODE_ENV: 'production',
+    READYWORK_PUBLIC_DEMO: '1',
+    READYWORK_PUBLIC_DEMO_TENANT: 't:public-demo',
+    READYWORK_PUBLIC_DEMO_SIMULATION_POLICY: 'simulated_demo',
+  }), undefined);
+});
+
 test('S3 adapter exposes its effective request timeout to lease coordinators', () => {
   const configured = new S3AttachmentObjectStorage(config({ requestTimeoutMs: 4_321 }));
   const defaulted = new S3AttachmentObjectStorage(config());

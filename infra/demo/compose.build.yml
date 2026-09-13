@@ -1,0 +1,22 @@
+x-demo-build: &demo-build
+  context: ../..
+  dockerfile: infra/production/Dockerfile
+  target: readywork-demo
+  args:
+    READYWORK_PUBLIC_DEMO: "1"
+    OCI_SOURCE: https://github.com/het2333/supply-sentry
+    OCI_REVISION: ${READYWORK_DEMO_REVISION:-local}
+
+services:
+  business-api:
+    build: *demo-build
+  control-api:
+    build: *demo-build
+  temporal-worker:
+    build: *demo-build
+  console:
+    build: *demo-build
+  mock-model:
+    build: *demo-build
+  reset-worker:
+    build: *demo-build

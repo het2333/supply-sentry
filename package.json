@@ -27,6 +27,7 @@
     "web": "tsx apps/web/src/index.ts",
     "console": "pnpm --filter @readywork/app-console dev",
     "mock-model": "tsx apps/mock-model/src/index.ts",
+    "demo:public": "./scripts/demo/demo.sh up",
     "api": "tsx apps/api/src/index.ts",
     "api:business": "tsx apps/business-api/src/index.ts",
     "api:control": "tsx apps/control-plane-api/src/index.ts",

@@ -220,12 +220,17 @@ function requireConfiguration(env: Readonly<Record<string, string | undefined>>,
 
 /**
  * Loads S3/MinIO configuration. Production fails closed: database-only or an
- * implicit storage backend is not accepted. Error messages name variables but
- * never include their values.
+ * implicit storage backend is not accepted. The isolated public demo is the
+ * sole exception because uploads are denied before body reads and it must not
+ * receive storage credentials. Error messages name variables, never values.
  */
 export function loadAttachmentObjectStorageConfig(
   env: Readonly<Record<string, string | undefined>> = process.env,
 ): S3AttachmentObjectStorageConfig | undefined {
+  const isolatedPublicDemo = env['READYWORK_PUBLIC_DEMO'] === '1'
+    && env['READYWORK_PUBLIC_DEMO_TENANT'] === 't:public-demo'
+    && env['READYWORK_PUBLIC_DEMO_SIMULATION_POLICY'] === 'simulated_demo';
+  if (isolatedPublicDemo) return undefined;
   const production = env['NODE_ENV'] === 'production';
   const backend = env['READYWORK_ATTACHMENT_OBJECT_STORAGE']?.trim().toLowerCase();
   if (!backend) {

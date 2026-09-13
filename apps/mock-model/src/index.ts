@@ -1,5 +1,7 @@
 import { createServer } from 'node:http';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /**
  * OpenAI 兼容 mock 模型端点（SSE 流式 /chat/completions）。
@@ -22,6 +24,8 @@ export interface MockModelServer {
 export interface MockModelServerOptions {
   logger?: (line: string) => void;
   mode?: 'decision' | 'mcp';
+  host?: string;
+  port?: number;
 }
 
 interface ParsedPrompt {
@@ -176,6 +180,11 @@ export function createMockModelServer(opts: MockModelServerOptions = {}): Promis
   const mode = opts.mode ?? 'decision';
   let requests = 0;
   const server = createServer((req: IncomingMessage, res: ServerResponse) => {
+    if (req.method === 'GET' && req.url === '/health') {
+      res.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+      res.end(JSON.stringify({ ok: true, service: 'readywork-mock-model', deterministic: true }));
+      return;
+    }
     if (req.method !== 'POST' || req.url !== '/chat/completions') {
       res.writeHead(404, { 'content-type': 'application/json' });
       res.end(JSON.stringify({ error: 'not found' }));
@@ -249,14 +258,15 @@ export function createMockModelServer(opts: MockModelServerOptions = {}): Promis
 
   return new Promise((resolve, reject) => {
     server.once('error', reject);
-    server.listen(0, '127.0.0.1', () => {
+    const host = opts.host ?? '127.0.0.1';
+    server.listen(opts.port ?? 0, host, () => {
       const address = server.address();
       if (address === null || typeof address === 'string') {
         reject(new Error('mock 模型服务器未绑定 TCP 端口'));
         return;
       }
       resolve({
-        url: `http://127.0.0.1:${address.port}`,
+        url: `http://${host === '0.0.0.0' ? '127.0.0.1' : host}:${address.port}`,
         port: address.port,
         requestCount: () => requests,
         close: () => new Promise<void>((r) => server.close(() => r())),
@@ -266,8 +276,13 @@ export function createMockModelServer(opts: MockModelServerOptions = {}): Promis
 }
 
 // 独立运行：pnpm mock-model
-const isMain = process.argv[1] !== undefined && process.argv[1].includes('mock-model');
+const isMain = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
-  const server = await createMockModelServer({ logger: (l) => console.log(l) });
+  const configuredPort = Number(process.env['READYWORK_MOCK_MODEL_PORT'] ?? 0);
+  const server = await createMockModelServer({
+    logger: (l) => console.log(l),
+    host: process.env['READYWORK_MOCK_MODEL_HOST'] ?? '127.0.0.1',
+    port: Number.isSafeInteger(configuredPort) && configuredPort >= 0 && configuredPort <= 65_535 ? configuredPort : 0,
+  });
   console.log(`mock-model (OpenAI 兼容) → ${server.url}  (直接 POST /chat/completions 可测试)`);
 }

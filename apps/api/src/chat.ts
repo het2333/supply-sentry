@@ -102,6 +102,18 @@ function modelTimeoutMs(): number {
   return Number.isSafeInteger(configured) ? Math.min(Math.max(configured, 1_000), 120_000) : 20_000;
 }
 
+function modelApiBaseUrl(): string {
+  return env('READYWORK_MODEL_BASE_URL', env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com'));
+}
+
+function modelApiKey(): string {
+  return env('READYWORK_MODEL_API_KEY', env('DEEPSEEK_API_KEY', ''));
+}
+
+export function modelApiConfigured(): boolean {
+  return Boolean(modelApiKey());
+}
+
 export class ModelRequestError extends Error {
   constructor(readonly kind: 'timeout' | 'upstream', message: string) { super(message); }
 }
@@ -122,9 +134,9 @@ export async function deepseekChat(
   const timeout = setTimeout(() => controller.abort(), modelTimeoutMs());
   let res: Response;
   try {
-    res = await fetch(`${env('DEEPSEEK_BASE_URL', 'https://api.deepseek.com')}/chat/completions`, {
+    res = await fetch(`${modelApiBaseUrl()}/chat/completions`, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', authorization: `Bearer ${options.apiKey ?? env('DEEPSEEK_API_KEY', '')}` },
+      headers: { 'content-type': 'application/json', authorization: `Bearer ${options.apiKey ?? modelApiKey()}` },
       body: JSON.stringify({
         model,
         messages,
@@ -227,7 +239,7 @@ export function createChatHandler(ctx: ChatContext): (message: string, history: 
   };
 
   return async (message: string, history: ChatHistoryItem[], actorId = 'h:procurement-manager', roleOverride?: string, confirm = false): Promise<ChatReply> => {
-    if (!env('DEEPSEEK_API_KEY', '')) return { reply: '未配置 DEEPSEEK_API_KEY。', actions: [], actionPlan: [] };
+    if (!modelApiConfigured()) return { reply: '模型服务尚未配置。', actions: [], actionPlan: [] };
     const actor = hub.org.getHuman(actorId);
     const actorRole = roleOverride ?? actor?.role ?? '采购经理';
     const actorCats = ACTOR_CATEGORIES[actorRole] ?? ['read'];

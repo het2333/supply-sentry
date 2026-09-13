@@ -3,7 +3,7 @@ import { basename } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { DatabaseSync } from 'node:sqlite';
 import { can, type Session } from './auth.js';
-import { deepseekChat, publicModelFailure } from './chat.js';
+import { deepseekChat, modelApiConfigured, publicModelFailure } from './chat.js';
 import { redactSensitiveValue } from './http-errors.js';
 import { procurementPortfolio } from './procurement-workbench.js';
 import type { AttachmentObjectMetadata, AttachmentObjectStorage } from './attachment-object-storage.js';
@@ -200,8 +200,8 @@ async function get(res: ServerResponse, url: URL, context: ProcurementRouteChatC
   const id = text(url.searchParams.get('conversationId'), 'conversationId', 300, false);
   const conversation = conversationFor(context.db, session.tenantId, session.humanId, selectedRoute, id);
   if (id && !conversation) throw new RouteChatError(404, '会话不存在或不属于当前用户/路线', 'ROUTE_CHAT_CONVERSATION_NOT_FOUND');
-  if (!conversation) { sendJson(res, 200, { conversation: null, messages: [], route: selectedRoute, permissions: { operate: can(session, 'operate') }, capabilities: capabilities(), contextSummary: routeSnapshot(context.db, session.tenantId, selectedRoute), model: { configured: Boolean(context.modelResponder || process.env['DEEPSEEK_API_KEY']) } }); return; }
-  sendJson(res, 200, response(context.db, session.tenantId, session, conversation, selectedRoute, { contextSummary: routeSnapshot(context.db, session.tenantId, selectedRoute), model: { configured: Boolean(context.modelResponder || process.env['DEEPSEEK_API_KEY']) } }));
+  if (!conversation) { sendJson(res, 200, { conversation: null, messages: [], route: selectedRoute, permissions: { operate: can(session, 'operate') }, capabilities: capabilities(), contextSummary: routeSnapshot(context.db, session.tenantId, selectedRoute), model: { configured: Boolean(context.modelResponder || modelApiConfigured()) } }); return; }
+  sendJson(res, 200, response(context.db, session.tenantId, session, conversation, selectedRoute, { contextSummary: routeSnapshot(context.db, session.tenantId, selectedRoute), model: { configured: Boolean(context.modelResponder || modelApiConfigured()) } }));
 }
 
 async function post(req: IncomingMessage, res: ServerResponse, context: ProcurementRouteChatContext, session: Session): Promise<void> {
@@ -302,7 +302,7 @@ async function post(req: IncomingMessage, res: ServerResponse, context: Procurem
     } catch (error) { if (!committed) { try { context.db.exec('ROLLBACK'); } catch { /* no active transaction */ } if (storedObject && context.attachmentObjectStorage && attachmentId) try { await context.attachmentObjectStorage.delete({ tenantId: session.tenantId, attachmentId, version: attachmentVersion }); } catch { /* best-effort orphan cleanup */ } } throw error; }
     stored = requestFor(context.db, session.tenantId, session.humanId, key)!; conversation = conversationFor(context.db, session.tenantId, session.humanId, input.route, conversation.id)!;
   }
-  const chat = transcript(context.db, session.tenantId, conversation.id); const snapshot = routeSnapshot(context.db, session.tenantId, input.route, conversation.id); const fingerprint = createHash('sha256').update(JSON.stringify(snapshot)).digest('hex'); const selectedModel = routeRouteChatModel(input.message, chat.slice(0, -1)); const responder = context.modelResponder ?? (process.env['DEEPSEEK_API_KEY'] ? defaultResponder : undefined);
+  const chat = transcript(context.db, session.tenantId, conversation.id); const snapshot = routeSnapshot(context.db, session.tenantId, input.route, conversation.id); const fingerprint = createHash('sha256').update(JSON.stringify(snapshot)).digest('hex'); const selectedModel = routeRouteChatModel(input.message, chat.slice(0, -1)); const responder = context.modelResponder ?? (modelApiConfigured() ? defaultResponder : undefined);
   let content: string; let messageStatus: 'completed' | 'failed' = 'completed'; let usage: Readonly<Record<string, number>> | undefined;
   if (!responder) { messageStatus = 'failed'; content = '模型服务尚未配置；消息和路线上下文已持久化，但本次没有生成 AI 回答。'; }
   else try { const result = await responder({ messages: buildRouteChatModelMessages(snapshot, chat), model: selectedModel.model, maxTokens: selectedModel.maxTokens }); content = result.content.trim() || '模型未返回可读内容。'; usage = result.usage; } catch (error) { messageStatus = 'failed'; content = publicModelFailure(error); }

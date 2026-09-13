@@ -3,7 +3,7 @@ import { basename } from 'node:path';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { DatabaseSync } from 'node:sqlite';
 import { can, type Session } from './auth.js';
-import { deepseekChat, publicModelFailure } from './chat.js';
+import { deepseekChat, modelApiConfigured, publicModelFailure } from './chat.js';
 import type { AttachmentObjectMetadata, AttachmentObjectStorage } from './attachment-object-storage.js';
 import { assessProcurementDocumentSecurity } from './procurement-document-security.js';
 import { procurementContextForObject } from './procurement-workbench.js';
@@ -513,7 +513,7 @@ function responsePayload(
       supplierId: resolution.po['supplierId'] ?? null,
     },
     model: {
-      configured: Boolean(process.env['DEEPSEEK_API_KEY']),
+      configured: modelApiConfigured(),
     },
     ...extra,
   }) as Row;
@@ -538,7 +538,7 @@ async function handleGet(res: ServerResponse, url: URL, context: ProcurementPoCh
         status: resolution.po['status'] ?? null,
         supplierId: resolution.po['supplierId'] ?? null,
       },
-      model: { configured: Boolean(context.modelResponder || process.env['DEEPSEEK_API_KEY']) },
+      model: { configured: Boolean(context.modelResponder || modelApiConfigured()) },
     }));
     return;
   }
@@ -709,7 +709,7 @@ async function handlePost(req: IncomingMessage, res: ServerResponse, context: Pr
   let assistantContent: string;
   let assistantStatus: 'completed' | 'failed' = 'completed';
   let usage: Readonly<Record<string, number>> | undefined;
-  const responder = context.modelResponder ?? (process.env['DEEPSEEK_API_KEY'] ? defaultModelResponder : undefined);
+  const responder = context.modelResponder ?? (modelApiConfigured() ? defaultModelResponder : undefined);
   if (!responder) {
     assistantStatus = 'failed';
     assistantContent = '模型服务尚未配置；你的消息和 PO 上下文已持久化，但本次没有生成 AI 回答。';
