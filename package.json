@@ -24,6 +24,8 @@
     "demo:orchestrator": "tsx apps/demo-orchestrator/src/index.ts",
     "demo:intake": "tsx apps/demo-intake/src/index.ts",
     "eval": "tsx apps/evals/src/index.ts",
+    "eval:supplier-replies:generate": "tsx scripts/evals/generate-supplier-reply-dataset.ts --write",
+    "eval:supplier-replies:verify": "tsx scripts/evals/verify-supplier-reply-dataset.ts",
     "web": "tsx apps/web/src/index.ts",
     "console": "pnpm --filter @readywork/app-console dev",
     "mock-model": "tsx apps/mock-model/src/index.ts",

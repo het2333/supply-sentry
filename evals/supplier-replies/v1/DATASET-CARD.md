@@ -13,6 +13,8 @@ The dataset measures association, evidence-grounded field extraction, missing-fa
 - At least 60 adversarial cases.
 - Matched, ambiguous, and unmatched association labels; accepted and human-review outcomes.
 
+The generated v1 artifact contains 90 adversarial, 100 basic, and 50 intermediate cases; 210 matched, 15 ambiguous, and 15 unmatched associations; and 105 accepted plus 135 human-review outcomes. Its checked-in SHA-256 is `4452a076d5d0ea7d0de01fee9ea77007976db0d038b718bda2378c455399b331`.
+
 Evidence offsets refer to exact UTF-16 JavaScript string positions in the final `body`. Dates resolve against each row's fixed `receivedAt`; unsupported facts remain unknown.
 
 ## Privacy, integrity, and versioning
