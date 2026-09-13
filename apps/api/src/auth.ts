@@ -1,4 +1,5 @@
 import { createHmac, scryptSync, timingSafeEqual } from 'node:crypto';
+import { assertPublicDemoConfiguration, PUBLIC_DEMO_TENANT_ID } from './public-demo-mode.js';
 
 export type PlatformPermission = 'read' | 'operate' | 'approve' | 'configure' | 'admin';
 
@@ -91,13 +92,29 @@ function passwordMatches(account: Account, password: string): boolean {
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
+function signSession(session: Session): { token: string; session: Session } {
+  const payload = Buffer.from(JSON.stringify(session)).toString('base64url');
+  return { token: `rw1.${payload}.${signature(payload)}`, session };
+}
+
 export function login(username: string, password: string): { token: string; session: Session } | null {
   if (!demoAuthEnabled()) return null;
   const account = ACCOUNTS.find((item) => item.username === username);
   if (!account || !passwordMatches(account, password)) return null;
   const session: Session = { username: account.username, tenantId: account.tenantId, humanId: account.humanId, name: account.name, role: account.role, expiresAt: Date.now() + TTL_MS };
-  const payload = Buffer.from(JSON.stringify(session)).toString('base64url');
-  return { token: `rw1.${payload}.${signature(payload)}`, session };
+  return signSession(session);
+}
+
+export function createPublicDemoSession(now = Date.now()): { token: string; session: Session } {
+  assertPublicDemoConfiguration();
+  return signSession({
+    username: 'public-demo',
+    tenantId: PUBLIC_DEMO_TENANT_ID,
+    humanId: 'h:public-demo-manager',
+    name: '公开演示采购经理',
+    role: '采购经理',
+    expiresAt: now + TTL_MS,
+  });
 }
 
 export function logout(token: string): void {

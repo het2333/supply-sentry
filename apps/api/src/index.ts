@@ -20,6 +20,7 @@ import {
 import {
   can,
   clearSessionCookieHeader,
+  createPublicDemoSession,
   demoAuthEnabled,
   localDemoSession,
   login,
@@ -30,6 +31,7 @@ import {
   type PlatformPermission,
   type Session,
 } from './auth.js';
+import { assertPublicDemoConfiguration, publicDemoCapabilityDenied, publicDemoMode } from './public-demo-mode.js';
 import { createChatHandler } from './chat.js';
 import { EditorIdempotencyConflictError, EditorRevisionConflictError, EditorRevisionRequiredError, EditorStore, type EditorNodeRun, type EditorRun, type EditorRunMode, type EditorWorkflowDef } from './editor.js';
 import { EditorStoreRegistry } from './editor-registry.js';
@@ -127,6 +129,7 @@ const ALLOWED_ORIGINS = new Set(
     .filter(Boolean),
 );
 const INTERNAL_CALLBACK_TOKEN = process.env['READYWORK_INTERNAL_CALLBACK_TOKEN'] ?? randomBytes(32).toString('hex');
+assertPublicDemoConfiguration();
 const temporalRuntime = new TemporalRuntimeClient();
 
 const mailConnector = new NetEaseMailConnector();
@@ -507,6 +510,7 @@ function bearerToken(req: IncomingMessage): string | undefined {
 function secureSessionCookie(req: IncomingMessage): boolean {
   const forwarded = req.headers['x-forwarded-proto'];
   const protocol = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+  if (publicDemoMode()) return protocol === 'https';
   return process.env['NODE_ENV'] === 'production' || protocol === 'https';
 }
 
@@ -1237,12 +1241,32 @@ const server = createServer(async (req, res) => {
       res.end();
       return;
     }
+    if (publicDemoMode() && publicDemoCapabilityDenied(method, path)) {
+      return sendJson(res, 403, {
+        error: '公开演示环境已禁用此功能',
+        code: 'PUBLIC_DEMO_CAPABILITY_DISABLED',
+      });
+    }
     if (!surfaceAllows(SERVICE_SURFACE, method, path)) return sendJson(res, 404, { error: `该路由不属于 ${SERVICE_SURFACE} 服务边界` });
     if (method === 'GET' && path === '/api/auth/config') {
       res.setHeader('cache-control', 'no-store');
       return sendJson(res, 200, {
-        mode: demoAuthEnabled() ? 'local_demo' : 'external',
-        passwordLogin: demoAuthEnabled(),
+        mode: publicDemoMode() ? 'public_demo' : demoAuthEnabled() ? 'local_demo' : 'external',
+        passwordLogin: !publicDemoMode() && demoAuthEnabled(),
+        demoMode: publicDemoMode(),
+      });
+    }
+
+    if (method === 'POST' && path === '/api/auth/public-demo') {
+      res.setHeader('cache-control', 'no-store');
+      if (!publicDemoMode()) return sendJson(res, 404, { error: '未找到路由' });
+      const result = createPublicDemoSession();
+      res.setHeader('set-cookie', sessionCookieHeader(result.token, secureSessionCookie(req)));
+      return sendJson(res, 200, {
+        ok: true,
+        account: { username: result.session.username, name: result.session.name, role: result.session.role, humanId: result.session.humanId },
+        expiresAt: new Date(result.session.expiresAt).toISOString(),
+        demoMode: true,
       });
     }
 
@@ -1284,6 +1308,7 @@ const server = createServer(async (req, res) => {
         ok: true,
         account: { username: s.username, name: s.name, role: s.role, humanId: s.humanId },
         expiresAt: new Date(s.expiresAt).toISOString(),
+        demoMode: publicDemoMode(),
       }) : sendJson(res, 401, { ok: false, error: '未登录或会话过期', code: 'UNAUTHORIZED' });
     }
 
@@ -1295,7 +1320,7 @@ const server = createServer(async (req, res) => {
       return sendJson(res, result.replayed ? 200 : 201, result);
     }
 
-    if (method === 'GET' && path === '/health') return sendJson(res, 200, { ok: true, service: `readywork-${SERVICE_SURFACE}-api`, surface: SERVICE_SURFACE, version: '0.2.0' });
+    if (method === 'GET' && path === '/health') return sendJson(res, 200, { ok: true, service: `readywork-${SERVICE_SURFACE}-api`, surface: SERVICE_SURFACE, version: '0.2.0', demoMode: publicDemoMode() });
 
     if (method === 'GET' && path === '/') {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
