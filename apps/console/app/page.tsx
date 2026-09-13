@@ -103,6 +103,7 @@ import { LanguageSwitcher } from "@/features/localization/ui-language";
 import { poNavigationIntentFromValue, resetNavigationScroll, resolveNavigationSection, resolveNavigationViewMode, sectionFromNavigationValue, type PurchaseOrderNavigationIntent, type ReadyworkSection as Section } from "@/features/procurement/navigation-state";
 import { poDetailTabFromNavigationValue, type PoDetailTabId } from "@/features/procurement/po-detail-navigation";
 import { procurementHeaderPresentation, READYWORK_PROCUREMENT_VISUAL_TOKENS } from "@/features/procurement/visual-tokens";
+import { usePublicDemo } from "@/features/public-demo/public-demo-context";
 
 function purchaseOrderIdFromUrl(value: string | null): string | null {
   const normalized = value?.trim();
@@ -1004,6 +1005,7 @@ export default function Page() {
 
 function ReadyworkPageContent() {
   const { formatDateTime, formatTime } = useProcurementLocale();
+  const { demoMode: publicDemoMode } = usePublicDemo();
   const dashboardRequestRef = useRef<AbortController | null>(null);
   const dashboardSequenceRef = useRef(0);
   const editorRunSubmittingRef = useRef(false);
@@ -1398,7 +1400,7 @@ function ReadyworkPageContent() {
   }, [section, selectedId, loadEmployee]);
 
   useEffect(() => {
-    if ((section === "tools" || section === "settings") && configurationConnectionsManageable) {
+    if (!publicDemoMode && (section === "tools" || section === "settings") && configurationConnectionsManageable) {
       void loadConnectors();
       return;
     }
@@ -1410,15 +1412,15 @@ function ReadyworkPageContent() {
       setDocumentReadinessError(null);
       setConnectorError(null);
     }
-  }, [configurationConnectionsLoading, configurationConnectionsManageable, loadConnectors, section]);
+  }, [configurationConnectionsLoading, configurationConnectionsManageable, loadConnectors, publicDemoMode, section]);
 
   useEffect(() => {
-    if (section === "settings" || section === "tools") void loadConfigurationConnections();
-  }, [section, loadConfigurationConnections]);
+    if (!publicDemoMode && (section === "settings" || section === "tools")) void loadConfigurationConnections();
+  }, [section, loadConfigurationConnections, publicDemoMode]);
 
   useEffect(() => {
-    if (viewMode === "developer") void loadEditor();
-  }, [viewMode, loadEditor]);
+    if (!publicDemoMode && viewMode === "developer") void loadEditor();
+  }, [viewMode, loadEditor, publicDemoMode]);
 
   useEffect(() => {
     if (viewMode !== "developer" || !editorRunDetail?.id) return;
@@ -1773,7 +1775,9 @@ function ReadyworkPageContent() {
       return { groups: [], error: error instanceof Error ? error.message : "员工包导航无效" };
     }
   }, [activePack]);
-  const sectionGroups = packNavigation.groups;
+  const sectionGroups = useMemo(() => packNavigation.groups
+    .map((group) => ({ ...group, items: publicDemoMode ? group.items.filter((item) => item.id !== "tools") : group.items }))
+    .filter((group) => group.items.length > 0), [packNavigation.groups, publicDemoMode]);
   const packUiError = employeePackError ?? packNavigation.error;
 
   const empEvents = useMemo(() => events.filter((e) => e.employeeId === selectedId || !e.employeeId).slice(-6), [events, selectedId]);
@@ -1990,6 +1994,7 @@ function ReadyworkPageContent() {
   }, [activePack, navigateToSection, section, viewMode]);
 
   const openWorkflowEditor = useCallback(() => {
+    if (publicDemoMode) return;
     const employeeId = activePackBinding?.employeeIds.includes(selectedId)
       ? selectedId
       : activePackBinding?.manifest.defaultEmployeeId ?? activePackBinding?.employeeIds[0] ?? "";
@@ -1997,7 +2002,13 @@ function ReadyworkPageContent() {
     setSelectedId(employeeId);
     setDevTab("editor");
     navigateToSection("employees", { viewMode: "developer" });
-  }, [activePackBinding, navigateToSection, selectedId]);
+  }, [activePackBinding, navigateToSection, publicDemoMode, selectedId]);
+
+  useEffect(() => {
+    if (!publicDemoMode || viewMode !== "developer") return;
+    setViewMode("business");
+    writeNavigationUrl(section, null, null, "replace", null, "business");
+  }, [publicDemoMode, section, viewMode]);
 
   const clearInvalidPurchaseOrderTarget = useCallback((purchaseOrderId: string) => {
     setInitialPurchaseOrderId((current) => current === purchaseOrderId ? null : current);
@@ -2444,6 +2455,7 @@ function ReadyworkPageContent() {
             {(section === "tools" || section === "settings") && (
               <ProcurementConfigurationWorkbench
                 mode={section === "settings" ? "settings" : "tools"}
+                publicDemo={publicDemoMode}
                 connections={configurationConnections}
                 autoSend={configurationAutoSend}
                 connectionsManageable={configurationConnectionsManageable}

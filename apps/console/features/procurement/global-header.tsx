@@ -11,6 +11,7 @@ import { useProcurementLocale } from "@/features/procurement/tenant-preferences-
 import { useProcurementRealtimeRefresh, useProcurementRealtimeStatus } from "@/features/procurement/realtime-events";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/features/localization/ui-language";
+import { usePublicDemo } from "@/features/public-demo/public-demo-context";
 
 export type ProcurementHeaderTarget = "home" | "orders" | "suppliers" | "notifications" | "message-drafts";
 
@@ -61,6 +62,7 @@ export function ProcurementGlobalHeader({
   showSearch?: boolean;
 }) {
   const { formatShortDateTime } = useProcurementLocale();
+  const publicDemo = usePublicDemo();
   const realtime = useProcurementRealtimeStatus();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -156,6 +158,7 @@ export function ProcurementGlobalHeader({
       : "sticky top-0 border-b border-[#e5e9ef] bg-white/95 px-4 backdrop-blur-xl md:px-7",
   )}>
     <LanguageSwitcher className={integrated ? "xl:pointer-events-auto" : ""} />
+    {publicDemo.demoMode && <span data-preserve-language className={cn("hidden shrink-0 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 font-mono text-[10px] font-bold text-amber-800 sm:inline-flex", integrated && "xl:pointer-events-auto")}>DEMO G{publicDemo.generation ?? "…"}</span>}
     <div className={cn("min-w-0 flex-1 lg:max-w-[340px]", integrated && "xl:hidden")}>
       <div className="truncate text-[17px] font-bold tracking-[-0.02em] text-[#182033]">{title}</div>
       <div className="mt-0.5 hidden text-[11px] text-[#939aa7] sm:block">PO 发出至交付收货 · 采购执行 V1</div>

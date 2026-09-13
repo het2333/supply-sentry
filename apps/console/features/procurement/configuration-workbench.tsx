@@ -30,6 +30,7 @@ import { ProcurementTenantPreferencesPanel, type ProcurementPreferencesSaveState
 import { ProcurementV1ReadinessPanel } from "@/features/procurement/v1-readiness-panel";
 import { READYWORK_INTEGRATED_HEADER_ACTION_GUTTER_CLASS, READYWORK_PAGE_TITLE_CLASS } from "@/features/procurement/visual-tokens";
 import { cn } from "@/lib/utils";
+import { useUiLanguage } from "@/features/localization/ui-language";
 
 type ConfigurationTarget = "sla" | "local-procurement" | "po-intake" | "ai-records";
 const configurationSections = [
@@ -53,6 +54,7 @@ const AUTO_SEND_GATE_IDS: ConfigurationAutoSendGateId[] = [
 export function ProcurementConfigurationWorkbench({
   mode,
   governanceMode,
+  publicDemo = false,
   connections,
   autoSend,
   connectionsManageable,
@@ -66,6 +68,7 @@ export function ProcurementConfigurationWorkbench({
 }: {
   mode: "settings" | "tools";
   governanceMode?: boolean;
+  publicDemo?: boolean;
   connections: readonly ChannelConnectionSummary[];
   autoSend: ConfigurationAutoSendSummary | null;
   connectionsManageable: boolean;
@@ -77,6 +80,7 @@ export function ProcurementConfigurationWorkbench({
   onNavigate: (target: ConfigurationTarget) => void;
   children: ReactNode;
 }) {
+  const { language } = useUiLanguage();
   const [urlGovernanceMode] = useState(() => typeof window !== "undefined" && new URLSearchParams(window.location.search).get("configurationGovernance") === "1");
   const [runtimeGovernanceMode, setRuntimeGovernanceMode] = useState(false);
   const showGovernance = Boolean(governanceMode || urlGovernanceMode || runtimeGovernanceMode);
@@ -143,6 +147,32 @@ export function ProcurementConfigurationWorkbench({
       </div>
     </section>
   );
+
+  if (publicDemo) {
+    const english = language === "en";
+    const disabledCapabilities = english
+      ? [
+          ["Connector and credential configuration is unavailable", "No provider secrets can be entered, read, tested, or changed."],
+          ["Uploads and raw exports are disabled", "Only pre-seeded, security-checked synthetic attachments can be viewed."],
+          ["External delivery is simulated", "Email, messaging, ERP, webhooks, and MCP produce labeled simulated receipts."],
+        ]
+      : [
+          ["连接器和凭据配置不可用", "无法输入、读取、测试或修改任何供应商密钥。"],
+          ["已禁用上传和原始导出", "仅可查看预置且通过安全检查的合成附件。"],
+          ["对外发送均为模拟", "邮件、消息、ERP、Webhook 和 MCP 仅产生带标识的模拟回执。"],
+        ];
+    return <div className="mx-auto -mt-[14.5px] w-full max-w-[1540px] space-y-6">
+      <section className={cn("border-b border-[#e8edf4] pb-[26px]", READYWORK_INTEGRATED_HEADER_ACTION_GUTTER_CLASS)}>
+        <div className="text-[11px] font-medium text-[#8a94a6]">{english ? "Settings / Public demo" : "设置 / 公开演示"}</div>
+        <h1 className={cn(READYWORK_PAGE_TITLE_CLASS, "mt-2")}>{english ? "Public demo safety boundary" : "公开演示安全边界"}</h1>
+        <p className="mt-1 max-w-3xl text-sm leading-6 text-[#687386]">{english ? "This workspace exposes real product state and interactions while keeping every external system disconnected." : "此工作区展示真实产品状态和交互，但不连接任何外部系统。"}</p>
+      </section>
+      <section className="overflow-hidden rounded-2xl border border-amber-200 bg-amber-50/60 shadow-sm">
+        <div className="flex items-start gap-3 border-b border-amber-200 px-5 py-4"><span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-amber-700 shadow-sm"><LockKeyhole className="size-4" /></span><span><span className="block text-sm font-bold text-amber-950">{english ? "Read-only configuration preview" : "配置只读预览"}</span><span className="mt-1 block text-xs leading-5 text-amber-900/75">{english ? "Server-side denial remains authoritative even if a client is modified." : "即使客户端被修改，服务端仍会强制拒绝这些功能。"}</span></span></div>
+        <div className="grid gap-px bg-amber-200/70 md:grid-cols-3">{disabledCapabilities.map(([title, description]) => <div key={title} className="bg-white px-5 py-5"><div className="flex items-center gap-2 text-xs font-bold text-[#273247]"><ShieldCheck className="size-4 text-amber-600" />{title}</div><p className="mt-2 text-[11px] leading-5 text-[#778195]">{description}</p></div>)}</div>
+      </section>
+    </div>;
+  }
 
   if (mode === "tools") return <div className="space-y-5">{connectionsManageable ? children : administrationBoundary}</div>;
 

@@ -10,10 +10,12 @@ import {
   type ReadyworkAuthRequiredReason,
   ReadyworkApiError,
 } from "@/features/shared/api-client";
+import { useUiLanguage } from "@/features/localization/ui-language";
+import { usePublicDemo } from "@/features/public-demo/public-demo-context";
 
 type Account = { username: string; name: string; role: string; humanId: string };
-type SessionPayload = { ok: true; account: Account; expiresAt: string };
-type AuthConfig = { mode: "local_demo" | "external"; passwordLogin: boolean };
+type SessionPayload = { ok: true; account: Account; expiresAt: string; demoMode?: boolean };
+type AuthConfig = { mode: "local_demo" | "external" | "public_demo"; passwordLogin: boolean; demoMode?: boolean };
 type GateState = "checking" | "authenticated" | "unauthenticated" | "unavailable";
 
 function errorMessage(error: unknown): string {
@@ -44,6 +46,9 @@ function AuthBackdrop({ children }: { children: ReactNode }) {
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { language } = useUiLanguage();
+  const publicDemo = usePublicDemo();
+  const english = language === "en";
   const publicRoute = pathname === "/product" || pathname === "/privacy" || pathname === "/terms";
   const [state, setState] = useState<GateState>("checking");
   const [config, setConfig] = useState<AuthConfig | null>(null);
@@ -60,7 +65,9 @@ export function AuthGate({ children }: { children: ReactNode }) {
     setState("checking");
     setMessage(null);
     try {
-      await apiRequest<SessionPayload>("/api/auth/me");
+      const session = await apiRequest<SessionPayload>("/api/auth/me");
+      publicDemo.setDemoMode(session.demoMode === true);
+      if (session.demoMode === true) await publicDemo.refreshStatus();
       setSessionExpired(false);
       setState("authenticated");
       return;
@@ -74,12 +81,13 @@ export function AuthGate({ children }: { children: ReactNode }) {
     try {
       const nextConfig = await apiRequest<AuthConfig>("/api/auth/config");
       setConfig(nextConfig);
+      publicDemo.setDemoMode(nextConfig.demoMode === true);
       setState("unauthenticated");
     } catch (error) {
       setMessage(errorMessage(error));
       setState("unavailable");
     }
-  }, [publicRoute]);
+  }, [publicDemo.refreshStatus, publicDemo.setDemoMode, publicRoute]);
 
   useEffect(() => {
     void checkSession();
@@ -95,11 +103,14 @@ export function AuthGate({ children }: { children: ReactNode }) {
       setPassword("");
       setMessage(null);
       setState("unauthenticated");
-      void apiRequest<AuthConfig>("/api/auth/config").then(setConfig).catch(() => setConfig(null));
+      void apiRequest<AuthConfig>("/api/auth/config").then((next) => {
+        setConfig(next);
+        publicDemo.setDemoMode(next.demoMode === true);
+      }).catch(() => setConfig(null));
     };
     window.addEventListener(READYWORK_AUTH_REQUIRED_EVENT, requireAuthentication);
     return () => window.removeEventListener(READYWORK_AUTH_REQUIRED_EVENT, requireAuthentication);
-  }, [publicRoute]);
+  }, [publicDemo.setDemoMode, publicRoute]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -115,8 +126,29 @@ export function AuthGate({ children }: { children: ReactNode }) {
         method: "POST",
         body: { username: submittedUsername, password: submittedPassword },
       });
-      await apiRequest<SessionPayload>("/api/auth/me");
+      const session = await apiRequest<SessionPayload>("/api/auth/me");
+      publicDemo.setDemoMode(session.demoMode === true);
       setPassword("");
+      setSessionExpired(false);
+      setState("authenticated");
+    } catch (error) {
+      setMessage(errorMessage(error));
+    } finally {
+      loginInFlight.current = false;
+      setSubmitting(false);
+    }
+  }
+
+  async function enterPublicDemo() {
+    if (loginInFlight.current || config?.mode !== "public_demo") return;
+    loginInFlight.current = true;
+    setSubmitting(true);
+    setMessage(null);
+    try {
+      await apiRequest<SessionPayload>("/api/auth/public-demo", { method: "POST" });
+      const session = await apiRequest<SessionPayload>("/api/auth/me");
+      publicDemo.setDemoMode(session.demoMode === true);
+      await publicDemo.refreshStatus();
       setSessionExpired(false);
       setState("authenticated");
     } catch (error) {
@@ -164,7 +196,13 @@ export function AuthGate({ children }: { children: ReactNode }) {
             <span className="relative block"><Lock className="pointer-events-none absolute left-4 top-1/2 size-[18px] -translate-y-1/2 text-[#65758b]/70" /><input value={password} onChange={(event) => setPassword(event.target.value)} name="password" type={showPassword ? "text" : "password"} autoComplete="current-password" required className="h-[52px] w-full rounded-2xl border border-[#eef2f6] bg-white pl-12 pr-12 text-[15px] text-[#0f1729] shadow-[0_1px_2px_rgba(16,24,40,0.05)] outline-none transition placeholder:text-[#65758b]/60 focus:border-blue-400 focus:ring-4 focus:ring-blue-100/60" placeholder="输入密码" /><button type="button" aria-label={showPassword ? "隐藏密码" : "显示密码"} onClick={() => setShowPassword((current) => !current)} className="absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-xl text-[#65758b]/70 transition hover:bg-slate-100 hover:text-[#0f1729]">{showPassword ? <EyeOff className="size-[18px]" /> : <Eye className="size-[18px]" />}</button></span>
           </label>
           <button type="submit" disabled={submitting} className="mt-8 flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-[#2563eb] text-[15px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(37,99,235,0.6)] transition hover:bg-[#1d4ed8] hover:shadow-[0_12px_28px_-8px_rgba(37,99,235,0.7)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">{submitting ? <><Loader2 className="size-4 animate-spin" />正在登录</> : "登录"}</button>
-        </form> : <div className="rounded-3xl border border-[#eef2f6] bg-white p-7 shadow-[0_1px_3px_rgba(16,24,40,0.04)] sm:p-9">
+        </form> : config?.mode === "public_demo" ? <div className="rounded-3xl border border-amber-200 bg-white p-7 shadow-[0_1px_3px_rgba(16,24,40,0.04)] sm:p-9">
+          <div className="text-sm font-semibold text-[#273248]">{english ? "Public demo workspace" : "公开演示工作区"}</div>
+          <div className="mt-2 text-xs leading-6 text-[#7f8998]">{english ? "Explore the complete procurement workflow with fictional suppliers and orders. Changes are writable and reset automatically." : "使用虚构供应商和订单体验完整采购流程。操作可写入，数据会定时重置。"}</div>
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-900">{english ? "Synthetic data only. Uploads, credentials, and all external delivery are disabled." : "仅使用合成数据。上传、凭据配置和所有对外发送均已禁用。"}</div>
+          {message && <div role="alert" className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs leading-5 text-red-700">{message}</div>}
+          <button type="button" onClick={() => void enterPublicDemo()} disabled={submitting} className="mt-6 flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-[#2563eb] text-[15px] font-semibold text-white shadow-[0_8px_20px_-8px_rgba(37,99,235,0.6)] transition hover:bg-[#1d4ed8] disabled:cursor-not-allowed disabled:opacity-50">{submitting ? <Loader2 className="size-4 animate-spin" /> : null}{english ? "Enter public demo" : "进入公开演示"}<ArrowRight className="size-4" /></button>
+        </div> : <div className="rounded-3xl border border-[#eef2f6] bg-white p-7 shadow-[0_1px_3px_rgba(16,24,40,0.04)] sm:p-9">
           <div className="text-sm font-semibold text-[#273248]">企业身份提供方尚未接入</div>
           <div className="mt-2 text-xs leading-6 text-[#7f8998]">生产环境不会启用内置账户。请配置企业 SSO；本机验收可仅对当前 API 进程显式开启演示认证。</div>
           <button type="button" onClick={() => void checkSession()} className="mt-6 flex h-[52px] w-full items-center justify-center gap-2 rounded-2xl border border-[#eef2f6] bg-white text-[15px] font-semibold text-[#465166] hover:bg-[#f7f9fb]">重新检查</button>
