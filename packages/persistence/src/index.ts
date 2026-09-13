@@ -3115,7 +3115,42 @@ CREATE TABLE IF NOT EXISTS procurement_ai_reply_analyses (
 CREATE INDEX IF NOT EXISTS idx_procurement_ai_reply_po ON procurement_ai_reply_analyses (tenant_id, po_id);
 `;
 
+const PUBLIC_DEMO_RUNTIME_SCHEMA = `
+CREATE TABLE IF NOT EXISTS public_demo_state (
+  tenant_id TEXT PRIMARY KEY CHECK (tenant_id = 't:public-demo'),
+  seed_version TEXT NOT NULL,
+  generation INTEGER NOT NULL CHECK (generation > 0),
+  reset_at TEXT NOT NULL,
+  reset_status TEXT NOT NULL CHECK (reset_status IN ('healthy','degraded')),
+  last_error_code TEXT
+);
+CREATE TABLE IF NOT EXISTS public_demo_reset_lease (
+  tenant_id TEXT PRIMARY KEY CHECK (tenant_id = 't:public-demo'),
+  lease_token TEXT NOT NULL,
+  lease_expires_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS public_demo_scenarios (
+  tenant_id TEXT NOT NULL CHECK (tenant_id = 't:public-demo'),
+  id TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  label TEXT NOT NULL,
+  payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (tenant_id,id)
+);
+CREATE TABLE IF NOT EXISTS public_demo_audit (
+  tenant_id TEXT NOT NULL CHECK (tenant_id = 't:public-demo'),
+  id TEXT NOT NULL,
+  generation INTEGER NOT NULL CHECK (generation > 0),
+  event_type TEXT NOT NULL,
+  detail_json TEXT NOT NULL CHECK (json_valid(detail_json)),
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (tenant_id,id)
+);
+`;
+
 export function initializeControlPlaneSchema(db: DatabaseSync): void {
+  db.exec(PUBLIC_DEMO_RUNTIME_SCHEMA);
   db.exec(PROCUREMENT_AI_REPLY_SCHEMA);
   db.exec(`${PLATFORM_SCHEMA}\n${WORKFLOW_CONTROL_SCHEMA}\n${PROCUREMENT_SCHEMA}\n${PROCUREMENT_REQUISITION_IDEMPOTENCY_SCHEMA}\n${PROCUREMENT_CREATE_IDEMPOTENCY_SCHEMA}\n${SUPPLIER_SYNC_IDEMPOTENCY_SCHEMA}\n${PROCUREMENT_SOURCING_DECISION_SCHEMA}\n${PROCUREMENT_EXECUTION_SCHEMA}\n${PROCUREMENT_MESSAGE_DRAFT_SCHEMA}\n${PROCUREMENT_COMMUNICATION_IDENTITY_SCHEMA}\n${PROCUREMENT_DEPLOYMENT_PROFILE_SCHEMA}\n${PROCUREMENT_NOTIFICATION_SCHEMA}\n${PROCUREMENT_ROUTE_SCHEMA}\n${PROCUREMENT_RISK_SNAPSHOT_SCHEMA}\n${PROCUREMENT_SLA_SCHEMA}\n${PROCUREMENT_ADVANCED_SLA_SCHEMA}\n${PROCUREMENT_INBOUND_COMMUNICATION_SCHEMA}\n${PROCUREMENT_INBOUND_MAIL_MONITOR_SCHEMA}\n${PROCUREMENT_INBOUND_MAIL_REJECTION_SCHEMA}\n${PROCUREMENT_PO_INTAKE_SCHEMA}\n${PROCUREMENT_ODOO_SYNC_SCHEMA}\n${PROCUREMENT_PO_STAGE_EVENT_SCHEMA}\n${PROCUREMENT_SLA_AUTOMATION_SCHEMA}\n${PROCUREMENT_WHATSAPP_SCHEMA}\n${PROCUREMENT_PO_CHAT_SCHEMA}\n${PROCUREMENT_ROUTE_CHAT_SCHEMA}\n${PUBLIC_DEMO_REQUEST_SCHEMA}`);
   ensureManufacturingContextSchema(db);
@@ -3552,6 +3587,7 @@ export function runMigrations(db: DatabaseSync): number {
   ensureManufacturingContextSchema(db);
   ensureAdvancedSlaColumnsSerialized(db);
   ensureProcurementRealtimeEventSchema(db);
+  db.exec(PUBLIC_DEMO_RUNTIME_SCHEMA);
   return applied;
 }
 

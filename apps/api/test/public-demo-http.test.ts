@@ -26,11 +26,12 @@ test('public demo HTTP entry creates only the fixed limited session', async () =
       MEMORY: '1',
       PORT: String(port),
       READYWORK_API_HOST: '127.0.0.1',
-      READYWORK_API_SURFACE: 'business',
+      READYWORK_API_SURFACE: 'compat',
       READYWORK_PUBLIC_DEMO: '1',
       READYWORK_PUBLIC_DEMO_TENANT: 't:public-demo',
       READYWORK_PUBLIC_DEMO_SIMULATION_POLICY: 'simulated_demo',
       READYWORK_SESSION_SECRET: 'test-only-public-demo-session-secret',
+      READYWORK_INTERNAL_CALLBACK_TOKEN: 'test-only-public-demo-internal-token',
     },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -54,8 +55,8 @@ test('public demo HTTP entry creates only the fixed limited session', async () =
     assert.ok(health, `public demo API did not become ready:\n${diagnostics}`);
     assert.deepEqual(await health.json(), {
       ok: true,
-      service: 'readywork-business-api',
-      surface: 'business',
+      service: 'readywork-compat-api',
+      surface: 'compat',
       version: '0.2.0',
       demoMode: true,
     });
@@ -93,6 +94,31 @@ test('public demo HTTP entry creates only the fixed limited session', async () =
       name: '公开演示采购经理',
       role: '采购经理',
       humanId: 'h:public-demo-manager',
+    });
+
+    const unauthorizedReset = await fetch(`http://127.0.0.1:${port}/internal/demo/reset`, { method: 'POST' });
+    assert.equal(unauthorizedReset.status, 401);
+    assert.equal((await unauthorizedReset.json() as { code: string }).code, 'UNAUTHORIZED');
+
+    const reset = await fetch(`http://127.0.0.1:${port}/internal/demo/reset`, {
+      method: 'POST',
+      headers: { 'x-readywork-internal-token': 'test-only-public-demo-internal-token' },
+    });
+    assert.equal(reset.status, 200, diagnostics);
+    const resetBody = await reset.json() as { generation: number; resetAt: string };
+    assert.equal(resetBody.generation, 1);
+
+    const status = await fetch(`http://127.0.0.1:${port}/api/public-demo/status`, {
+      headers: { cookie: cookie.split(';')[0]! },
+    });
+    assert.equal(status.status, 200, diagnostics);
+    assert.deepEqual(await status.json(), {
+      demoMode: true,
+      tenantId: 't:public-demo',
+      seedVersion: 'public-demo-v1',
+      generation: 1,
+      resetAt: resetBody.resetAt,
+      status: 'healthy',
     });
 
     const denied = await fetch(`http://127.0.0.1:${port}/api/editor/workflows`, {

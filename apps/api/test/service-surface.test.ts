@@ -17,3 +17,12 @@ test('服务边界: 业务任务不能从控制面访问，员工写操作只能
   assert.equal(surfaceAllows('control', 'POST', '/api/employees/wizard'), true);
   assert.equal(surfaceAllows('compat', 'POST', '/api/employees/wizard'), true);
 });
+
+test('服务边界: 公开演示重置只属于控制面，状态只属于业务面', () => {
+  assert.equal(routeDomain('POST', '/internal/demo/reset'), 'control');
+  assert.equal(surfaceAllows('business', 'POST', '/internal/demo/reset'), false);
+  assert.equal(surfaceAllows('control', 'POST', '/internal/demo/reset'), true);
+  assert.equal(routeDomain('GET', '/api/public-demo/status'), 'business');
+  assert.equal(surfaceAllows('business', 'GET', '/api/public-demo/status'), true);
+  assert.equal(surfaceAllows('control', 'GET', '/api/public-demo/status'), false);
+});

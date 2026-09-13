@@ -113,6 +113,7 @@ import { reconcileTemporalRun, reconcileTemporalRuns } from './temporal-run-reco
 import { createManufacturingContextRuntime } from './manufacturing-context-worker.js';
 import { handleManufacturingContextRequest } from './manufacturing-context-routes.js';
 import { submitPublicDemoRequest } from './public-demo-requests.js';
+import { PublicDemoResetInProgressError, readPublicDemoStatus, resetPublicDemo } from './public-demo-reset.js';
 
 /**
  * AI Workforce OS · Console 后端 API（node:http 零依赖，供 apps/console 前端调用）。
@@ -1248,6 +1249,18 @@ const server = createServer(async (req, res) => {
       });
     }
     if (!surfaceAllows(SERVICE_SURFACE, method, path)) return sendJson(res, 404, { error: `该路由不属于 ${SERVICE_SURFACE} 服务边界` });
+    if (method === 'POST' && path === '/internal/demo/reset') {
+      if (!publicDemoMode()) return sendJson(res, 404, { error: '未找到路由' });
+      if (!internalCallbackAuthorized(req)) return sendJson(res, 401, { error: '内部回调未授权', code: 'UNAUTHORIZED' });
+      try {
+        return sendJson(res, 200, resetPublicDemo(requisitionDb));
+      } catch (error) {
+        if (error instanceof PublicDemoResetInProgressError) {
+          return sendJson(res, 409, { error: '公开演示正在重置', code: error.code });
+        }
+        throw error;
+      }
+    }
     if (method === 'GET' && path === '/api/auth/config') {
       res.setHeader('cache-control', 'no-store');
       return sendJson(res, 200, {
@@ -1310,6 +1323,15 @@ const server = createServer(async (req, res) => {
         expiresAt: new Date(s.expiresAt).toISOString(),
         demoMode: publicDemoMode(),
       }) : sendJson(res, 401, { ok: false, error: '未登录或会话过期', code: 'UNAUTHORIZED' });
+    }
+
+    if (method === 'GET' && path === '/api/public-demo/status') {
+      res.setHeader('cache-control', 'no-store');
+      if (!publicDemoMode()) return sendJson(res, 404, { error: '未找到路由' });
+      const session = requestSession(req);
+      if (!session) return sendJson(res, 401, { error: '未登录或会话过期', code: 'UNAUTHORIZED' });
+      if (session.tenantId !== 't:public-demo') return sendJson(res, 403, { error: '公开演示租户不匹配', code: 'PUBLIC_DEMO_TENANT_MISMATCH' });
+      return sendJson(res, 200, readPublicDemoStatus(requisitionDb));
     }
 
     if (method === 'POST' && path === '/api/public/demo-requests') {
