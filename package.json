@@ -2,6 +2,7 @@
   "name": "supply-sentry",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-only",
   "description": "SupplySentry — AI-assisted procurement execution and supplier follow-up",
   "type": "module",
   "packageManager": "pnpm@11.7.0",

@@ -322,3 +322,11 @@ Historical documents may refer to local `.research/`, `.superpowers/`, or `artif
 - [Chinese project guide](README.zh-CN.md)
 
 Detailed engineering documents currently remain in Chinese.
+
+## License and commercial use
+
+Unless you have a separate written commercial agreement with the copyright holder, the SupplySentry source code is licensed under the [GNU Affero General Public License v3.0 only](LICENSE) (`AGPL-3.0-only`). If you modify the software and make it available to users over a network, the AGPL requires you to offer those users the corresponding source code.
+
+Alternative commercial licensing is available for organizations that need to embed, modify, or operate SupplySentry without the AGPL obligations. See [Commercial licensing](LICENSE-COMMERCIAL.md) for the licensing route; no additional rights are granted until a separate agreement is executed.
+
+The SupplySentry name, logo, and brand assets are not licensed under the AGPL. See the [trademark policy](TRADEMARKS.md). Third-party components and bundled fonts remain subject to their respective licenses, including the inventory in [Third-party licenses](docs/THIRD-PARTY-LICENSES.md).

@@ -125,7 +125,7 @@ test('Navisight 物料制造交期：真实供应商绑定、版本审计、退�
     assert.equal(updated.body['item']['standard_lead_time_days'], 20);
     assert.equal(updated.body['item']['criticality'], 'low');
 
-    const portfolio = procurementPortfolio(store.db, tenantId) as Record<string, any>;
+    const portfolio = procurementPortfolio(store.db, tenantId, fixed) as Record<string, any>;
     const riskItem = portfolio['items'].find((item: Record<string, unknown>) => item['id'] === po.id) as Record<string, any>;
     const factor = riskItem['riskFactors'].find((item: Record<string, unknown>) => item['code'] === 'manufacturing_lead_time_shortfall');
     assert.ok(factor, JSON.stringify(riskItem));
@@ -147,7 +147,7 @@ test('Navisight 物料制造交期：真实供应商绑定、版本审计、退�
         tenantId, 'CN', JSON.stringify([1, 2, 3, 4, 5]), 'Asia/Shanghai', 'YYYY-MM-DD',
         'human:manager', 'human:manager', at, at,
       );
-    const disabledPortfolio = procurementPortfolio(store.db, tenantId) as Record<string, any>;
+    const disabledPortfolio = procurementPortfolio(store.db, tenantId, fixed) as Record<string, any>;
     const disabledRiskItem = disabledPortfolio['items'].find((item: Record<string, unknown>) => item['id'] === po.id) as Record<string, any>;
     assert.deepEqual(disabledRiskItem['leadTimeEvidence'], []);
     assert.equal(disabledRiskItem['riskFactors'].some((item: Record<string, unknown>) => item['code'] === 'manufacturing_lead_time_shortfall'), false);
@@ -169,7 +169,7 @@ test('Navisight 物料制造交期：真实供应商绑定、版本审计、退�
     const history = await request('/api/po/lead-times?includeRetired=true', buyer);
     assert.equal(history.body['items'][0]['status'], 'retired');
     assert.deepEqual(history.body['events'].map((event: Record<string, unknown>) => event['action']), ['retired', 'updated', 'created']);
-    const afterRetire = procurementPortfolio(store.db, tenantId) as Record<string, any>;
+    const afterRetire = procurementPortfolio(store.db, tenantId, fixed) as Record<string, any>;
     const retiredRiskItem = afterRetire['items'].find((item: Record<string, unknown>) => item['id'] === po.id) as Record<string, any>;
     assert.equal(retiredRiskItem['riskFactors'].some((item: Record<string, unknown>) => item['code'] === 'manufacturing_lead_time_shortfall'), false);
     assert.deepEqual(retiredRiskItem['leadTimeEvidence'], []);

@@ -262,3 +262,11 @@ pnpm web           # 零依赖 Control Tower 仪表盘（备用）→ http://127
 4. 提供脱敏公开体验环境并接入生产身份认证。
 
 详见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
+
+## 开源许可证与商业授权
+
+除非你已与版权所有者签署独立书面商业协议，SupplySentry 源代码均依据 [GNU Affero General Public License v3.0 only](LICENSE)（`AGPL-3.0-only`）授权。若修改本软件并通过网络向用户提供服务，AGPL 要求向这些用户提供对应源代码。
+
+需要在不承担 AGPL 开源义务的情况下嵌入、修改或运营 SupplySentry 的组织，可以申请独立商业授权。申请方式见[商业授权说明](LICENSE-COMMERCIAL.md)；双方签署独立协议前，该说明本身不授予任何额外权利。
+
+SupplySentry 名称、Logo 和品牌素材不属于 AGPL 授权范围，详见[商标政策](TRADEMARKS.md)。第三方组件和内置字体继续遵循各自许可证，具体记录见[第三方许可证清单](docs/THIRD-PARTY-LICENSES.md)。
