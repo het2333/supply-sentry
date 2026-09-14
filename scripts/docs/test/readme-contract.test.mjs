@@ -13,6 +13,9 @@ const requiredAssets = [
   'docs/assets/supplysentry-demo.gif',
   'docs/assets/supplysentry-demo-poster.png',
   'docs/architecture/supplysentry-system.svg',
+  'docs/architecture/supplysentry-architecture.en.png',
+  'docs/architecture/supplysentry-architecture.zh-CN.png',
+  'docs/architecture/supplysentry-agent-design.zh-CN.png',
   'reports/evaluations/supplier-replies-v1.md',
 ];
 
@@ -53,6 +56,11 @@ test('repository landing pages expose the runnable portfolio story in both langu
   assert.match(english, /Run Locally/u);
   assert.match(english, /supplysentry-walkthrough-v1\.0\.0\.mp4/u);
   assert.match(chinese, /supplysentry-walkthrough-v1\.0\.0\.mp4/u);
+  assert.ok(english.includes('](docs/architecture/supplysentry-architecture.en.png)'));
+  assert.ok(chinese.includes('](docs/architecture/supplysentry-architecture.zh-CN.png)'));
+  for (const markdown of [english, chinese]) {
+    assert.ok(markdown.includes('](docs/architecture/supplysentry-agent-design.zh-CN.png)'));
+  }
   assert.doesNotMatch(english, /47\.102\.116\.148:3002/u);
   assert.doesNotMatch(chinese, /47\.102\.116\.148:3002/u);
   assert.match(english, /Durable workflow/u);

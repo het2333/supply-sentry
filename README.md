@@ -16,7 +16,7 @@ SupplySentry follows a purchase order after issue, turns unstructured supplier r
   <img src="docs/assets/supplysentry-demo-poster.png" alt="SupplySentry synthetic public demo: supplier reply evidence, short-delivery approval, risk, SLA, notifications, and drafts" width="100%">
 </picture>
 
-[**Watch the 61-second walkthrough**](https://github.com/het2333/supply-sentry/releases/download/v1.0.0-portfolio/supplysentry-walkthrough-v1.0.0.mp4) · [**Online demo paused**](#public-demo-status) · [**Run Locally**](#quick-start) · [Evaluation report](reports/evaluations/supplier-replies-v1.md) · [Architecture source](docs/architecture/supplysentry-system.drawio)
+[**Watch the 61-second walkthrough**](https://github.com/het2333/supply-sentry/releases/download/v1.0.0-portfolio/supplysentry-walkthrough-v1.0.0.mp4) · [**Online demo paused**](#public-demo-status) · [**Run Locally**](#quick-start) · [Evaluation report](reports/evaluations/supplier-replies-v1.md) · [Architecture image](docs/architecture/supplysentry-architecture.en.png)
 
 | Durable workflow | Controlled side effects | Measured reliability |
 | --- | --- | --- |
@@ -65,7 +65,21 @@ The perfect result is a **deterministic contract baseline**: it proves the commi
 
 ## Architecture
 
-![SupplySentry architecture: trusted runtime, messaging and enterprise integrations, and durable evidence](docs/architecture/supplysentry-system.svg)
+### Agent execution design
+
+![SupplySentry Agent execution design (Chinese): supplier messages, evidence, AI proposals, policy checks, human approval, controlled actions and receipt verification](docs/architecture/supplysentry-agent-design.zh-CN.png)
+
+Read left to right: associate supplier messages with orders and preserve source evidence, extract candidate facts with AI, then apply business rules. Material changes wait for human approval; approved commands still pass permission, version and idempotency checks. Rejection stops the action. Confirmed receipts update business state; uncertain outcomes require reconciliation, never blind resending. Dashed lines indicate persistence/recovery support or exception paths, not bypasses around policy checks.
+
+This is a logical execution view, not a LangGraph implementation diagram. The current durable workflow implementation uses Temporal. Public-demo external actions are simulated, not actual supplier deliveries.
+
+[Full-resolution Agent design (Chinese)](docs/architecture/supplysentry-agent-design.zh-CN.png) · [Generation notes](docs/architecture/agent-design-generation.md)
+
+### Layer responsibilities
+
+![SupplySentry architecture: evidence, AI proposals, approval, controlled execution, replaceable integrations and shared persistence](docs/architecture/supplysentry-architecture.en.png)
+
+This AI-generated logical overview shows stable responsibilities, not vendor-specific deployment units. Models, messaging adapters, workflow engines and storage implementations can change without changing the diagram; the table below lists current implementations.
 
 The model proposes; the business runtime decides. DeepSeek can extract candidate facts and recommend an action, but cannot directly approve a short delivery, mutate a PO, mark receipt, or contact a supplier. Commands cross the Action Gateway only after current-version, permission, policy, and idempotency checks.
 
@@ -80,7 +94,7 @@ The model proposes; the business runtime decides. DeepSeek can extract candidate
 | Hermes / email / ERP boundaries | Transport adapters and read-write-readback integrations |
 | SQLite / Temporal PostgreSQL | Business facts, projections, audit evidence, and workflow history |
 
-Editable source: [Draw.io](docs/architecture/supplysentry-system.drawio) · [Embedded editable PNG](docs/architecture/supplysentry-system.drawio.png) · [Architecture verifier](scripts/docs/verify-architecture.mjs)
+Architecture images: [English PNG](docs/architecture/supplysentry-architecture.en.png) · [Chinese PNG](docs/architecture/supplysentry-architecture.zh-CN.png). These AI-generated images are raster assets, not editable Draw.io exports.
 
 ## Quick start
 

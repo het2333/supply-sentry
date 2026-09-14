@@ -16,7 +16,7 @@ SupplySentry 从采购订单发出后开始工作：将供应商的自由文本�
   <img src="docs/assets/supplysentry-demo-poster.png" alt="SupplySentry 合成公开演示：供应商回复证据、短交审批、风险、SLA、通知和草稿" width="100%">
 </picture>
 
-[**观看 61 秒完整演示**](https://github.com/het2333/supply-sentry/releases/download/v1.0.0-portfolio/supplysentry-walkthrough-v1.0.0.mp4) · [**在线 Demo 暂停**](#公开演示状态) · [**本地运行**](#快速开始) · [评测报告](reports/evaluations/supplier-replies-v1.md) · [架构图源文件](docs/architecture/supplysentry-system.drawio)
+[**观看 61 秒完整演示**](https://github.com/het2333/supply-sentry/releases/download/v1.0.0-portfolio/supplysentry-walkthrough-v1.0.0.mp4) · [**在线 Demo 暂停**](#公开演示状态) · [**本地运行**](#快速开始) · [评测报告](reports/evaluations/supplier-replies-v1.md) · [架构图片](docs/architecture/supplysentry-architecture.zh-CN.png)
 
 | 可恢复长流程 | 受控外部操作 | 可量化可靠性 |
 | --- | --- | --- |
@@ -65,7 +65,21 @@ SupplySentry 从采购订单发出后开始工作：将供应商的自由文本�
 
 ## 系统架构
 
-![SupplySentry 架构：可信业务运行时、消息与企业集成、持久证据](docs/architecture/supplysentry-system.svg)
+### Agent 执行流程
+
+![SupplySentry 采购 Agent 系统设计：供应商消息、证据上下文、AI 建议、规则校验、人工审批、受控执行和回执核验](docs/architecture/supplysentry-agent-design.zh-CN.png)
+
+从左向右阅读：供应商消息关联订单并保留原文，AI 提取候选事实，业务规则判断能否执行。重大差异先等待人工审批，批准后仍需重新校验权限、版本与幂等条件；拒绝则停止本次动作。外部结果确认后更新业务状态，结果不确定时进入人工核对，不盲目重发。虚线表示持久化恢复支持或异常分支，不表示模型可以绕过业务校验。
+
+这是逻辑执行设计，不是 LangGraph 实现图；当前持久化工作流使用 Temporal。公开 Demo 的外部动作仅模拟，不代表实际供应商已收到消息。
+
+[下载 Agent 系统设计原图](docs/architecture/supplysentry-agent-design.zh-CN.png) · [图片生成说明](docs/architecture/agent-design-generation.md)
+
+### 分层职责
+
+![SupplySentry 架构：证据上下文、AI 解析建议、策略审批、受控执行、可替换集成与共享持久化](docs/architecture/supplysentry-architecture.zh-CN.png)
+
+这张 AI 生成的逻辑架构图展示稳定的业务职责，而不是绑定具体厂商的部署单元。更换模型、消息适配器、工作流引擎或存储实现时通常无需重画；当前技术选型见下表。
 
 模型提出建议，业务运行时作出决定。DeepSeek 可以提取候选事实并推荐操作，但不能直接批准短交、修改 PO、确认收货或联系供应商。只有通过当前版本、权限、策略和幂等校验的指令才能跨过 Action Gateway。
 
@@ -80,7 +94,7 @@ SupplySentry 从采购订单发出后开始工作：将供应商的自由文本�
 | Hermes / 邮件 / ERP 边界 | 传输适配器与读-写-读回集成 |
 | SQLite / Temporal PostgreSQL | 业务事实、投影、审计证据和工作流历史 |
 
-可编辑源文件：[Draw.io](docs/architecture/supplysentry-system.drawio) · [内嵌可编辑 PNG](docs/architecture/supplysentry-system.drawio.png) · [架构验证器](scripts/docs/verify-architecture.mjs)
+架构图片：[中文版 PNG](docs/architecture/supplysentry-architecture.zh-CN.png) · [英文版 PNG](docs/architecture/supplysentry-architecture.en.png)。图片由 AI 直接生成，为位图，不是 Draw.io 可编辑导出文件。
 
 ## 快速开始
 
